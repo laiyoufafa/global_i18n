@@ -80,6 +80,8 @@ LocaleInfo::LocaleInfo(const std::string &localeTag, std::map<std::string, std::
         std::string defaultLocaleTag = LocaleConfig::GetSystemLocale();
         finalLocaleTag = "";
         ComputeFinalLocaleTag(defaultLocaleTag);
+        status = U_ZERO_ERROR;
+        builder->clear();
         locale = builder->setLanguageTag(StringPiece(finalLocaleTag)).build(status);
     }
     language = locale.getLanguage();
