@@ -107,6 +107,8 @@ ohos_shared_library("intl_util") {
     external_deps += [ "core_service:tel_core_service_api" ]
     cflags_cc += [ "-DTEL_CORE_SERVICE_EXISTS" ]
   }
+  install_images = [ system_base_dir ]
+  relative_install_dir = "platformsdk"
   subsystem_name = "global"
   part_name = "i18n"
 }
