@@ -150,6 +150,10 @@ void I18nAddon::CreateInitProperties(napi_property_descriptor *properties)
     properties[22] = DECLARE_NAPI_FUNCTION("set24HourClock", Set24HourClock);
     // 23 is properties index
     properties[23] = DECLARE_NAPI_FUNCTION("getTimeZone", GetI18nTimeZone);
+    // 25 is properties index
+    properties[25] = DECLARE_NAPI_FUNCTION("setUsingLocalDigit", SetUsingLocalDigitAddon);
+    // 26 is properties index
+    properties[26] = DECLARE_NAPI_FUNCTION("getUsingLocalDigit", GetUsingLocalDigitAddon);
 }
 
 napi_value I18nAddon::Init(napi_env env, napi_value exports)
@@ -180,7 +184,7 @@ napi_value I18nAddon::Init(napi_env env, napi_value exports)
     if (!transliterator) {
         return nullptr;
     }
-    size_t propertiesNums = 25;
+    size_t propertiesNums = 27;
     napi_property_descriptor properties[propertiesNums];
     CreateInitProperties(properties);
     properties[13] = DECLARE_NAPI_PROPERTY("Util", util);  // 13 is properties index
@@ -3093,6 +3097,52 @@ napi_value I18nAddon::GetRawOffset(napi_env env, napi_callback_info info)
     status = napi_create_int32(env, result, &value);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Create result failed");
+        return nullptr;
+    }
+    return value;
+}
+
+napi_value I18nAddon::SetUsingLocalDigitAddon(napi_env env, napi_callback_info info)
+{
+    size_t argc = 1;
+    napi_value argv[1] = { 0 };
+    napi_value thisVar = nullptr;
+    void *data = nullptr;
+    napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+
+    if (argv[0] == nullptr) {
+        HiLog::Error(LABEL, "Invalid parameter nullptr");
+        return nullptr;
+    }
+    napi_valuetype valueType = napi_valuetype::napi_undefined;
+    napi_typeof(env, argv[0], &valueType);
+    if (valueType != napi_valuetype::napi_boolean) {
+        HiLog::Error(LABEL, "Invalid parameter type");
+        return nullptr;
+    }
+    bool flag = false;
+    napi_status status = napi_get_value_bool(env, argv[0], &flag);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "Get parameter flag failed");
+        return nullptr;
+    }
+    
+    bool res = LocaleConfig::SetUsingLocalDigit(flag);
+    napi_value value = nullptr;
+    status = napi_get_boolean(env, res, &value);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "Invalid result");
+        return nullptr;
+    }
+    return value;
+}
+
+napi_value I18nAddon::GetUsingLocalDigitAddon(napi_env env, napi_callback_info info)
+{
+    bool res = LocaleConfig::GetUsingLocalDigit();
+    napi_value value = nullptr;
+    napi_status status = napi_get_boolean(env, res, &value);
+    if (status != napi_ok) {
         return nullptr;
     }
     return value;

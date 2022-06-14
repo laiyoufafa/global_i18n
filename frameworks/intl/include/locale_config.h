@@ -47,6 +47,8 @@ public:
     static bool Is24HourClock();
     static bool Set24HourClock(bool option);
     static bool CheckPermission();
+    static bool SetUsingLocalDigit(bool flag);
+    static bool GetUsingLocalDigit();
 
 private:
     static bool IsValidLanguage(const std::string &language);
@@ -89,6 +91,7 @@ private:
     static std::unordered_set<std::string> supportedRegions;
     static std::unordered_set<std::string> whiteLanguages;
     static std::unordered_map<std::string, std::string> dialectMap;
+    static std::unordered_map<std::string, std::string> localDigitMap;
     static std::set<std::string> validCaTag;
     static std::set<std::string> validCoTag;
     static std::set<std::string> validKnTag;
