@@ -80,6 +80,8 @@ public:
     static napi_value InitTransliterator(napi_env env, napi_value exports);
     static napi_value GetTransliteratorInstance(napi_env env, napi_callback_info info);
     static napi_value GetAvailableIDs(napi_env env, napi_callback_info info);
+    static napi_value SetUsingLocalDigitAddon(napi_env env, napi_callback_info info);
+    static napi_value GetUsingLocalDigitAddon(napi_env env, napi_callback_info info);
 
 private:
     static void CreateInitProperties(napi_property_descriptor *properties);

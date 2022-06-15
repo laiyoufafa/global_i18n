@@ -88,6 +88,17 @@ unordered_map<string, string> LocaleConfig::dialectMap {
     { "en-Latn-US", "en-Latn-US" }
 };
 
+unordered_map<string, string> LocaleConfig::localDigitMap {
+    { "ar", "arab" },
+    { "as", "beng" },
+    { "bn", "beng" },
+    { "fa", "arabext" },
+    { "mr", "deva" },
+    { "my", "mymr" },
+    { "ne", "deva" },
+    { "ur", "latn" }
+};
+
 set<std::string> LocaleConfig::validCaTag {
     "buddhist",
     "chinese",
@@ -909,6 +920,59 @@ bool LocaleConfig::Set24HourClock(bool option)
         optionStr = "false";
     }
     return SetParameter(HOUR_KEY, optionStr.data()) == 0;
+}
+
+bool LocaleConfig::SetUsingLocalDigit(bool flag)
+{
+    if (!CheckPermission()) {
+        return false;
+    }
+    std::string locale = GetSystemLocale();
+    LocaleInfo localeInfo(locale);
+    std::string language = localeInfo.GetLanguage();
+    if (localDigitMap.find(language) == localDigitMap.end()) {
+        return false;
+    }
+    std::string numberSystem = "-nu-" + localDigitMap.at(language);
+    if (flag) {
+        if (locale.find("-u-") == std::string::npos) {
+            locale += "-u" + numberSystem;
+        } else if (locale.find("-nu-") == std::string::npos) {
+            locale += numberSystem;
+        } else {
+            std::string oldNumberSystem = "-nu-" + localeInfo.GetNumberingSystem();
+            locale.replace(locale.find("-nu-"), oldNumberSystem.length(), numberSystem);
+        }
+    } else {
+        size_t pos = locale.find(numberSystem);
+        if (pos != std::string::npos) {
+            locale.replace(pos, numberSystem.length(), "");
+        }
+        // 2 is string -u length
+        if (locale.find("-u") == (locale.length() - 2)) {
+            // 2 is string -u length
+            locale = locale.substr(0, locale.length() - 2);
+        }
+    }
+    if (!SetSystemLocale(locale)) {
+        return false;
+    }
+    return true;
+}
+
+bool LocaleConfig::GetUsingLocalDigit()
+{
+    std::string locale = GetSystemLocale();
+    LocaleInfo localeInfo(locale);
+    std::string language = localeInfo.GetLanguage();
+    if (localDigitMap.find(language) == localDigitMap.end()) {
+        return false;
+    }
+    std::string localNumberSystem = localDigitMap.at(language);
+    if (localNumberSystem.compare(localeInfo.GetNumberingSystem()) != 0) {
+        return false;
+    }
+    return true;
 }
 } // namespace I18n
 } // namespace Global
