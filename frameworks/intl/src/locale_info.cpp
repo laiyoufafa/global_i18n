@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 #include "locale_info.h"
-#include <algorithm>
 #include "ohos/init_data.h"
 #include "locale_config.h"
 
