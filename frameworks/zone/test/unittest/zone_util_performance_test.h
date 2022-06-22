@@ -16,10 +16,10 @@
 #ifndef OHOS_GLOBAL_I18N_ZONE_UTIL_PERFORMANCE_TEST_H
 #define OHOS_GLOBAL_I18N_ZONE_UTIL_PERFORMANCE_TEST_H
 
-int ZoneUtilPerformanceFuncTest001();
-int ZoneUtilPerformanceFuncTest002();
-int ZoneUtilPerformanceFuncTest003();
-int ZoneUtilPerformanceFuncTest004();
-int ZoneUtilPerformanceFuncTest005();
-int ZoneUtilPerformanceFuncTest006();
+int ZoneUtilPerformanceFuncTest001(void);
+int ZoneUtilPerformanceFuncTest002(void);
+int ZoneUtilPerformanceFuncTest003(void);
+int ZoneUtilPerformanceFuncTest004(void);
+int ZoneUtilPerformanceFuncTest005(void);
+int ZoneUtilPerformanceFuncTest006(void);
 #endif
