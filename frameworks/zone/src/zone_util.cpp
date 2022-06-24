@@ -14,8 +14,6 @@
  */
 
 #include "zone_util.h"
-#include <algorithm>
-#include <cctype>
 #include "ohos/init_data.h"
 #include "strenum.h"
 #include "unicode/timezone.h"

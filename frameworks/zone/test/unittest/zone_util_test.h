@@ -16,12 +16,12 @@
 #ifndef OHOS_GLOBAL_I18N_ZONE_UTIL_TEST_H
 #define OHOS_GLOBAL_I18N_ZONE_UTIL_TEST_H
 
-int ZoneUtilFuncTest001();
-int ZoneUtilFuncTest002();
-int ZoneUtilFuncTest003();
-int ZoneUtilFuncTest004();
-int ZoneUtilFuncTest005();
-int ZoneUtilFuncTest006();
-int ZoneUtilFuncTest007();
-int ZoneUtilFuncTest008();
+int ZoneUtilFuncTest001(void);
+int ZoneUtilFuncTest002(void);
+int ZoneUtilFuncTest003(void);
+int ZoneUtilFuncTest004(void);
+int ZoneUtilFuncTest005(void);
+int ZoneUtilFuncTest006(void);
+int ZoneUtilFuncTest007(void);
+int ZoneUtilFuncTest008(void);
 #endif

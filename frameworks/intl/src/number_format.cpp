@@ -13,8 +13,6 @@
  * limitations under the License.
  */
 #include "number_format.h"
-#include <locale>
-#include <codecvt>
 #include "ohos/init_data.h"
 #include "locale_config.h"
 

@@ -150,6 +150,10 @@ void I18nAddon::CreateInitProperties(napi_property_descriptor *properties)
     properties[22] = DECLARE_NAPI_FUNCTION("set24HourClock", Set24HourClock);
     // 23 is properties index
     properties[23] = DECLARE_NAPI_FUNCTION("getTimeZone", GetI18nTimeZone);
+    // 25 is properties index
+    properties[25] = DECLARE_NAPI_FUNCTION("setUsingLocalDigit", SetUsingLocalDigitAddon);
+    // 26 is properties index
+    properties[26] = DECLARE_NAPI_FUNCTION("getUsingLocalDigit", GetUsingLocalDigitAddon);
 }
 
 napi_value I18nAddon::Init(napi_env env, napi_value exports)
@@ -180,7 +184,7 @@ napi_value I18nAddon::Init(napi_env env, napi_value exports)
     if (!transliterator) {
         return nullptr;
     }
-    size_t propertiesNums = 25;
+    size_t propertiesNums = 27;
     napi_property_descriptor properties[propertiesNums];
     CreateInitProperties(properties);
     properties[13] = DECLARE_NAPI_PROPERTY("Util", util);  // 13 is properties index
@@ -244,6 +248,9 @@ napi_value I18nAddon::UnitConvert(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    if (status != napi_ok) {
+        return nullptr;
+    }
     std::string fromUnit;
     GetOptionValue(env, argv[0], "unit", fromUnit);
     std::string fromMeasSys;
@@ -261,7 +268,6 @@ napi_value I18nAddon::UnitConvert(napi_env env, napi_callback_info info)
     // 3 is the index of value
     status = napi_get_value_string_utf8(env, argv[3], localeBuf.data(), len + 1, &len);
     if (status != napi_ok) {
-        HiLog::Error(LABEL, "Failed to get string item");
         return nullptr;
     }
     std::vector<std::string> localeTags;
@@ -269,7 +275,6 @@ napi_value I18nAddon::UnitConvert(napi_env env, napi_callback_info info)
     std::map<std::string, std::string> map = {};
     map.insert(std::make_pair("style", "unit"));
     if (!convertStatus) {
-        HiLog::Error(LABEL, "Do not support the conversion");
         map.insert(std::make_pair("unit", fromUnit));
     } else {
         map.insert(std::make_pair("unit", toUnit));
@@ -295,6 +300,9 @@ napi_value I18nAddon::GetDateOrder(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    if (status != napi_ok) {
+        return nullptr;
+    }
     size_t len = 0;
     napi_get_value_string_utf8(env, argv[0], nullptr, 0, &len);
     std::vector<char> languageBuf(len + 1);
@@ -627,6 +635,9 @@ napi_value I18nAddon::IsDigitAddon(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    if (status != napi_ok) {
+        return nullptr;
+    }
     napi_valuetype valueType = napi_valuetype::napi_undefined;
     napi_typeof(env, argv[0], &valueType);
     if (valueType != napi_valuetype::napi_string) {
@@ -655,6 +666,9 @@ napi_value I18nAddon::IsSpaceCharAddon(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    if (status != napi_ok) {
+        return nullptr;
+    }
     napi_valuetype valueType = napi_valuetype::napi_undefined;
     napi_typeof(env, argv[0], &valueType);
     if (valueType != napi_valuetype::napi_string) {
@@ -683,6 +697,9 @@ napi_value I18nAddon::IsWhiteSpaceAddon(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    if (status != napi_ok) {
+        return nullptr;
+    }
     napi_valuetype valueType = napi_valuetype::napi_undefined;
     napi_typeof(env, argv[0], &valueType);
     if (valueType != napi_valuetype::napi_string) {
@@ -711,6 +728,9 @@ napi_value I18nAddon::IsRTLCharacterAddon(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    if (status != napi_ok) {
+        return nullptr;
+    }
     napi_valuetype valueType = napi_valuetype::napi_undefined;
     napi_typeof(env, argv[0], &valueType);
     if (valueType != napi_valuetype::napi_string) {
@@ -739,6 +759,9 @@ napi_value I18nAddon::IsIdeoGraphicAddon(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    if (status != napi_ok) {
+        return nullptr;
+    }
     napi_valuetype valueType = napi_valuetype::napi_undefined;
     napi_typeof(env, argv[0], &valueType);
     if (valueType != napi_valuetype::napi_string) {
@@ -767,6 +790,9 @@ napi_value I18nAddon::IsLetterAddon(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    if (status != napi_ok) {
+        return nullptr;
+    }
     napi_valuetype valueType = napi_valuetype::napi_undefined;
     napi_typeof(env, argv[0], &valueType);
     if (valueType != napi_valuetype::napi_string) {
@@ -795,6 +821,9 @@ napi_value I18nAddon::IsLowerCaseAddon(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    if (status != napi_ok) {
+        return nullptr;
+    }
     napi_valuetype valueType = napi_valuetype::napi_undefined;
     napi_typeof(env, argv[0], &valueType);
     if (valueType != napi_valuetype::napi_string) {
@@ -823,6 +852,9 @@ napi_value I18nAddon::IsUpperCaseAddon(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    if (status != napi_ok) {
+        return nullptr;
+    }
     napi_valuetype valueType = napi_valuetype::napi_undefined;
     napi_typeof(env, argv[0], &valueType);
     if (valueType != napi_valuetype::napi_string) {
@@ -851,6 +883,9 @@ napi_value I18nAddon::GetTypeAddon(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    if (status != napi_ok) {
+        return nullptr;
+    }
     napi_valuetype valueType = napi_valuetype::napi_undefined;
     napi_typeof(env, argv[0], &valueType);
     if (valueType != napi_valuetype::napi_string) {
@@ -905,6 +940,9 @@ napi_value I18nAddon::GetSystemCountries(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    if (status != napi_ok) {
+        return nullptr;
+    }
     size_t len = 0;
     napi_get_value_string_utf8(env, argv[0], nullptr, 0, &len);
     std::vector<char> localeBuf(len + 1);
@@ -981,6 +1019,9 @@ napi_value I18nAddon::GetDisplayLanguage(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    if (status != napi_ok) {
+        return nullptr;
+    }
     size_t len = 0;
     napi_get_value_string_utf8(env, argv[0], nullptr, 0, &len);
     std::vector<char> localeBuf(len + 1);
@@ -1020,6 +1061,9 @@ napi_value I18nAddon::GetDisplayCountry(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    if (status != napi_ok) {
+        return nullptr;
+    }
     size_t len = 0;
     napi_get_value_string_utf8(env, argv[0], nullptr, 0, &len);
     std::vector<char> localeBuf(len + 1);
@@ -1058,6 +1102,9 @@ napi_value I18nAddon::IsSuggested(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    if (status != napi_ok) {
+        return nullptr;
+    }
     size_t len = 0;
     napi_get_value_string_utf8(env, argv[0], nullptr, 0, &len);
     std::vector<char> languageBuf(len + 1);
@@ -1095,6 +1142,9 @@ napi_value I18nAddon::SetSystemLanguage(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    if (status != napi_ok) {
+        return nullptr;
+    }
     size_t len = 0;
     napi_get_value_string_utf8(env, argv[0], nullptr, 0, &len);
     std::vector<char> languageBuf(len + 1);
@@ -1120,6 +1170,9 @@ napi_value I18nAddon::SetSystemRegion(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    if (status != napi_ok) {
+        return nullptr;
+    }
     size_t len = 0;
     napi_get_value_string_utf8(env, argv[0], nullptr, 0, &len);
     std::vector<char> regionBuf(len + 1);
@@ -1145,6 +1198,9 @@ napi_value I18nAddon::SetSystemLocale(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    if (status != napi_ok) {
+        return nullptr;
+    }
     size_t len = 0;
     napi_get_value_string_utf8(env, argv[0], nullptr, 0, &len);
     std::vector<char> localeBuf(len + 1);
@@ -1170,6 +1226,9 @@ napi_value I18nAddon::IsRTL(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    if (status != napi_ok) {
+        return nullptr;
+    }
     size_t len = 0;
     napi_get_value_string_utf8(env, argv[0], nullptr, 0, &len);
     std::vector<char> localeBuf(len + 1);
@@ -1231,6 +1290,9 @@ void GetOptionValue(napi_env env, napi_value options, const std::string &optionN
             napi_get_value_string_utf8(env, optionValue, nullptr, 0, &len);
             std::vector<char> optionBuf(len + 1);
             status = napi_get_value_string_utf8(env, optionValue, optionBuf.data(), len + 1, &len);
+            if (status != napi_ok) {
+                return;
+            }
             map.insert(make_pair(optionName, optionBuf.data()));
         }
     }
@@ -1243,51 +1305,45 @@ napi_value I18nAddon::PhoneNumberFormatConstructor(napi_env env, napi_callback_i
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-
+    if (status != napi_ok) {
+        return nullptr;
+    }
     napi_valuetype valueType = napi_valuetype::napi_undefined;
     napi_typeof(env, argv[0], &valueType);
     if (valueType != napi_valuetype::napi_string) {
         napi_throw_type_error(env, nullptr, "Parameter type does not match");
         return nullptr;
     }
-
     size_t len = 0;
     status = napi_get_value_string_utf8(env, argv[0], nullptr, 0, &len);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Get country tag length failed");
         return nullptr;
     }
-
     std::vector<char> country (len + 1);
     status = napi_get_value_string_utf8(env, argv[0], country.data(), len + 1, &len);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Get country tag failed");
         return nullptr;
     }
-
     std::map<std::string, std::string> options;
     GetOptionValue(env, argv[1], "type", options);
-
     std::unique_ptr<I18nAddon> obj = nullptr;
     obj = std::make_unique<I18nAddon>();
     if (!obj) {
         HiLog::Error(LABEL, "Create I18nAddon failed");
         return nullptr;
     }
-
     status = napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()),
                        I18nAddon::Destructor, nullptr, &obj->wrapper_);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Wrap I18nAddon failed");
         return nullptr;
     }
-
     if (!obj->InitPhoneNumberFormatContext(env, info, country.data(), options)) {
         return nullptr;
     }
-
     obj.release();
-
     return thisVar;
 }
 
@@ -2391,6 +2447,9 @@ napi_value I18nAddon::IndexUtilConstructor(napi_env env, napi_callback_info info
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    if (status != napi_ok) {
+        return nullptr;
+    }
     std::string localeTag = "";
     if (argv[0] != nullptr) {
         napi_valuetype valueType = napi_valuetype::napi_undefined;
@@ -2604,6 +2663,9 @@ napi_value I18nAddon::Set24HourClock(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    if (status != napi_ok) {
+        return nullptr;
+    }
 
     bool option = false;
     status = napi_get_value_bool(env, argv[0], &option);
@@ -2628,6 +2690,9 @@ napi_value I18nAddon::AddPreferredLanguage(napi_env env, napi_callback_info info
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    if (status != napi_ok) {
+        return nullptr;
+    }
 
     napi_valuetype valueType = napi_valuetype::napi_undefined;
     napi_typeof(env, argv[0], &valueType);
@@ -2672,6 +2737,9 @@ napi_value I18nAddon::RemovePreferredLanguage(napi_env env, napi_callback_info i
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    if (status != napi_ok) {
+        return nullptr;
+    }
 
     napi_valuetype valueType = napi_valuetype::napi_undefined;
     napi_typeof(env, argv[0], &valueType);
@@ -2926,6 +2994,9 @@ napi_value I18nAddon::GetTimeZoneDisplayName(napi_env env, napi_callback_info in
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    if (status != napi_ok) {
+        return nullptr;
+    }
 
     I18nAddon *obj = nullptr;
     status = napi_unwrap(env, thisVar, reinterpret_cast<void **>(&obj));
@@ -2968,6 +3039,9 @@ napi_value I18nAddon::GetOffset(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    if (status != napi_ok) {
+        return nullptr;
+    }
 
     double date = 0;
     if (argv[0]) {
@@ -3023,6 +3097,52 @@ napi_value I18nAddon::GetRawOffset(napi_env env, napi_callback_info info)
     status = napi_create_int32(env, result, &value);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Create result failed");
+        return nullptr;
+    }
+    return value;
+}
+
+napi_value I18nAddon::SetUsingLocalDigitAddon(napi_env env, napi_callback_info info)
+{
+    size_t argc = 1;
+    napi_value argv[1] = { 0 };
+    napi_value thisVar = nullptr;
+    void *data = nullptr;
+    napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+
+    if (argv[0] == nullptr) {
+        HiLog::Error(LABEL, "Invalid parameter nullptr");
+        return nullptr;
+    }
+    napi_valuetype valueType = napi_valuetype::napi_undefined;
+    napi_typeof(env, argv[0], &valueType);
+    if (valueType != napi_valuetype::napi_boolean) {
+        HiLog::Error(LABEL, "Invalid parameter type");
+        return nullptr;
+    }
+    bool flag = false;
+    napi_status status = napi_get_value_bool(env, argv[0], &flag);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "Get parameter flag failed");
+        return nullptr;
+    }
+    
+    bool res = LocaleConfig::SetUsingLocalDigit(flag);
+    napi_value value = nullptr;
+    status = napi_get_boolean(env, res, &value);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "Invalid result");
+        return nullptr;
+    }
+    return value;
+}
+
+napi_value I18nAddon::GetUsingLocalDigitAddon(napi_env env, napi_callback_info info)
+{
+    bool res = LocaleConfig::GetUsingLocalDigit();
+    napi_value value = nullptr;
+    napi_status status = napi_get_boolean(env, res, &value);
+    if (status != napi_ok) {
         return nullptr;
     }
     return value;
