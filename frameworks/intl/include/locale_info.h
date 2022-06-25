@@ -26,7 +26,7 @@ namespace Global {
 namespace I18n {
 class LocaleInfo {
 public:
-    explicit LocaleInfo(std::string locale);
+    explicit LocaleInfo(const std::string &locale);
     LocaleInfo(const std::string &localeTag, std::map<std::string, std::string> &configs);
     virtual ~LocaleInfo();
     std::string GetLanguage() const;

@@ -20,7 +20,6 @@ namespace OHOS {
 namespace Global {
 namespace I18n {
 using namespace icu;
-
 std::set<std::string> LocaleInfo::allValidLocales = GetValidLocales();
 
 std::set<std::string> LocaleInfo::GetValidLocales()
@@ -37,7 +36,7 @@ std::set<std::string> LocaleInfo::GetValidLocales()
     return allValidLocales;
 }
 
-LocaleInfo::LocaleInfo(std::string localeTag)
+LocaleInfo::LocaleInfo(const std::string &localeTag)
 {
     UErrorCode status = U_ZERO_ERROR;
     configs = {};
