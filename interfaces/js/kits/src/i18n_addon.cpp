@@ -1247,12 +1247,14 @@ napi_value I18nAddon::IsRTL(napi_env env, napi_callback_info info)
     return result;
 }
 
+// t
 napi_value I18nAddon::InitPhoneNumberFormat(napi_env env, napi_value exports)
 {
     napi_status status = napi_ok;
     napi_property_descriptor properties[] = {
         DECLARE_NAPI_FUNCTION("isValidNumber", IsValidPhoneNumber),
-        DECLARE_NAPI_FUNCTION("format", FormatPhoneNumber)
+        DECLARE_NAPI_FUNCTION("format", FormatPhoneNumber),
+        DECLARE_NAPI_FUNCTION("getLocationName", GetLocationName)
     };
 
     napi_value constructor;
@@ -1402,6 +1404,64 @@ napi_value I18nAddon::IsValidPhoneNumber(napi_env env, napi_callback_info info)
     status = napi_get_boolean(env, isValid, &result);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Create boolean failed");
+        return nullptr;
+    }
+
+    return result;
+}
+
+napi_value I18nAddon::GetLocationName(napi_env env, napi_callback_info info)
+{
+    size_t argc = 2;
+    napi_value argv[2] = { 0,0 };
+    napi_value thisVar = nullptr;
+    void *data = nullptr;
+    napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    
+    napi_valuetype arg0Type = napi_valuetype::napi_undefined;
+    napi_typeof(env, argv[0], &arg0Type);
+    if (arg0Type != napi_valuetype::napi_string) {
+        napi_throw_type_error(env, nullptr, "Parameter number does not match");
+        return nullptr;
+    }
+
+    napi_valuetype arg1Type = napi_valuetype::napi_undefined;
+    napi_typeof(env, argv[1], &arg1Type);
+    if (arg1Type != napi_valuetype::napi_string) {
+        napi_throw_type_error(env, nullptr, "Parameter locale does not match");
+        return nullptr;
+    }
+
+    size_t numLen = 0;
+    napi_status status = napi_get_value_string_utf8(env, argv[0], nullptr, 0, &numLen);
+    std::vector<char> numberBuf(numLen + 1);
+    status = napi_get_value_string_utf8(env, argv[0], numberBuf.data(), numLen + 1, &numLen);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "Failed to get number string for GetLocationName");
+        return nullptr;
+    }
+
+    size_t len = 0;
+    status = napi_get_value_string_utf8(env, argv[1], nullptr, 0, &len);
+    std::vector<char> languageBuf(len + 1);
+    status = napi_get_value_string_utf8(env, argv[1], languageBuf.data(), len + 1, &len);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "Failed to get locale string for GetLocationName");
+        return nullptr;
+    }
+    
+    I18nAddon *obj = nullptr;
+    status = napi_unwrap(env, thisVar, reinterpret_cast<void **>(&obj));
+    if (status != napi_ok || !obj || !obj->phonenumberfmt_) {
+        HiLog::Error(LABEL, "GetPhoneNumberFormat object failed");
+        return nullptr;
+    }
+
+    std::string resStr = obj->phonenumberfmt_->getLocationName(numberBuf.data(), languageBuf.data());
+    napi_value result = nullptr;
+    status = napi_create_string_utf8(env, resStr.c_str(), NAPI_AUTO_LENGTH , &result);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "Create result string failed");
         return nullptr;
     }
 
