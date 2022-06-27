@@ -15,7 +15,10 @@
 #ifndef OHOS_GLOBAL_I18N_TIMEZONE_H
 #define OHOS_GLOBAL_I18N_TIMEZONE_H
 
+#include <map>
+#include <set>
 #include <string>
+#include <vector>
 #include "unicode/timezone.h"
 
 namespace OHOS {
@@ -23,7 +26,7 @@ namespace Global {
 namespace I18n {
 class I18nTimeZone {
 public:
-    I18nTimeZone(std::string zoneID);
+    I18nTimeZone(std::string &id, bool isZoneID);
     ~I18nTimeZone();
     int32_t GetOffset(double date);
     int32_t GetRawOffset();
@@ -32,9 +35,29 @@ public:
     std::string GetDisplayName(bool isDST);
     std::string GetDisplayName(std::string localeStr);
     std::string GetDisplayName(std::string localeStr, bool isDST);
-    static std::unique_ptr<I18nTimeZone> CreateInstance(std::string zoneID);
+    static std::unique_ptr<I18nTimeZone> CreateInstance(std::string &id, bool isZoneID);
+    static std::set<std::string> GetAvailableIDs();
+    static std::vector<std::string> GetAvailableZoneCityIDs();
+    static std::string GetCityDisplayName(std::string &cityID, std::string &locale);
 
 private:
+    static const char *DEFAULT_LANGUAGE;
+    static const char *DEFAULT_LOCALE;
+    static const char *TIMEZONES_PATH;
+    static const char *SUPPORT_LOCALES_PATH;
+    static const char *rootTag;
+    static const char *secondRootTag;
+    static const uint32_t ELEMENT_NUM = 3;
+    static const char *supportLocalesTag;
+    static std::string displayLocale;
+    static bool isInitialized;
+    static std::set<std::string> availableIDs;
+    static std::vector<std::string> availableZoneCityIDs;
+    static std::map<std::string, std::string> city2DisplayName;
+    static std::map<std::string, std::string> city2TimeZoneID;
+    static std::map<std::string, std::string> supportLocales;
+    static void ReadTimeZoneData(const char *xmlPath);
+    static std::string ComputeLocale(std::string &locale);
     icu::TimeZone* GetTimeZone();
     icu::TimeZone *timezone;
 };

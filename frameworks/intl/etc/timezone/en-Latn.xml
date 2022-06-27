@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2022 Huawei Device Co., Ltd.
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<timezones>
+    <timezone>
+        <city>Auckland</city>
+        <id>Pacific/Auckland</id>
+        <display_name>Auckland (New Zealand)</display_name>
+    </timezone>
+    <timezone>
+        <city>Magadan</city>
+        <id>Asia/Magadan</id>
+        <display_name>Magadan (Russia)</display_name>
+    </timezone>
+    <timezone>
+        <city>Lord Howe Island</city>
+        <id>Australia/Lord_Howe</id>
+        <display_name>Lord Howe Island (Australia)</display_name>
+    </timezone>
+    <timezone>
+        <city>Tokyo</city>
+        <id>Asia/Tokyo</id>
+        <display_name>Tokyo (Japan)</display_name>
+    </timezone>
+    <timezone>
+        <city>Shanghai</city>
+        <id>Asia/Shanghai</id>
+        <display_name>Shanghai (China)</display_name>
+    </timezone>
+    <timezone>
+        <city>Hovd</city>
+        <id>Asia/Hovd</id>
+        <display_name>Khovd (Mongolia)</display_name>
+    </timezone>
+    <timezone>
+        <city>Omsk</city>
+        <id>Asia/Omsk</id>
+        <display_name>Omsk (Russia)</display_name>
+    </timezone>
+    <timezone>
+        <city>Ashgabat</city>
+        <id>Asia/Ashgabat</id>
+        <display_name>Ashgabat (Turkmenistan)</display_name>
+    </timezone>
+    <timezone>
+        <city>Yerevan</city>
+        <id>Asia/Yerevan</id>
+        <display_name>Yerevan (Armenia)</display_name>
+    </timezone>
+    <timezone>
+        <city>Moscow</city>
+        <id>Europe/Moscow</id>
+        <display_name>Moscow (Russia)</display_name>
+    </timezone>
+    <timezone>
+        <city>Tel Aviv</city>
+        <id>Asia/Jerusalem</id>
+        <display_name>Tel Aviv (Israel)</display_name>
+    </timezone>
+    <timezone>
+        <city>Dublin</city>
+        <id>Europe/Dublin</id>
+        <display_name>Dublin (Ireland)</display_name>
+    </timezone>
+    <timezone>
+        <city>London</city>
+        <id>Europe/London</id>
+        <display_name>London (United Kingdom)</display_name>
+    </timezone>
+    <timezone>
+        <city>Praia</city>
+        <id>Atlantic/Cape_Verde</id>
+        <display_name>Praia (Cape Verde)</display_name>
+    </timezone>
+    <timezone>
+        <city>Montevideo</city>
+        <id>America/Montevideo</id>
+        <display_name>Montevideo (Uruguay)</display_name>
+    </timezone>
+    <timezone>
+        <city>Brasília</city>
+        <id>America/Sao_Paulo</id>
+        <display_name>Brasília (Brazil)</display_name>
+    </timezone>
+    <timezone>
+        <city>Stanley</city>
+        <id>Atlantic/Stanley</id>
+        <display_name>Stanley (Falkland Islands)</display_name>
+    </timezone>
+    <timezone>
+        <city>Bogotá</city>
+        <id>America/Bogota</id>
+        <display_name>Bogotá (Colombia)</display_name>
+    </timezone>
+    <timezone>
+        <city>Easter Island</city>
+        <id>Pacific/Easter</id>
+        <display_name>Easter Island (Chile)</display_name>
+    </timezone>
+    <timezone>
+        <city>Salt Lake City</city>
+        <id>America/Denver</id>
+        <display_name>Salt Lake City (United States)</display_name>
+    </timezone>
+    <timezone>
+        <city>Los Angeles</city>
+        <id>America/Los_Angeles</id>
+        <display_name>Los Angeles (United States)</display_name>
+    </timezone>
+    <timezone>
+        <city>Anchorage</city>
+        <id>America/Anchorage</id>
+        <display_name>Anchorage (United States)</display_name>
+    </timezone>
+    <timezone>
+        <city>Adak</city>
+        <id>America/Adak</id>
+        <display_name>Adak (United States)</display_name>
+    </timezone>
+    <timezone>
+        <city>Pago Pago</city>
+        <id>Pacific/Pago-Pago</id>
+        <display_name>Pago Pago (American Samoa)</display_name>
+    </timezone>
+</timezones>
