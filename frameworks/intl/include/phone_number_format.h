@@ -37,12 +37,12 @@ public:
     std::string format(const std::string &number) const;
     static std::unique_ptr<PhoneNumberFormat> CreateInstance(const std::string &countryTag,
                                                              const std::map<std::string, std::string> &options);
-    std::string getLocationName(const std::string &number, const std::string &locale) const;
+	std::string getLocationName(const std::string &number, const std::string &locale) const;
 
 private:
     PhoneNumberUtil* GetPhoneNumberUtil();
     PhoneNumberUtil *util;
-    scoped_ptr<PhoneNumberOfflineGeocoder> offLineGeocoder;
+	scoped_ptr<PhoneNumberOfflineGeocoder> offLineGeocoder;
     std::string country;
     PhoneNumberUtil::PhoneNumberFormat phoneNumberFormat;
 };

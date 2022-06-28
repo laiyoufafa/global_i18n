@@ -20,13 +20,12 @@ namespace OHOS {
 namespace Global {
 namespace I18n {
 using i18n::phonenumbers::PhoneNumberUtil;
-using i18n::phonenumbers::PhoneNumberOfflineGeocoder;
 
 PhoneNumberFormat::PhoneNumberFormat(const std::string &countryTag,
                                      const std::map<std::string, std::string> &options)
 {
     util = PhoneNumberUtil::GetInstance();
-    offLineGeocoder.reset(new PhoneNumberOfflineGeocoder());
+	offLineGeocoder.reset(new PhoneNumberOfflineGeocoder());
     country = countryTag;
 
     std::string type = "";
@@ -103,7 +102,6 @@ std::string PhoneNumberFormat::getLocationName(const std::string &number,const s
     std::string location_name = offLineGeocoder->GetDescriptionForNumber(phoneNumber, uLocale);
     return location_name;
 }
-
 } // namespace I18n
 } // namespace Global
 } // namespace OHOS
