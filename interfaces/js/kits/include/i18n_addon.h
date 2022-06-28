@@ -82,7 +82,10 @@ public:
     static napi_value GetAvailableIDs(napi_env env, napi_callback_info info);
     static napi_value SetUsingLocalDigitAddon(napi_env env, napi_callback_info info);
     static napi_value GetUsingLocalDigitAddon(napi_env env, napi_callback_info info);
-
+    static napi_value GetAvailableTimezoneIDs(napi_env env, napi_callback_info info);
+    static napi_value GetAvailableZoneCityIDs(napi_env env, napi_callback_info info);
+    static napi_value GetCityDisplayName(napi_env env, napi_callback_info info);
+    static napi_value GetTimezoneFromCity(napi_env env, napi_callback_info info);
 
 private:
     static void CreateInitProperties(napi_property_descriptor *properties);
@@ -147,6 +150,9 @@ private:
     static std::string ModifyOrder(std::string &pattern);
     static void ProcessNormal(char ch, int *order, size_t orderSize, int *lengths, size_t lengsSize);
     static bool GetStringFromJS(napi_env env, napi_value argv, std::string &jsString);
+
+    static napi_value StaticGetTimeZone(napi_env, napi_value *argv, bool isZoneID);
+    static napi_value CreateTimeZoneObject(napi_env env);
 
     napi_env env_;
     napi_ref wrapper_;

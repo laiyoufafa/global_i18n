@@ -184,12 +184,17 @@ napi_value I18nAddon::Init(napi_env env, napi_value exports)
     if (!transliterator) {
         return nullptr;
     }
-    size_t propertiesNums = 27;
+    napi_value timezone = CreateTimeZoneObject(env);
+    if (!timezone) {
+        return nullptr;
+    }
+    size_t propertiesNums = 28;
     napi_property_descriptor properties[propertiesNums];
     CreateInitProperties(properties);
     properties[13] = DECLARE_NAPI_PROPERTY("Util", util);  // 13 is properties index
     properties[16] = DECLARE_NAPI_PROPERTY("Character", character);  // 16 is properties index
     properties[24] = DECLARE_NAPI_PROPERTY("Transliterator", transliterator); // 24 is properties index
+    properties[27] = DECLARE_NAPI_PROPERTY("TimeZone", timezone); // 27 is properties index
     status = napi_define_properties(env, exports, propertiesNums, properties);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Failed to set properties at init");
@@ -1247,14 +1252,12 @@ napi_value I18nAddon::IsRTL(napi_env env, napi_callback_info info)
     return result;
 }
 
-// t
 napi_value I18nAddon::InitPhoneNumberFormat(napi_env env, napi_value exports)
 {
     napi_status status = napi_ok;
     napi_property_descriptor properties[] = {
         DECLARE_NAPI_FUNCTION("isValidNumber", IsValidPhoneNumber),
-        DECLARE_NAPI_FUNCTION("format", FormatPhoneNumber),
-        DECLARE_NAPI_FUNCTION("getLocationName", GetLocationName)
+        DECLARE_NAPI_FUNCTION("format", FormatPhoneNumber)
     };
 
     napi_value constructor;
@@ -2893,8 +2896,8 @@ napi_value I18nAddon::InitI18nTimeZone(napi_env env, napi_value exports)
 
 napi_value I18nAddon::I18nTimeZoneConstructor(napi_env env, napi_callback_info info)
 {
-    size_t argc = 1;
-    napi_value argv[1] = { nullptr };
+    size_t argc = 2;
+    napi_value argv[2] = { nullptr };
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
@@ -2902,11 +2905,10 @@ napi_value I18nAddon::I18nTimeZoneConstructor(napi_env env, napi_callback_info i
         return nullptr;
     }
     std::string zoneID = "";
+    napi_valuetype valueType = napi_valuetype::napi_undefined;
     if (argv[0] != nullptr) {
-        napi_valuetype valueType = napi_valuetype::napi_undefined;
         napi_typeof(env, argv[0], &valueType);
         if (valueType != napi_valuetype::napi_string) {
-            napi_throw_type_error(env, nullptr, "Parameter type does not match");
             return nullptr;
         }
         int32_t code = 0;
@@ -2915,21 +2917,29 @@ napi_value I18nAddon::I18nTimeZoneConstructor(napi_env env, napi_callback_info i
             return nullptr;
         }
     }
-    std::unique_ptr<I18nAddon> obj = nullptr;
-    obj = std::make_unique<I18nAddon>();
+    if (argv[1] == nullptr) {
+        return nullptr;
+    }
+    napi_typeof(env, argv[1], &valueType);
+    if (valueType != napi_valuetype::napi_boolean) {
+        return nullptr;
+    }
+    bool isZoneID = false;
+    status = napi_get_value_bool(env, argv[1], &isZoneID);
+    if (status != napi_ok) {
+        return nullptr;
+    }
+    std::unique_ptr<I18nAddon> obj = std::make_unique<I18nAddon>();
     if (!obj) {
-        HiLog::Error(LABEL, "Create I18nAddon failed");
         return nullptr;
     }
     status =
         napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()), I18nAddon::Destructor, nullptr, &obj->wrapper_);
     if (status != napi_ok) {
-        HiLog::Error(LABEL, "Wrap II18nAddon failed");
         return nullptr;
     }
-    obj->timezone_ = I18nTimeZone::CreateInstance(zoneID);
+    obj->timezone_ = I18nTimeZone::CreateInstance(zoneID, isZoneID);
     if (!obj->timezone_) {
-        HiLog::Error(LABEL, "Wrap TimeZone failed");
         return nullptr;
     }
     obj.release();
@@ -2943,24 +2953,8 @@ napi_value I18nAddon::GetI18nTimeZone(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    napi_value constructor = nullptr;
-    napi_status status = napi_get_reference_value(env, *g_timezoneConstructor, &constructor);
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "Failed to create reference at GetTimeZoneInstance");
-        return nullptr;
-    }
-    
-    napi_value result = nullptr;
-    if (!argv[0]) {
-        status = napi_new_instance(env, constructor, 0, nullptr, &result); // 1 arguments
-    } else {
-        status = napi_new_instance(env, constructor, 1, argv, &result); // 1 arguments
-    }
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "GetTimeZone create instance failed");
-        return nullptr;
-    }
-    return result;
+
+    return StaticGetTimeZone(env, argv, true);
 }
 
 napi_value I18nAddon::GetID(napi_env env, napi_callback_info info)
@@ -3206,6 +3200,153 @@ napi_value I18nAddon::GetUsingLocalDigitAddon(napi_env env, napi_callback_info i
         return nullptr;
     }
     return value;
+}
+
+napi_value I18nAddon::CreateTimeZoneObject(napi_env env)
+{
+    napi_status status = napi_ok;
+    napi_value timezone = nullptr;
+    status = napi_create_object(env, &timezone);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "Failed to create timezone object at init");
+        return nullptr;
+    }
+    napi_property_descriptor timezoneProperties[] = {
+        DECLARE_NAPI_FUNCTION("getAvailableIDs", GetAvailableTimezoneIDs),
+        DECLARE_NAPI_FUNCTION("getAvailableZoneCityIDs", GetAvailableZoneCityIDs),
+        DECLARE_NAPI_FUNCTION("getCityDisplayName", GetCityDisplayName),
+        DECLARE_NAPI_FUNCTION("getTimezoneFromCity", GetTimezoneFromCity)
+    };
+    status = napi_define_properties(env, timezone,
+                                    sizeof(timezoneProperties) / sizeof(napi_property_descriptor),
+                                    timezoneProperties);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "Failed to set properties of timezone at init");
+        return nullptr;
+    }
+    return timezone;
+}
+
+napi_value I18nAddon::GetAvailableTimezoneIDs(napi_env env, napi_callback_info info)
+{
+    std::set<std::string> timezoneIDs = I18nTimeZone::GetAvailableIDs();
+    napi_value result = nullptr;
+    napi_status status = napi_create_array_with_length(env, timezoneIDs.size(), &result);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "Failed to create array");
+        return nullptr;
+    }
+    size_t index = 0;
+    for (std::set<std::string>::iterator it = timezoneIDs.begin(); it != timezoneIDs.end(); it++) {
+        napi_value value = nullptr;
+        status = napi_create_string_utf8(env, (*it).c_str(), NAPI_AUTO_LENGTH, &value);
+        if (status != napi_ok) {
+            HiLog::Error(LABEL, "Failed to create string item");
+            return nullptr;
+        }
+        status = napi_set_element(env, result, index, value);
+        if (status != napi_ok) {
+            HiLog::Error(LABEL, "Failed to set array item");
+            return nullptr;
+        }
+        index++;
+    }
+    return result;
+}
+
+napi_value I18nAddon::GetAvailableZoneCityIDs(napi_env env, napi_callback_info info)
+{
+    std::vector<std::string> cityIDs = I18nTimeZone::GetAvailableZoneCityIDs();
+    napi_value result = nullptr;
+    napi_status status = napi_create_array_with_length(env, cityIDs.size(), &result);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "Failed to create array");
+        return nullptr;
+    }
+    for (size_t i = 0; i < cityIDs.size(); i++) {
+        napi_value value = nullptr;
+        status = napi_create_string_utf8(env, cityIDs[i].c_str(), NAPI_AUTO_LENGTH, &value);
+        if (status != napi_ok) {
+            HiLog::Error(LABEL, "Failed to create string item");
+            return nullptr;
+        }
+        status = napi_set_element(env, result, i, value);
+        if (status != napi_ok) {
+            HiLog::Error(LABEL, "Failed to set array item");
+            return nullptr;
+        }
+    }
+    return result;
+}
+
+napi_value I18nAddon::GetCityDisplayName(napi_env env, napi_callback_info info)
+{
+    size_t argc = 2;
+    napi_value argv[2] = { 0 };
+    napi_value thisVar = nullptr;
+    void *data = nullptr;
+    napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    if (status != napi_ok) {
+        return nullptr;
+    }
+    if (argv[0] == nullptr || argv[1] == nullptr) {
+        return nullptr;
+    }
+    napi_valuetype valueType = napi_valuetype::napi_undefined;
+    napi_typeof(env, argv[0], &valueType);
+    if (valueType != napi_valuetype::napi_string) {
+        HiLog::Error(LABEL, "Invalid parameter type");
+        return nullptr;
+    }
+    int32_t code = 0;
+    std::string cityID = GetString(env, argv[0], code);
+    if (code != 0) {
+        return nullptr;
+    }
+    std::string locale = GetString(env, argv[1], code);
+    if (code != 0) {
+        return nullptr;
+    }
+    std::string name = I18nTimeZone::GetCityDisplayName(cityID, locale);
+    napi_value result = nullptr;
+    status = napi_create_string_utf8(env, name.c_str(), NAPI_AUTO_LENGTH, &result);
+    if (status != napi_ok) {
+        return nullptr;
+    }
+    return result;
+}
+
+napi_value I18nAddon::StaticGetTimeZone(napi_env env, napi_value *argv, bool isZoneID)
+{
+    napi_value constructor = nullptr;
+    napi_status status = napi_get_reference_value(env, *g_timezoneConstructor, &constructor);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "Failed to create reference at StaticGetTimeZone");
+        return nullptr;
+    }
+    napi_value newArgv[2] = { 0 };
+    newArgv[0] = argv[0];
+    status = napi_get_boolean(env, isZoneID, &newArgv[1]);
+    if (status != napi_ok) {
+        return nullptr;
+    }
+    napi_value result = nullptr;
+    status = napi_new_instance(env, constructor, 2, newArgv, &result); // 2 is parameter num
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "StaticGetTimeZone create instance failed");
+        return nullptr;
+    }
+    return result;
+}
+
+napi_value I18nAddon::GetTimezoneFromCity(napi_env env, napi_callback_info info)
+{
+    size_t argc = 1;
+    napi_value argv[1] = { nullptr };
+    napi_value thisVar = nullptr;
+    void *data = nullptr;
+    napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    return StaticGetTimeZone(env, argv, false);
 }
 
 napi_value Init(napi_env env, napi_value exports)
