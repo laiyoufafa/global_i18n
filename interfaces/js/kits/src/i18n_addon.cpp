@@ -2895,7 +2895,9 @@ napi_value I18nAddon::GetI18nTimeZone(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-
+    if (argv[0] == nullptr) {
+        napi_create_string_utf8(env, "", NAPI_AUTO_LENGTH, &argv[0]);
+    }
     return StaticGetTimeZone(env, argv, true);
 }
 
