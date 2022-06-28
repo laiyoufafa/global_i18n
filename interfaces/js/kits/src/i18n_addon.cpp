@@ -3180,7 +3180,7 @@ napi_value I18nAddon::SetUsingLocalDigitAddon(napi_env env, napi_callback_info i
         HiLog::Error(LABEL, "Get parameter flag failed");
         return nullptr;
     }
-    
+
     bool res = LocaleConfig::SetUsingLocalDigit(flag);
     napi_value value = nullptr;
     status = napi_get_boolean(env, res, &value);
