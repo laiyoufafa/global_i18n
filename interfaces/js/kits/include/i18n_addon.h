@@ -92,6 +92,7 @@ private:
     static napi_value PhoneNumberFormatConstructor(napi_env env, napi_callback_info info);
     static napi_value IsValidPhoneNumber(napi_env env, napi_callback_info info);
     static napi_value FormatPhoneNumber(napi_env env, napi_callback_info info);
+    static napi_value GetLocationName(napi_env env, napi_callback_info info);
     bool InitPhoneNumberFormatContext(napi_env env, napi_callback_info info, const std::string &country,
                                       const std::map<std::string, std::string> &options);
 
