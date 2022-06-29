@@ -1257,7 +1257,8 @@ napi_value I18nAddon::InitPhoneNumberFormat(napi_env env, napi_value exports)
     napi_status status = napi_ok;
     napi_property_descriptor properties[] = {
         DECLARE_NAPI_FUNCTION("isValidNumber", IsValidPhoneNumber),
-        DECLARE_NAPI_FUNCTION("format", FormatPhoneNumber)
+        DECLARE_NAPI_FUNCTION("format", FormatPhoneNumber),
+        DECLARE_NAPI_FUNCTION("getLocationName", GetLocationName)
     };
 
     napi_value constructor;
