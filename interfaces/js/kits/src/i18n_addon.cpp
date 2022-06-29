@@ -1416,7 +1416,7 @@ napi_value I18nAddon::IsValidPhoneNumber(napi_env env, napi_callback_info info)
 napi_value I18nAddon::GetLocationName(napi_env env, napi_callback_info info)
 {
     size_t argc = 2;
-    napi_value argv[2] = { 0,0 };
+    napi_value argv[2] = {0, 0};
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
@@ -1462,7 +1462,7 @@ napi_value I18nAddon::GetLocationName(napi_env env, napi_callback_info info)
 
     std::string resStr = obj->phonenumberfmt_->getLocationName(numberBuf.data(), languageBuf.data());
     napi_value result = nullptr;
-    status = napi_create_string_utf8(env, resStr.c_str(), NAPI_AUTO_LENGTH , &result);
+    status = napi_create_string_utf8(env, resStr.c_str(), NAPI_AUTO_LENGTH, &result);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Create result string failed");
         return nullptr;

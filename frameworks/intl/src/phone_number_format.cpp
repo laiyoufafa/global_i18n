@@ -13,9 +13,9 @@
  * limitations under the License.
  */
  
+#include "cpp/src/phonenumbers/geocoding/phonenumber_offline_geocoder.h"
 #include "locid.h"
 #include "phone_number_format.h"
-#include "cpp/src/phonenumbers/geocoding/phonenumber_offline_geocoder.h"
 
 namespace OHOS {
 namespace Global {
@@ -91,7 +91,7 @@ std::string PhoneNumberFormat::format(const std::string &number) const
     return formatted_number;
 }
 
-std::string PhoneNumberFormat::getLocationName(const std::string &number,const std::string &locale) const
+std::string PhoneNumberFormat::getLocationName(const std::string &number, const std::string &locale) const
 {
     const char *l_name = locale.c_str();
     icu::Locale uLocale = icu::Locale::createFromName(l_name);
