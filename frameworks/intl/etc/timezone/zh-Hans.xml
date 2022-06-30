@@ -94,9 +94,9 @@
         <display_name>巴西利亚 (巴西)</display_name>
     </timezone>
     <timezone>
-        <city>Stanley</city>
-        <id>Atlantic/Stanley</id>
-        <display_name>史丹利 (福克兰群岛)</display_name>
+        <city>Santiago</city>
+        <id>America/Santiago</id>
+        <display_name>圣地亚哥 (智利)</display_name>
     </timezone>
     <timezone>
         <city>Bogotá</city>
