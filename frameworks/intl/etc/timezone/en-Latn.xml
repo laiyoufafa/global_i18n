@@ -94,9 +94,9 @@
         <display_name>Brasília (Brazil)</display_name>
     </timezone>
     <timezone>
-        <city>Stanley</city>
-        <id>Atlantic/Stanley</id>
-        <display_name>Stanley (Falkland Islands)</display_name>
+        <city>Santiago</city>
+        <id>America/Santiago</id>
+        <display_name>Santiago (Chile)</display_name>
     </timezone>
     <timezone>
         <city>Bogotá</city>
