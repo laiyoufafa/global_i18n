@@ -44,6 +44,9 @@
         "adapted_system_type": [
             "standard"
         ],
+        "hisysevent_config": [
+            "//base/global/i18n/hisysevent.yaml"
+        ],
         "rom": "",
         "ram": "",
         "deps": {
