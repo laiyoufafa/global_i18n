@@ -19,6 +19,7 @@
 #include "hilog/log.h"
 #include "hisysevent_adapter.h"
 #include "i18n_calendar.h"
+#include "phone_number_format.h"
 #include "unicode/locid.h"
 #include "unicode/datefmt.h"
 #include "unicode/smpdtfmt.h"
@@ -164,7 +165,6 @@ napi_value I18nAddon::Init(napi_env env, napi_value exports)
     status = napi_create_object(env, &util);
     if (status != napi_ok) {
         ReportInitI18nFail("I18n init failed.");
-        HiLog::Error(LABEL, "Failed to create util object at init");
         return nullptr;
     }
     napi_property_descriptor utilProperties[] = {
@@ -176,7 +176,6 @@ napi_value I18nAddon::Init(napi_env env, napi_value exports)
                                     utilProperties);
     if (status != napi_ok) {
         ReportInitI18nFail("I18n init failed.");
-        HiLog::Error(LABEL, "Failed to set properties of util at init");
         return nullptr;
     }
     napi_value character = CreateCharacterObject(env);
@@ -191,17 +190,18 @@ napi_value I18nAddon::Init(napi_env env, napi_value exports)
     if (!timezone) {
         return nullptr;
     }
-    size_t propertiesNums = 28;
+    napi_value phoneNumberFormat = CreatePhoneNumberFormatObject(env);
+    size_t propertiesNums = 29;
     napi_property_descriptor properties[propertiesNums];
     CreateInitProperties(properties);
     properties[13] = DECLARE_NAPI_PROPERTY("Util", util);  // 13 is properties index
     properties[16] = DECLARE_NAPI_PROPERTY("Character", character);  // 16 is properties index
     properties[24] = DECLARE_NAPI_PROPERTY("Transliterator", transliterator); // 24 is properties index
     properties[27] = DECLARE_NAPI_PROPERTY("TimeZone", timezone); // 27 is properties index
+    properties[28] = DECLARE_NAPI_PROPERTY("PhoneNumberFormat", phoneNumberFormat); // 28 is properties index
     status = napi_define_properties(env, exports, propertiesNums, properties);
     if (status != napi_ok) {
         ReportInitI18nFail("I18n init failed.");
-        HiLog::Error(LABEL, "Failed to set properties at init");
         return nullptr;
     }
     return exports;
@@ -1262,7 +1262,6 @@ napi_value I18nAddon::InitPhoneNumberFormat(napi_env env, napi_value exports)
     napi_property_descriptor properties[] = {
         DECLARE_NAPI_FUNCTION("isValidNumber", IsValidPhoneNumber),
         DECLARE_NAPI_FUNCTION("format", FormatPhoneNumber),
-        DECLARE_NAPI_FUNCTION("getLocationName", GetLocationName)
     };
 
     napi_value constructor;
@@ -1458,14 +1457,10 @@ napi_value I18nAddon::GetLocationName(napi_env env, napi_callback_info info)
         return nullptr;
     }
     
-    I18nAddon *obj = nullptr;
-    status = napi_unwrap(env, thisVar, reinterpret_cast<void **>(&obj));
-    if (status != napi_ok || !obj || !obj->phonenumberfmt_) {
-        HiLog::Error(LABEL, "GetPhoneNumberFormat object failed");
-        return nullptr;
-    }
-
-    std::string resStr = obj->phonenumberfmt_->getLocationName(numberBuf.data(), languageBuf.data());
+    std::string locale = "CN";
+    std::map<std::string, std::string> options {};
+    PhoneNumberFormat format(locale, options);
+    std::string resStr = format.getLocationName(numberBuf.data(), languageBuf.data());
     napi_value result = nullptr;
     status = napi_create_string_utf8(env, resStr.c_str(), NAPI_AUTO_LENGTH, &result);
     if (status != napi_ok) {
@@ -3355,6 +3350,28 @@ napi_value I18nAddon::GetTimezoneFromCity(napi_env env, napi_callback_info info)
     void *data = nullptr;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
     return StaticGetTimeZone(env, argv, false);
+}
+
+napi_value I18nAddon::CreatePhoneNumberFormatObject(napi_env env)
+{
+    napi_status status = napi_ok;
+    napi_value phoneNumberFormat = nullptr;
+    status = napi_create_object(env, &phoneNumberFormat);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "Failed to create PhoneNumberFormat object at init");
+        return nullptr;
+    }
+    napi_property_descriptor formatProperties[] = {
+        DECLARE_NAPI_FUNCTION("getLocationName", GetLocationName),
+    };
+    status = napi_define_properties(env, phoneNumberFormat,
+                                    sizeof(formatProperties) / sizeof(napi_property_descriptor),
+                                    formatProperties);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "Failed to set properties of phone number format at init");
+        return nullptr;
+    }
+    return phoneNumberFormat;
 }
 
 napi_value Init(napi_env env, napi_value exports)
