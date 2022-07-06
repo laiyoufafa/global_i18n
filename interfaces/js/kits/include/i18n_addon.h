@@ -154,6 +154,7 @@ private:
     static napi_value StaticGetTimeZone(napi_env, napi_value *argv, bool isZoneID);
     static napi_value CreateTimeZoneObject(napi_env env);
 
+    static napi_value CreatePhoneNumberFormatObject(napi_env env);
     napi_env env_;
     napi_ref wrapper_;
     std::unique_ptr<PhoneNumberFormat> phonenumberfmt_ = nullptr;
