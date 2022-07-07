@@ -36,7 +36,7 @@ ohos_shared_library("preferred_language") {
   deps = [ "//base/global/i18n/frameworks/intl:intl_util" ]
   external_deps = [
     "hiviewdfx_hilog_native:libhilog",
-    "startup_l2:syspara",
+    "init:libbegetutil",
   ]
   subsystem_name = "global"
   part_name = "i18n"
@@ -101,8 +101,8 @@ ohos_shared_library("intl_util") {
   external_deps = [
     "access_token:libaccesstoken_sdk",
     "hiviewdfx_hilog_native:libhilog",
+    "init:libbegetutil",
     "ipc:ipc_core",
-    "startup_l2:syspara",
     "utils_base:utils",
   ]
   if (defined(global_parts_info) &&

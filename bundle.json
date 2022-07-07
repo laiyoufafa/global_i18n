@@ -52,7 +52,7 @@
         "deps": {
             "components": [
                 "ipc_core",
-                "syspara",
+                "init",
                 "utils",
                 "tel_core_service_api",
                 "libaccesstoken_sdk",
