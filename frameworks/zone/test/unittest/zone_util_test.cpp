@@ -20,7 +20,9 @@ using namespace OHOS::Global::I18n;
 using testing::ext::TestSize;
 using namespace std;
 
-namespace {
+namespace OHOS {
+namespace Global {
+namespace I18n {
 class ZoneUtilTest : public testing::Test {
 public:
     static void SetUpTestCase(void);
@@ -184,4 +186,6 @@ HWTEST_F(ZoneUtilTest, ZoneUtilFuncTest008, TestSize.Level1)
     string out = util.GetDefaultZone(number, 8 * 3600 * 1000);
     EXPECT_EQ(expects[0], out);
 }
-}
+} // namespace I18n
+} // namespace Global
+} // namespace OHOS

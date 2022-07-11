@@ -23,7 +23,9 @@ using namespace OHOS::Global::I18n;
 using testing::ext::TestSize;
 using namespace std;
 
-namespace {
+namespace OHOS {
+namespace Global {
+namespace I18n {
 class ZoneUtilPerformanceTest : public testing::Test {
 public:
     static void SetUpTestCase(void);
@@ -187,4 +189,6 @@ HWTEST_F(ZoneUtilPerformanceTest,  ZoneUtilPerformanceFuncTest006, TestSize.Leve
     average = total / 1000.0;
     EXPECT_LT(average, 10300);
 }
-}
+} // namespace I18n
+} // namespace Global
+} // namespace OHOS

@@ -16,6 +16,9 @@
 #ifndef OHOS_GLOBAL_I18N_INTL_TEST_H
 #define OHOS_GLOBAL_I18N_INTL_TEST_H
 
+namespace OHOS {
+namespace Global {
+namespace I18n {
 int IntlFuncTest001(void);
 int IntlFuncTest002(void);
 int IntlFuncTest003(void);
@@ -35,4 +38,7 @@ int IntlFuncTest0016(void);
 int IntlFuncTest0017(void);
 int IntlFuncTest0018(void);
 int IntlFuncTest0019(void);
+} // namespace I18n
+} // namespace Global
+} // namespace OHOS
 #endif

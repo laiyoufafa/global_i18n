@@ -22,7 +22,9 @@ using namespace OHOS::Global::I18n;
 using testing::ext::TestSize;
 using namespace std;
 
-namespace {
+namespace OHOS {
+namespace Global {
+namespace I18n {
 class LocaleConfigTest : public testing::Test {
 public:
     static void SetUpTestCase(void);
@@ -185,4 +187,6 @@ HWTEST_F(LocaleConfigTest, LocaleConfigFuncTest012, TestSize.Level1)
 {
     EXPECT_EQ(LocaleConfig::GetDisplayRegion("zh-Hans", "en-US", true), "China");
 }
-} // namespace
+} // namespace I18n
+} // namespace Global
+} // namespace OHOS

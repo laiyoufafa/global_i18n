@@ -16,6 +16,9 @@
 #ifndef OHOS_GLOBAL_I18N_ZONE_UTIL_TEST_H
 #define OHOS_GLOBAL_I18N_ZONE_UTIL_TEST_H
 
+namespace OHOS {
+namespace Global {
+namespace I18n {
 int ZoneUtilFuncTest001(void);
 int ZoneUtilFuncTest002(void);
 int ZoneUtilFuncTest003(void);
@@ -24,4 +27,7 @@ int ZoneUtilFuncTest005(void);
 int ZoneUtilFuncTest006(void);
 int ZoneUtilFuncTest007(void);
 int ZoneUtilFuncTest008(void);
+} // namespace I18n
+} // namespace Global
+} // namespace OHOS
 #endif
