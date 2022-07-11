@@ -478,13 +478,13 @@ napi_value I18nAddon::TransliteratorConstructor(napi_env env, napi_callback_info
     std::unique_ptr<I18nAddon> obj = nullptr;
     obj = std::make_unique<I18nAddon>();
     if (!obj) {
-        HiLog::Error(LABEL, "Create I18nAddon failed");
+        HiLog::Error(LABEL, "TransliteratorConstructor: Create I18nAddon failed");
         return nullptr;
     }
     status =
         napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()), I18nAddon::Destructor, nullptr, &obj->wrapper_);
     if (status != napi_ok) {
-        HiLog::Error(LABEL, "Wrap II18nAddon failed");
+        HiLog::Error(LABEL, "TransliteratorConstructor: Wrap II18nAddon failed");
         return nullptr;
     }
     if (!obj->InitTransliteratorContext(env, info, idTag)) {
@@ -930,12 +930,12 @@ napi_value I18nAddon::GetSystemLanguages(napi_env env, napi_callback_info info)
         napi_value value = nullptr;
         status = napi_create_string_utf8(env, systemLanguages[i].c_str(), NAPI_AUTO_LENGTH, &value);
         if (status != napi_ok) {
-            HiLog::Error(LABEL, "Failed to create string item");
+            HiLog::Error(LABEL, "GetSystemLanguages: Failed to create string item");
             return nullptr;
         }
         status = napi_set_element(env, result, i, value);
         if (status != napi_ok) {
-            HiLog::Error(LABEL, "Failed to set array item");
+            HiLog::Error(LABEL, "GetSystemLanguages: Failed to set array item");
             return nullptr;
         }
     }
@@ -972,12 +972,12 @@ napi_value I18nAddon::GetSystemCountries(napi_env env, napi_callback_info info)
         napi_value value = nullptr;
         status = napi_create_string_utf8(env, systemCountries[i].c_str(), NAPI_AUTO_LENGTH, &value);
         if (status != napi_ok) {
-            HiLog::Error(LABEL, "Failed to create string item");
+            HiLog::Error(LABEL, "GetSystemCountries: Failed to create string item");
             return nullptr;
         }
         status = napi_set_element(env, result, i, value);
         if (status != napi_ok) {
-            HiLog::Error(LABEL, "Failed to set array item");
+            HiLog::Error(LABEL, "GetSystemCountries: Failed to set array item");
             return nullptr;
         }
     }
@@ -1603,13 +1603,13 @@ napi_value I18nAddon::CalendarConstructor(napi_env env, napi_callback_info info)
     std::unique_ptr<I18nAddon> obj = nullptr;
     obj = std::make_unique<I18nAddon>();
     if (!obj) {
-        HiLog::Error(LABEL, "Create I18nAddon failed");
+        HiLog::Error(LABEL, "CalendarConstructor: Create I18nAddon failed");
         return nullptr;
     }
     status =
         napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()), I18nAddon::Destructor, nullptr, &obj->wrapper_);
     if (status != napi_ok) {
-        HiLog::Error(LABEL, "Wrap II18nAddon failed");
+        HiLog::Error(LABEL, "CalendarConstructor: Wrap II18nAddon failed");
         return nullptr;
     }
     if (!obj->InitCalendarContext(env, info, localeTag, type)) {
@@ -2164,13 +2164,13 @@ napi_value I18nAddon::BreakIteratorConstructor(napi_env env, napi_callback_info 
     std::unique_ptr<I18nAddon> obj = nullptr;
     obj = std::make_unique<I18nAddon>();
     if (!obj) {
-        HiLog::Error(LABEL, "Create I18nAddon failed");
+        HiLog::Error(LABEL, "BreakIteratorConstructor: Create I18nAddon failed");
         return nullptr;
     }
     status =
         napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()), I18nAddon::Destructor, nullptr, &obj->wrapper_);
     if (status != napi_ok) {
-        HiLog::Error(LABEL, "Wrap II18nAddon failed");
+        HiLog::Error(LABEL, "BreakIteratorConstructor: Wrap II18nAddon failed");
         return nullptr;
     }
     obj->brkiter_ = std::make_unique<I18nBreakIterator>(localeTag);
@@ -2543,13 +2543,13 @@ napi_value I18nAddon::IndexUtilConstructor(napi_env env, napi_callback_info info
     std::unique_ptr<I18nAddon> obj = nullptr;
     obj = std::make_unique<I18nAddon>();
     if (!obj) {
-        HiLog::Error(LABEL, "Create I18nAddon failed");
+        HiLog::Error(LABEL, "IndexUtilConstructor: Create I18nAddon failed");
         return nullptr;
     }
     status =
         napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()), I18nAddon::Destructor, nullptr, &obj->wrapper_);
     if (status != napi_ok) {
-        HiLog::Error(LABEL, "Wrap II18nAddon failed");
+        HiLog::Error(LABEL, "IndexUtilConstructor: Wrap II18nAddon failed");
         return nullptr;
     }
     if (!obj->InitIndexUtilContext(env, info, localeTag)) {
@@ -3275,12 +3275,12 @@ napi_value I18nAddon::GetAvailableZoneCityIDs(napi_env env, napi_callback_info i
         napi_value value = nullptr;
         status = napi_create_string_utf8(env, cityIDs[i].c_str(), NAPI_AUTO_LENGTH, &value);
         if (status != napi_ok) {
-            HiLog::Error(LABEL, "Failed to create string item");
+            HiLog::Error(LABEL, "GetAvailableZoneCityIDs: Failed to create string item");
             return nullptr;
         }
         status = napi_set_element(env, result, i, value);
         if (status != napi_ok) {
-            HiLog::Error(LABEL, "Failed to set array item");
+            HiLog::Error(LABEL, "GetAvailableZoneCityIDs: Failed to set array item");
             return nullptr;
         }
     }
