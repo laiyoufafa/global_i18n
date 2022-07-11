@@ -16,6 +16,9 @@
 #ifndef OHOS_GLOBAL_I18N_LOCALE_CONFIG_TEST
 #define OHOS_GLOBAL_I18N_LOCALE_CONFIG_TEST
 
+namespace OHOS {
+namespace Global {
+namespace I18n {
 int LocaleConfigFuncTest001(void);
 int LocaleConfigFuncTest002(void);
 int LocaleConfigFuncTest003(void);
@@ -28,4 +31,7 @@ int LocaleConfigFuncTest009(void);
 int LocaleConfigFuncTest010(void);
 int LocaleConfigFuncTest011(void);
 int LocaleConfigFuncTest012(void);
+} // namespace I18n
+} // namespace Global
+} // namespace OHOS
 #endif

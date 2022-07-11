@@ -25,7 +25,9 @@ using namespace OHOS::Global::I18n;
 using testing::ext::TestSize;
 using namespace std;
 
-namespace {
+namespace OHOS {
+namespace Global {
+namespace I18n {
 class IntlTest : public testing::Test {
 public:
     static void SetUpTestCase(void);
@@ -463,4 +465,6 @@ HWTEST_F(IntlTest, IntlFuncTest0015, TestSize.Level1)
     EXPECT_EQ(dateFormat->GetTimeZoneName(), "long");
     delete dateFormat;
 }
-}
+} // namespace I18n
+} // namespace Global
+} // namespace OHOS
