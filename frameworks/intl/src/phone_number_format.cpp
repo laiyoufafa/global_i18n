@@ -12,21 +12,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-#include "cpp/src/phonenumbers/geocoding/phonenumber_offline_geocoder.h"
 #include "locid.h"
 #include "phone_number_format.h"
+#include "cpp/src/phonenumbers/geocoding/phonenumber_offline_geocoder.h"
+#include <dlfcn.h>
 
 namespace OHOS {
 namespace Global {
 namespace I18n {
 using i18n::phonenumbers::PhoneNumberUtil;
 
+typedef const char* (*p_exposeLocationName)(i18n::phonenumbers::PhoneNumber, icu::Locale);
+void* dynamic_handler;
 PhoneNumberFormat::PhoneNumberFormat(const std::string &countryTag,
                                      const std::map<std::string, std::string> &options)
 {
     util = PhoneNumberUtil::GetInstance();
-    offLineGeocoder.reset(new PhoneNumberOfflineGeocoder());
+    const char* geocodingSO = "libgeocoding.z.so";
+    if(dynamic_handler == NULL){
+        dynamic_handler = dlopen(geocodingSO, RTLD_LAZY);
+    }
     country = countryTag;
 
     std::string type = "";
@@ -52,6 +57,9 @@ PhoneNumberFormat::PhoneNumberFormat(const std::string &countryTag,
 
 PhoneNumberFormat::~PhoneNumberFormat()
 {
+    if(dynamic_handler != NULL) {
+        dlclose(dynamic_handler);
+    }
 }
 
 std::unique_ptr<PhoneNumberFormat> PhoneNumberFormat::CreateInstance(const std::string &countryTag,
@@ -91,8 +99,15 @@ std::string PhoneNumberFormat::format(const std::string &number) const
     return formatted_number;
 }
 
-std::string PhoneNumberFormat::getLocationName(const std::string &number, const std::string &locale) const
+std::string PhoneNumberFormat::getLocationName(const std::string &number,const std::string &locale) const
 {
+    const char* error = NULL;
+    p_exposeLocationName func = (p_exposeLocationName)dlsym(dynamic_handler, "exposeLocationName");
+    error = dlerror();
+    if(error != NULL){
+        std::string errMsg = error;
+        return errMsg;
+    }
     const char *l_name = locale.c_str();
     icu::Locale uLocale = icu::Locale::createFromName(l_name);
     i18n::phonenumbers::PhoneNumber phoneNumber;
@@ -100,9 +115,11 @@ std::string PhoneNumberFormat::getLocationName(const std::string &number, const 
     if (type != PhoneNumberUtil::ErrorType::NO_PARSING_ERROR) {
         return "";
     }
-    std::string location_name = offLineGeocoder->GetDescriptionForNumber(phoneNumber, uLocale);
-    return location_name;
+    const char* location_name = func(phoneNumber, uLocale);
+    const std::string locName = location_name;
+    return locName;
 }
+
 } // namespace I18n
 } // namespace Global
 } // namespace OHOS

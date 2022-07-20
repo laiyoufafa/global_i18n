@@ -36,7 +36,7 @@ ohos_shared_library("preferred_language") {
   deps = [ "//base/global/i18n/frameworks/intl:intl_util" ]
   external_deps = [
     "hiviewdfx_hilog_native:libhilog",
-    "init:libbegetutil",
+    "startup_l2:syspara",
   ]
   subsystem_name = "global"
   part_name = "i18n"
@@ -85,24 +85,22 @@ ohos_shared_library("intl_util") {
   deps = [
     ":config_locales_xml",
     ":config_regions_xml",
-    ":en_Latn_timezone_xml",
     ":forbidden_languages_xml",
     ":forbidden_regions_xml",
     ":language_config.para",
-    ":timezone_supported_locales",
     ":white_languages_xml",
-    ":zh_Hans_timezone_xml",
     "//third_party/icu/icu4c:ohos_icudat",
     "//third_party/icu/icu4c:shared_icui18n",
     "//third_party/icu/icu4c:shared_icuuc",
     "//third_party/libphonenumber/cpp:phonenumber_standard",
+    "//third_party/libphonenumber/cpp:geocoding",
     "//third_party/libxml2:xml2",
   ]
   external_deps = [
     "access_token:libaccesstoken_sdk",
     "hiviewdfx_hilog_native:libhilog",
-    "init:libbegetutil",
     "ipc:ipc_core",
+    "startup_l2:syspara",
     "utils_base:utils",
   ]
   if (defined(global_parts_info) &&
@@ -151,28 +149,6 @@ ohos_prebuilt_etc("forbidden_languages_xml") {
 ohos_prebuilt_etc("forbidden_regions_xml") {
   source = "//base/global/i18n/frameworks/intl/etc/forbidden_regions.xml"
   module_install_dir = "usr/ohos_locale_config/"
-  part_name = "i18n"
-  subsystem_name = "global"
-}
-
-ohos_prebuilt_etc("zh_Hans_timezone_xml") {
-  source = "//base/global/i18n/frameworks/intl/etc/timezone/zh-Hans.xml"
-  module_install_dir = "usr/ohos_timezone/"
-  part_name = "i18n"
-  subsystem_name = "global"
-}
-
-ohos_prebuilt_etc("en_Latn_timezone_xml") {
-  source = "//base/global/i18n/frameworks/intl/etc/timezone/en-Latn.xml"
-  module_install_dir = "usr/ohos_timezone/"
-  part_name = "i18n"
-  subsystem_name = "global"
-}
-
-ohos_prebuilt_etc("timezone_supported_locales") {
-  source =
-      "//base/global/i18n/frameworks/intl/etc/timezone/supported_locales.xml"
-  module_install_dir = "usr/ohos_timezone/"
   part_name = "i18n"
   subsystem_name = "global"
 }
