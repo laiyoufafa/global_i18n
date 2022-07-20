@@ -12,24 +12,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ #include <dlfcn.h>
 #include "locid.h"
-#include "phone_number_format.h"
 #include "cpp/src/phonenumbers/geocoding/phonenumber_offline_geocoder.h"
-#include <dlfcn.h>
+#include "phone_number_format.h"
 
 namespace OHOS {
 namespace Global {
 namespace I18n {
-using i18n::phonenumbers::PhoneNumberUtil;
 
+using i18n::phonenumbers::PhoneNumberUtil;
 typedef const char* (*p_exposeLocationName)(i18n::phonenumbers::PhoneNumber, icu::Locale);
 void* dynamic_handler;
+
 PhoneNumberFormat::PhoneNumberFormat(const std::string &countryTag,
                                      const std::map<std::string, std::string> &options)
 {
     util = PhoneNumberUtil::GetInstance();
     const char* geocodingSO = "libgeocoding.z.so";
-    if(dynamic_handler == NULL){
+    if (dynamic_handler == NULL) {
         dynamic_handler = dlopen(geocodingSO, RTLD_LAZY);
     }
     country = countryTag;
@@ -99,12 +100,12 @@ std::string PhoneNumberFormat::format(const std::string &number) const
     return formatted_number;
 }
 
-std::string PhoneNumberFormat::getLocationName(const std::string &number,const std::string &locale) const
+std::string PhoneNumberFormat::getLocationName(const std::string &number, const std::string &locale) const
 {
     const char* error = NULL;
     p_exposeLocationName func = (p_exposeLocationName)dlsym(dynamic_handler, "exposeLocationName");
     error = dlerror();
-    if(error != NULL){
+    if (error != NULL) {
         std::string errMsg = error;
         return errMsg;
     }
@@ -119,7 +120,6 @@ std::string PhoneNumberFormat::getLocationName(const std::string &number,const s
     const std::string locName = location_name;
     return locName;
 }
-
 } // namespace I18n
 } // namespace Global
 } // namespace OHOS
