@@ -19,15 +19,11 @@
 #include <map>
 #include <string>
 #include "cpp/src/phonenumbers/phonenumberutil.h"
-#include "cpp/src/phonenumbers/geocoding/phonenumber_offline_geocoder.h"
-#include "cpp/src/phonenumbers/base/memory/scoped_ptr.h"
 
 namespace OHOS {
 namespace Global {
 namespace I18n {
 using i18n::phonenumbers::PhoneNumberUtil;
-using i18n::phonenumbers::PhoneNumberOfflineGeocoder;
-using i18n::phonenumbers::scoped_ptr;
 
 class PhoneNumberFormat {
 public:
@@ -42,7 +38,6 @@ public:
 private:
     PhoneNumberUtil* GetPhoneNumberUtil();
     PhoneNumberUtil *util;
-    scoped_ptr<PhoneNumberOfflineGeocoder> offLineGeocoder;
     std::string country;
     PhoneNumberUtil::PhoneNumberFormat phoneNumberFormat;
 };
