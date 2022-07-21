@@ -93,7 +93,7 @@ std::string PhoneNumberFormat::format(const std::string &number) const
 
 std::string PhoneNumberFormat::getLocationName(const std::string &number, const std::string &locale) const
 {
-    const char *l_name = locale.c_str();
+    /**const char *l_name = locale.c_str();
     icu::Locale uLocale = icu::Locale::createFromName(l_name);
     i18n::phonenumbers::PhoneNumber phoneNumber;
     PhoneNumberUtil::ErrorType type = util->Parse(number, uLocale.getCountry(), &phoneNumber);
@@ -101,7 +101,8 @@ std::string PhoneNumberFormat::getLocationName(const std::string &number, const 
         return "";
     }
     std::string location_name = offLineGeocoder->GetDescriptionForNumber(phoneNumber, uLocale);
-    return location_name;
+    return location_name;*/
+    return "";
 }
 } // namespace I18n
 } // namespace Global
