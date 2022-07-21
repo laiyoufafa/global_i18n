@@ -24,8 +24,6 @@ namespace OHOS {
 namespace Global {
 namespace I18n {
 using i18n::phonenumbers::PhoneNumberUtil;
-using i18n::phonenumbers::PhoneNumberOfflineGeocoder;
-using i18n::phonenumbers::scoped_ptr;
 
 class PhoneNumberFormat {
 public:

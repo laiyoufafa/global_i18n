@@ -99,7 +99,7 @@ std::string PhoneNumberFormat::getLocationName(const std::string &number, const 
         return "";
     }
     std::string location_name = offLineGeocoder->GetDescriptionForNumber(phoneNumber, uLocale);
-    return location_name;*/
+    return location_name; */
     
     return "";
 }
