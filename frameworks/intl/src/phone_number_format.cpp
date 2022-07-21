@@ -13,7 +13,6 @@
  * limitations under the License.
  */
  
-#include "cpp/src/phonenumbers/geocoding/phonenumber_offline_geocoder.h"
 #include "locid.h"
 #include "phone_number_format.h"
 
@@ -26,7 +25,6 @@ PhoneNumberFormat::PhoneNumberFormat(const std::string &countryTag,
                                      const std::map<std::string, std::string> &options)
 {
     util = PhoneNumberUtil::GetInstance();
-    offLineGeocoder.reset(new PhoneNumberOfflineGeocoder());
     country = countryTag;
 
     std::string type = "";
@@ -102,6 +100,7 @@ std::string PhoneNumberFormat::getLocationName(const std::string &number, const 
     }
     std::string location_name = offLineGeocoder->GetDescriptionForNumber(phoneNumber, uLocale);
     return location_name;*/
+    
     return "";
 }
 } // namespace I18n
