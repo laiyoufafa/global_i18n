@@ -55,7 +55,7 @@ config("intl_util_config") {
 ohos_shared_library("intl_util") {
   public_configs = [ ":intl_util_config" ]
   include_dirs = [
-    "//utils/native/base/include",
+    "//commonlibrary/c_utils/base/include",
     "//third_party/libxml2/include",
     "//third_party/libphonenumber/cpp/src",
     "//third_party/libphonenumber",
@@ -100,10 +100,10 @@ ohos_shared_library("intl_util") {
   ]
   external_deps = [
     "access_token:libaccesstoken_sdk",
+    "c_utils:utils",
     "hiviewdfx_hilog_native:libhilog",
     "init:libbegetutil",
     "ipc:ipc_core",
-    "utils_base:utils",
   ]
   if (defined(global_parts_info) &&
       defined(global_parts_info.telephony_core_service)) {
