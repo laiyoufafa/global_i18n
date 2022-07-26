@@ -20,8 +20,9 @@
 namespace OHOS {
 namespace Global {
 namespace I18n {
+const int RECV_CHAR_LEN = 100;
 using i18n::phonenumbers::PhoneNumberUtil;
-using p_exposeLocationName = const char* (*)(const char*, const char*);
+using p_exposeLocationName = void (*)(const char*, const char*, char*);
 void* dynamic_handler;
 p_exposeLocationName func;
 
@@ -113,8 +114,9 @@ std::string PhoneNumberFormat::getLocationName(const std::string &number, const 
     }
     const char* numberStr = number.c_str();
     const char* localeStr = locale.c_str();
-    const char* locationName = func(numberStr, localeStr);
-    const std::string locName = locationName;
+    char recvArr[RECV_CHAR_LEN];
+    func(numberStr, localeStr, recvArr);
+    std::string locName = recvArr;
     return locName;
 }
 } // namespace I18n
