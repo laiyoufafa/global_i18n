@@ -377,10 +377,6 @@ bool LocaleConfig::CheckPermission()
     Security::AccessToken::AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
     int result = Security::AccessToken::PermissionState::PERMISSION_GRANTED;
     if (Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(callerToken)
-        == Security::AccessToken::ATokenTypeEnum::TOKEN_NATIVE) {
-        result = Security::AccessToken::AccessTokenKit::VerifyNativeToken(callerToken,
-                                                                          "ohos.permission.UPDATE_CONFIGURATION");
-    } else if (Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(callerToken)
         == Security::AccessToken::ATokenTypeEnum::TOKEN_HAP) {
         result = Security::AccessToken::AccessTokenKit::VerifyAccessToken(callerToken,
                                                                           "ohos.permission.UPDATE_CONFIGURATION");
