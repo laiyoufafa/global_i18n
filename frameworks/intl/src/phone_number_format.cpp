@@ -109,8 +109,7 @@ std::string PhoneNumberFormat::getLocationName(const std::string &number, const 
     }
     error = dlerror();
     if (error != NULL) {
-        std::string errMsg = error;
-        return errMsg;
+        return "";
     }
     const char* numberStr = number.c_str();
     const char* localeStr = locale.c_str();
