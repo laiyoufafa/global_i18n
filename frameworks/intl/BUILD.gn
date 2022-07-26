@@ -85,12 +85,15 @@ ohos_shared_library("intl_util") {
   deps = [
     ":config_locales_xml",
     ":config_regions_xml",
+    ":en_Latn_lang_xml",
     ":en_Latn_timezone_xml",
     ":forbidden_languages_xml",
     ":forbidden_regions_xml",
+    ":lang_supported_locales",
     ":language_config.para",
     ":timezone_supported_locales",
     ":white_languages_xml",
+    ":zh_Hans_lang_xml",
     ":zh_Hans_timezone_xml",
     "//third_party/icu/icu4c:ohos_icudat",
     "//third_party/icu/icu4c:shared_icui18n",
@@ -155,9 +158,30 @@ ohos_prebuilt_etc("forbidden_regions_xml") {
   subsystem_name = "global"
 }
 
+ohos_prebuilt_etc("lang_supported_locales") {
+  source = "//base/global/i18n/frameworks/intl/etc/lang/supported_locales.xml"
+  module_install_dir = "usr/ohos_lang_config/"
+  part_name = "i18n"
+  subsystem_name = "global"
+}
+
+ohos_prebuilt_etc("zh_Hans_lang_xml") {
+  source = "//base/global/i18n/frameworks/intl/etc/lang/zh-Hans.xml"
+  module_install_dir = "usr/ohos_lang_config/"
+  part_name = "i18n"
+  subsystem_name = "global"
+}
+
 ohos_prebuilt_etc("zh_Hans_timezone_xml") {
   source = "//base/global/i18n/frameworks/intl/etc/timezone/zh-Hans.xml"
   module_install_dir = "usr/ohos_timezone/"
+  part_name = "i18n"
+  subsystem_name = "global"
+}
+
+ohos_prebuilt_etc("en_Latn_lang_xml") {
+  source = "//base/global/i18n/frameworks/intl/etc/lang/en-Latn.xml"
+  module_install_dir = "usr/ohos_lang_config/"
   part_name = "i18n"
   subsystem_name = "global"
 }
