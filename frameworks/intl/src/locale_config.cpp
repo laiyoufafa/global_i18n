@@ -764,20 +764,22 @@ std::string LocaleConfig::ComputeLocale(const std::string &displayLocale)
         xmlNodePtr cur = xmlDocGetRootElement(doc);
         if (!cur || xmlStrcmp(cur->name, reinterpret_cast<const xmlChar *>(supportLocalesTag))) {
             xmlFreeDoc(doc);
+            HiLog::Info(LABEL, "can not parse language supported locale file");
             return DEFAULT_LOCALE;
         }
         cur = cur->xmlChildrenNode;
         while (cur != nullptr) {
             xmlChar *content = xmlNodeGetContent(cur);
             if (content == nullptr) {
+                HiLog::Info(LABEL, "get xml node content failed");
                 break;
             }
-            std::map<std::string, std::string> configs = {};
-            LocaleInfo localeinfo(reinterpret_cast<const char*>(content), configs);
+            std::map<std::string, std::string> localeInfoConfigs = {};
+            LocaleInfo localeinfo(reinterpret_cast<const char*>(content), localeInfoConfigs);
             std::string language = localeinfo.GetLanguage();
             std::string script = localeinfo.GetScript();
             std::string languageAndScript = (script.length() == 0) ? language : language + "-" + script;
-            LocaleInfo newLocaleInfo(languageAndScript, configs);
+            LocaleInfo newLocaleInfo(languageAndScript, localeInfoConfigs);
             std::string maximizeLocale = newLocaleInfo.Maximize();
             supportedDialectLocales.insert(
                 std::make_pair<std::string, std::string>(maximizeLocale.c_str(),
@@ -799,40 +801,42 @@ std::string LocaleConfig::ComputeLocale(const std::string &displayLocale)
     return DEFAULT_LOCALE;
 }
 
-void LocaleConfig::ReadLangData(const char *xmlPath)
+void LocaleConfig::ReadLangData(const char *langDataPath)
 {
     xmlKeepBlanksDefault(0);
-    if (xmlPath == nullptr) {
+    if (langDataPath == nullptr) {
         return;
     }
-    xmlDocPtr doc = xmlParseFile(xmlPath);
+    xmlDocPtr doc = xmlParseFile(langDataPath);
     if (!doc) {
+        HiLog::Info(LABEL, "can not open language data file");
         return;
     }
     xmlNodePtr cur = xmlDocGetRootElement(doc);
     if (!cur || xmlStrcmp(cur->name, reinterpret_cast<const xmlChar *>(rootTag))) {
         xmlFreeDoc(doc);
+        HiLog::Info(LABEL, "parse language data file failed");
         return;
     }
     cur = cur->xmlChildrenNode;
     while (cur != nullptr && !xmlStrcmp(cur->name, reinterpret_cast<const xmlChar *>(secondRootTag))) {
-        xmlNodePtr value = cur->xmlChildrenNode;
-        xmlChar *contents[ELEMENT_NUM] = { 0 }; // 2 represent langid, displayname;
+        xmlChar *langContents[ELEMENT_NUM] = { 0 }; // 2 represent langid, displayname;
+        xmlNodePtr langValue = cur->xmlChildrenNode;
         for (size_t i = 0; i < ELEMENT_NUM; i++) {
-            if (value != nullptr) {
-                contents[i] = xmlNodeGetContent(value);
-                value = value->next;
+            if (langValue != nullptr) {
+                langContents[i] = xmlNodeGetContent(langValue);
+                langValue = langValue->next;
             } else {
                 break;
             }
         }
         // 0 represents langid index, 1 represents displayname index
         locale2DisplayName.insert(
-            std::make_pair<std::string, std::string>(reinterpret_cast<const char *>(contents[0]),
-                                                     reinterpret_cast<const char *>(contents[1])));
+            std::make_pair<std::string, std::string>(reinterpret_cast<const char *>(langContents[0]),
+                                                     reinterpret_cast<const char *>(langContents[1])));
         for (size_t i = 0; i < ELEMENT_NUM; i++) {
-            if (contents[i] != nullptr) {
-                xmlFree(contents[i]);
+            if (langContents[i] != nullptr) {
+                xmlFree(langContents[i]);
             }
         }
         cur = cur->next;
