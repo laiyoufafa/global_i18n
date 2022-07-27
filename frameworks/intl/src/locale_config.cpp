@@ -840,7 +840,7 @@ void LocaleConfig::ReadLangData(const char *langDataPath)
     xmlFreeDoc(doc);
 }
 
-string LocaleConfig::GetDsiplayLanguageWithDialect(const std::string &language, const std::string &displayLocale)
+string LocaleConfig::GetDsiplayLanguageWithDialect(const std::string &localeStr, const std::string &displayLocale)
 {
     std::string finalLocale = ComputeLocale(displayLocale);
     if (finalLocale.compare(currentDialectLocale) != 0) {
@@ -849,10 +849,30 @@ string LocaleConfig::GetDsiplayLanguageWithDialect(const std::string &language, 
         ReadLangData(xmlPath.c_str());
         currentDialectLocale = finalLocale;
     }
-    if (locale2DisplayName.find(language) == locale2DisplayName.end()) {
-        return "";
+    if (locale2DisplayName.find(localeStr) != locale2DisplayName.end()) {
+        return locale2DisplayName.at(localeStr);
     }
-    return locale2DisplayName.at(language);
+    std::map<std::string, std::string> configs = {};
+    LocaleInfo locale(localeStr, configs);
+    std::string language = locale.GetLanguage();
+    std::string scripts = locale.GetScript();
+    std::string region = locale.GetRegion();
+    if (scripts.length() != 0) {
+        std::string languageAndScripts = language + "-" + scripts;
+        if (locale2DisplayName.find(languageAndScripts) != locale2DisplayName.end()) {
+            return locale2DisplayName.at(languageAndScripts);
+        }
+    }
+    if (region.length() != 0) {
+        std::string languageAndRegion = language + "-" + region;
+        if (locale2DisplayName.find(languageAndRegion) != locale2DisplayName.end()) {
+            return locale2DisplayName.at(languageAndRegion);
+        }
+    }
+    if (locale2DisplayName.find(language) != locale2DisplayName.end()) {
+        return locale2DisplayName.at(language);
+    }
+    return "";
 }
 
 string LocaleConfig::GetDisplayRegion(const string &region, const string &displayLocale, bool sentenceCase)
