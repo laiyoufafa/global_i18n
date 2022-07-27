@@ -12,21 +12,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+#include <dlfcn.h>
 #include "locid.h"
 #include "phone_number_format.h"
+/**#include "cpp/src/phonenumbers/geocoding/geocoding_warpper.h"*/
 
 namespace OHOS {
 namespace Global {
 namespace I18n {
+const int RECV_CHAR_LEN = 100;
 using i18n::phonenumbers::PhoneNumberUtil;
+using p_exposeLocationName = void (*)(const char*, const char*, char*);
+void* dynamic_handler;
+p_exposeLocationName func;
 
 PhoneNumberFormat::PhoneNumberFormat(const std::string &countryTag,
                                      const std::map<std::string, std::string> &options)
 {
     util = PhoneNumberUtil::GetInstance();
     country = countryTag;
-
     std::string type = "";
     auto search = options.find("type");
     if (search != options.end()) {
@@ -50,6 +54,9 @@ PhoneNumberFormat::PhoneNumberFormat(const std::string &countryTag,
 
 PhoneNumberFormat::~PhoneNumberFormat()
 {
+    if (dynamic_handler != NULL) {
+        dlclose(dynamic_handler);
+    }
 }
 
 std::unique_ptr<PhoneNumberFormat> PhoneNumberFormat::CreateInstance(const std::string &countryTag,
@@ -91,17 +98,25 @@ std::string PhoneNumberFormat::format(const std::string &number) const
 
 std::string PhoneNumberFormat::getLocationName(const std::string &number, const std::string &locale) const
 {
-    /**const char *l_name = locale.c_str();
-    icu::Locale uLocale = icu::Locale::createFromName(l_name);
-    i18n::phonenumbers::PhoneNumber phoneNumber;
-    PhoneNumberUtil::ErrorType type = util->Parse(number, uLocale.getCountry(), &phoneNumber);
-    if (type != PhoneNumberUtil::ErrorType::NO_PARSING_ERROR) {
+    const char* error = NULL;
+    if (dynamic_handler == NULL) {
+        const char* geocodingSO = "libgeocoding.z.so";
+        dynamic_handler = dlopen(geocodingSO, RTLD_NOW);
+        dlerror();
+    }
+    if (!func) {
+        func = (p_exposeLocationName)dlsym(dynamic_handler, "exposeLocationName");
+    }
+    error = dlerror();
+    if (error != NULL) {
         return "";
     }
-    std::string location_name = offLineGeocoder->GetDescriptionForNumber(phoneNumber, uLocale);
-    return location_name; */
-    
-    return "";
+    const char* numberStr = number.c_str();
+    const char* localeStr = locale.c_str();
+    char recvArr[RECV_CHAR_LEN];
+    func(numberStr, localeStr, recvArr);
+    std::string locName = recvArr;
+    return locName;
 }
 } // namespace I18n
 } // namespace Global
