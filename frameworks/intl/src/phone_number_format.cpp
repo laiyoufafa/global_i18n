@@ -15,7 +15,6 @@
 #include <dlfcn.h>
 #include "locid.h"
 #include "phone_number_format.h"
-/**#include "cpp/src/phonenumbers/geocoding/geocoding_warpper.h"*/
 
 namespace OHOS {
 namespace Global {
@@ -56,6 +55,8 @@ PhoneNumberFormat::~PhoneNumberFormat()
 {
     if (dynamic_handler != NULL) {
         dlclose(dynamic_handler);
+        dynamic_handler = nullptr;
+        func = nullptr;
     }
 }
 

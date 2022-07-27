@@ -20,6 +20,12 @@ group("build_module") {
   ]
 }
 
+group("geocoding_depends") {
+  deps = [
+    "//third_party/libphonenumber/cpp:geocoding"
+  ]
+}
+
 config("preferred_language_config") {
   include_dirs = [
     "//base/global/i18n/interfaces/native/inner_api/preferred_language/include",
@@ -98,7 +104,7 @@ ohos_shared_library("intl_util") {
     "//third_party/icu/icu4c:ohos_icudat",
     "//third_party/icu/icu4c:shared_icui18n",
     "//third_party/icu/icu4c:shared_icuuc",
-    "//third_party/libphonenumber/cpp:build_module",
+    "//third_party/libphonenumber/cpp:phonenumber_standard",
     "//third_party/libxml2:xml2",
   ]
   external_deps = [
