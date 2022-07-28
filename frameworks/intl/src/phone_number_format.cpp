@@ -56,6 +56,8 @@ PhoneNumberFormat::~PhoneNumberFormat()
 {
     if (dynamic_handler != NULL) {
         dlclose(dynamic_handler);
+        dynamic_handler = nullptr;
+        func = nullptr;
     }
 }
 
