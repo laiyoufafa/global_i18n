@@ -21,9 +21,7 @@ group("build_module") {
 }
 
 group("geocoding_depends") {
-  deps = [
-    "//third_party/libphonenumber/cpp:geocoding"
-  ]
+  deps = [ "//third_party/libphonenumber/cpp:geocoding" ]
 }
 
 config("preferred_language_config") {
