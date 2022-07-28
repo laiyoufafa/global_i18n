@@ -71,7 +71,8 @@
             "sub_component": [
                 "//base/global/i18n/frameworks/zone:zone_util",
                 "//base/global/i18n/frameworks/intl:build_module",
-                "//base/global/i18n/interfaces/js/kits:build_module"
+                "//base/global/i18n/interfaces/js/kits:build_module",
+                "//base/global/i18n/frameworks/intl:geocoding_depends"
             ],
             "inner_kits": [
                 {
