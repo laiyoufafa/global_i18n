@@ -54,8 +54,10 @@ PhoneNumberFormat::PhoneNumberFormat(const std::string &countryTag,
 
 PhoneNumberFormat::~PhoneNumberFormat()
 {
-    if (dynamic_handler != NULL) {
+    if (dynamic_handler != nullptr) {
         dlclose(dynamic_handler);
+        dynamic_handler = nullptr;
+        func = nullptr;
     }
 }
 
