@@ -17,9 +17,11 @@
 
 #include <map>
 #include <set>
+#include <stdint.h>
+
+#include "iosfwd"
+#include "string"
 #include "unicode/locid.h"
-#include "unicode/localebuilder.h"
-#include "unicode/stringpiece.h"
 
 namespace OHOS {
 namespace Global {

@@ -14,8 +14,9 @@
  */
 #ifndef GLOBAL_I18N_CHARACTER_H
 #define GLOBAL_I18N_CHARACTER_H
+
 #include <string>
-#include <map>
+
 #include "unicode/uchar.h"
 
 namespace OHOS {

@@ -12,10 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "preferred_language.h"
+
 #include "locale_config.h"
 #include "locale_info.h"
 #include "parameter.h"
-#include "preferred_language.h"
+#include "vector"
+
 
 namespace OHOS {
 namespace Global {

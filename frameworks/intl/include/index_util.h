@@ -17,6 +17,8 @@
 
 #include <string>
 #include <vector>
+
+#include "memory"
 #include "unicode/alphaindex.h"
 
 namespace OHOS {

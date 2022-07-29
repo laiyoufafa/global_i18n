@@ -20,11 +20,11 @@
 #include <map>
 #include <set>
 
-#include "unicode/locid.h"
-#include "unicode/plurrule.h"
-#include "unicode/numberformatter.h"
-
 #include "locale_info.h"
+#include "memory"
+#include "unicode/locid.h"
+#include "unicode/numberformatter.h"
+#include "unicode/plurrule.h"
 
 namespace OHOS {
 namespace Global {

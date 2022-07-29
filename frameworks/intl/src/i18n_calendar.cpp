@@ -12,9 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "i18n_calendar.h"
-#include "unicode/gregocal.h"
+
 #include "buddhcal.h"
 #include "chnsecal.h"
 #include "coptccal.h"
@@ -24,12 +23,16 @@
 #include "islamcal.h"
 #include "japancal.h"
 #include "persncal.h"
+#include "string"
 #include "ureslocs.h"
 #include "ulocimp.h"
-#include "uresimp.h"
-#include "ustring.h"
+#include "umachine.h"
+#include "unicode/gregocal.h"
+#include "unicode/timezone.h"
+#include "unistr.h"
+#include "urename.h"
 #include "ustr_imp.h"
-#include "hilog/log.h"
+#include "ustring.h"
 
 namespace OHOS {
 namespace Global {

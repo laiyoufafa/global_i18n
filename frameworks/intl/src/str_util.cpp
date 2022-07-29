@@ -14,6 +14,9 @@
  */
 #include "str_util.h"
 
+#include <string>
+#include <vector>
+
 namespace OHOS {
 namespace Global {
 namespace I18n {

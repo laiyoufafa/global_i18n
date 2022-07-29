@@ -16,10 +16,19 @@
 
 #include <stringpiece.h>
 
+#include "locale_config.h"
+#include "locid.h"
+#include "map"
+#include "set"
+#include "strenum.h"
+#include "string"
 #include "unicode/ucol.h"
 #include "unicode/errorcode.h"
 #include "unicode/uloc.h"
-#include "locale_config.h"
+#include "unistr.h"
+#include "urename.h"
+#include "utility"
+#include "vector"
 
 namespace OHOS {
 namespace Global {
