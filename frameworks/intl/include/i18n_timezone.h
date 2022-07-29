@@ -15,10 +15,13 @@
 #ifndef OHOS_GLOBAL_I18N_TIMEZONE_H
 #define OHOS_GLOBAL_I18N_TIMEZONE_H
 
+#include <stdint.h>
 #include <map>
 #include <set>
 #include <string>
 #include <vector>
+
+#include "memory"
 #include "unicode/timezone.h"
 
 namespace OHOS {

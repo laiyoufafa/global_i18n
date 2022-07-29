@@ -12,9 +12,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <dlfcn.h>
-#include "locid.h"
 #include "phone_number_format.h"
+
+#include <dlfcn.h>
+
+#include "locid.h"
+#include "map"
+#include "new"
+#include "set"
+#include "string"
+#include "utility"
 
 namespace OHOS {
 namespace Global {

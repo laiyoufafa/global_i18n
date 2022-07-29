@@ -15,8 +15,13 @@
 #ifndef OHOS_GLOBAL_I18N_CALENDAR_H
 #define OHOS_GLOBAL_I18N_CALENDAR_H
 
-#include "unicode/ucal.h"
+#include <stdint.h>
+
+#include "iosfwd"
+#include "locid.h"
 #include "unicode/calendar.h"
+#include "unicode/ucal.h"
+#include "utypes.h"
 
 namespace OHOS {
 namespace Global {

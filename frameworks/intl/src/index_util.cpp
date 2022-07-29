@@ -13,7 +13,13 @@
  * limitations under the License.
  */
 #include "index_util.h"
+
 #include "locale_config.h"
+#include "locid.h"
+#include "string"
+#include "unistr.h"
+#include "utypes.h"
+#include "vector"
 
 namespace OHOS {
 namespace Global {

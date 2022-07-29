@@ -15,7 +15,11 @@
 #ifndef OHOS_GLOBAL_I18N_BREAKITERATOR_H
 #define OHOS_GLOBAL_I18N_BREAKITERATOR_H
 
+#include <stdint.h>
+
+#include "iosfwd"
 #include "unicode/brkiter.h"
+#include "unistr.h"
 
 namespace OHOS {
 namespace Global {

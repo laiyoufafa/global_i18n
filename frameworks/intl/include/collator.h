@@ -20,10 +20,11 @@
 #include <vector>
 #include <set>
 
-#include "unicode/locid.h"
-#include "unicode/coll.h"
-
 #include "locale_info.h"
+#include "memory"
+#include "unicode/coll.h"
+#include "unicode/locid.h"
+#include "utypes.h"
 
 namespace OHOS {
 namespace Global {

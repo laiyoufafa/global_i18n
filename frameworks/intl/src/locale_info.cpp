@@ -13,8 +13,19 @@
  * limitations under the License.
  */
 #include "locale_info.h"
-#include "ohos/init_data.h"
+
+#include "algorithm"
 #include "locale_config.h"
+#include "localebuilder.h"
+#include "locid.h"
+#include "map"
+#include "memory"
+#include "ohos/init_data.h"
+#include "set"
+#include "stringpiece.h"
+#include "type_traits"
+#include "utypes.h"
+#include "uversion.h"
 
 namespace OHOS {
 namespace Global {

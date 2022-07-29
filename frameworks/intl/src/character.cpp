@@ -13,8 +13,17 @@
  * limitations under the License.
  */
 #include "character.h"
+
+#include <sys/types.h>
 #include <set>
+#include <string>
+
+#include "cctype"
+#include "map"
+#include "string"
+#include "umachine.h"
 #include "unicode/unistr.h"
+#include "urename.h"
 
 namespace OHOS {
 namespace Global {

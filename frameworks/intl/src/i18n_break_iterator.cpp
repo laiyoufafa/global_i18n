@@ -12,8 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "i18n_break_iterator.h"
+
+#include "brkiter.h"
+#include "string"
+#include "utypes.h"
 
 namespace OHOS {
 namespace Global {

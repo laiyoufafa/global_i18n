@@ -12,14 +12,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "plural_rules.h"
 
 #include <stringpiece.h>
 
-#include "hilog/log.h"
-#include "unicode/unistr.h"
-
+#include "algorithm"
+#include "hilog/log_c.h"
+#include "hilog/log_cpp.h"
 #include "locale_config.h"
+#include "locid.h"
 #include "plural_rules.h"
+#include "map"
+#include "set"
+#include "string"
+#include "unicode/unistr.h"
+#include "unicode/upluralrules.h"
+#include "utility"
+#include "utypes.h"
+#include "vector"
 
 namespace OHOS {
 namespace Global {
