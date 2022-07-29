@@ -164,14 +164,14 @@ ohos_prebuilt_etc("forbidden_regions_xml") {
 
 ohos_prebuilt_etc("lang_supported_locales") {
   source = "//base/global/i18n/frameworks/intl/etc/lang/supported_locales.xml"
-  module_install_dir = "usr/ohos_lang_config/"
+  module_install_dir = "etc/ohos_lang_config/"
   part_name = "i18n"
   subsystem_name = "global"
 }
 
 ohos_prebuilt_etc("zh_Hans_lang_xml") {
   source = "//base/global/i18n/frameworks/intl/etc/lang/zh-Hans.xml"
-  module_install_dir = "usr/ohos_lang_config/"
+  module_install_dir = "etc/ohos_lang_config/"
   part_name = "i18n"
   subsystem_name = "global"
 }
@@ -185,7 +185,7 @@ ohos_prebuilt_etc("zh_Hans_timezone_xml") {
 
 ohos_prebuilt_etc("en_Latn_lang_xml") {
   source = "//base/global/i18n/frameworks/intl/etc/lang/en-Latn.xml"
-  module_install_dir = "usr/ohos_lang_config/"
+  module_install_dir = "etc/ohos_lang_config/"
   part_name = "i18n"
   subsystem_name = "global"
 }

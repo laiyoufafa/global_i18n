@@ -59,10 +59,10 @@ const char *LocaleConfig::FORBIDDEN_REGIONS_PATH = "/system/usr/ohos_locale_conf
 const char *LocaleConfig::SUPPORTED_LOCALES_PATH = "/system/usr/ohos_locale_config/supported_locales.xml";
 const char *LocaleConfig::SUPPORTED_REGIONS_PATH = "/system/usr/ohos_locale_config/supported_regions.xml";
 const char *LocaleConfig::WHITE_LANGUAGES_PATH = "/system/usr/ohos_locale_config/white_languages.xml";
-const char *LocaleConfig::SUPPORT_LOCALES_PATH = "/system/usr/ohos_lang_config/supported_locales.xml";
+const char *LocaleConfig::SUPPORT_LOCALES_PATH = "/etc/ohos_lang_config/supported_locales.xml";
 const char *LocaleConfig::DEFAULT_LOCALE = "en-Latn";
 const char *LocaleConfig::supportLocalesTag = "supported_locales";
-const char *LocaleConfig::LANG_PATH = "/system/usr/ohos_lang_config/";
+const char *LocaleConfig::LANG_PATH = "/etc/ohos_lang_config/";
 const char *LocaleConfig::rootTag = "languages";
 const char *LocaleConfig::secondRootTag = "lang";
 unordered_set<string> LocaleConfig::supportedLocales;
