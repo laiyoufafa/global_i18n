@@ -17,6 +17,7 @@
 #ifdef TEL_CORE_SERVICE_EXISTS
 #include "core_service_client.h"
 #endif
+#include <cctype>
 #include "hilog/log.h"
 #include "ipc_skeleton.h"
 #include "libxml/parser.h"
@@ -58,6 +59,12 @@ const char *LocaleConfig::FORBIDDEN_REGIONS_PATH = "/system/usr/ohos_locale_conf
 const char *LocaleConfig::SUPPORTED_LOCALES_PATH = "/system/usr/ohos_locale_config/supported_locales.xml";
 const char *LocaleConfig::SUPPORTED_REGIONS_PATH = "/system/usr/ohos_locale_config/supported_regions.xml";
 const char *LocaleConfig::WHITE_LANGUAGES_PATH = "/system/usr/ohos_locale_config/white_languages.xml";
+const char *LocaleConfig::SUPPORT_LOCALES_PATH = "/etc/ohos_lang_config/supported_locales.xml";
+const char *LocaleConfig::DEFAULT_LOCALE = "en-Latn";
+const char *LocaleConfig::supportLocalesTag = "supported_locales";
+const char *LocaleConfig::LANG_PATH = "/etc/ohos_lang_config/";
+const char *LocaleConfig::rootTag = "languages";
+const char *LocaleConfig::secondRootTag = "lang";
 unordered_set<string> LocaleConfig::supportedLocales;
 unordered_set<string> LocaleConfig::supportedRegions;
 unordered_set<string> LocaleConfig::whiteLanguages;
@@ -87,6 +94,10 @@ unordered_map<string, string> LocaleConfig::dialectMap {
     { "pt-Latn-PT", "pt-Latn-PT" },
     { "en-Latn-US", "en-Latn-US" }
 };
+
+std::map<std::string, std::string> LocaleConfig::supportedDialectLocales;
+std::map<string, string> LocaleConfig::locale2DisplayName {};
+std::string LocaleConfig::currentDialectLocale = "";
 
 set<std::string> LocaleConfig::validCaTag {
     "buddhist",
@@ -154,6 +165,11 @@ set<std::string> LocaleConfig::validHcTag {
     "h23",
     "h11",
     "h24",
+};
+set<std::string> LocaleConfig::dialectLang {
+    "zh",
+    "ro",
+    "fa",
 };
 
 static unordered_map<string, string> g_languageMap = {
@@ -709,16 +725,147 @@ string LocaleConfig::GetDisplayLanguage(const string &language, const string &di
             return "";
         }
         icu::UnicodeString unistr;
-        locale.getDisplayLanguage(displayLoc, unistr);
-        if (sentenceCase) {
-            UChar32 ch = ucase_toupper(unistr.char32At(0));
-            unistr.replace(0, 1, ch);
+        std::string lang(locale.getLanguage());
+        std::string result;
+        if (dialectLang.find(lang) != dialectLang.end()) {
+            result = GetDsiplayLanguageWithDialect(language, displayLocale);
+        } else {
+            locale.getDisplayLanguage(displayLoc, unistr);
+            unistr.toUTF8String(result);
         }
-        string out;
-        unistr.toUTF8String(out);
-        return out;
+        if (sentenceCase) {
+            char ch = static_cast<char>(toupper(result[0]));
+            return result.replace(0, 1, 1, ch);
+        }
+        return result;
     }
     return GetDisplayLanguageInner(adjust, displayLocale, sentenceCase);
+}
+
+std::string LocaleConfig::ComputeLocale(const std::string &displayLocale)
+{
+    if (supportedDialectLocales.size() == 0) {
+        xmlKeepBlanksDefault(0);
+        xmlDocPtr doc = xmlParseFile(SUPPORT_LOCALES_PATH);
+        if (!doc) {
+            return DEFAULT_LOCALE;
+        }
+        xmlNodePtr cur = xmlDocGetRootElement(doc);
+        if (!cur || xmlStrcmp(cur->name, reinterpret_cast<const xmlChar *>(supportLocalesTag))) {
+            xmlFreeDoc(doc);
+            HiLog::Info(LABEL, "can not parse language supported locale file");
+            return DEFAULT_LOCALE;
+        }
+        cur = cur->xmlChildrenNode;
+        while (cur != nullptr) {
+            xmlChar *content = xmlNodeGetContent(cur);
+            if (content == nullptr) {
+                HiLog::Info(LABEL, "get xml node content failed");
+                break;
+            }
+            std::map<std::string, std::string> localeInfoConfigs = {};
+            LocaleInfo localeinfo(reinterpret_cast<const char*>(content), localeInfoConfigs);
+            std::string language = localeinfo.GetLanguage();
+            std::string script = localeinfo.GetScript();
+            std::string languageAndScript = (script.length() == 0) ? language : language + "-" + script;
+            LocaleInfo newLocaleInfo(languageAndScript, localeInfoConfigs);
+            std::string maximizeLocale = newLocaleInfo.Maximize();
+            supportedDialectLocales.insert(
+                std::make_pair<std::string, std::string>(maximizeLocale.c_str(),
+                                                         reinterpret_cast<const char*>(content)));
+            xmlFree(content);
+            cur = cur->next;
+        }
+    }
+    std::map<std::string, std::string> configs = {};
+    LocaleInfo localeinfo(displayLocale, configs);
+    std::string language = localeinfo.GetLanguage();
+    std::string script = localeinfo.GetScript();
+    std::string languageAndScript = (script.length() == 0) ? language : language + "-" + script;
+    LocaleInfo newLocaleInfo(languageAndScript, configs);
+    std::string maximizeLocale = newLocaleInfo.Maximize();
+    if (supportedDialectLocales.find(maximizeLocale) != supportedDialectLocales.end()) {
+        return supportedDialectLocales.at(maximizeLocale);
+    }
+    return DEFAULT_LOCALE;
+}
+
+void LocaleConfig::ReadLangData(const char *langDataPath)
+{
+    xmlKeepBlanksDefault(0);
+    if (langDataPath == nullptr) {
+        return;
+    }
+    xmlDocPtr doc = xmlParseFile(langDataPath);
+    if (!doc) {
+        HiLog::Info(LABEL, "can not open language data file");
+        return;
+    }
+    xmlNodePtr cur = xmlDocGetRootElement(doc);
+    if (!cur || xmlStrcmp(cur->name, reinterpret_cast<const xmlChar *>(rootTag))) {
+        xmlFreeDoc(doc);
+        HiLog::Info(LABEL, "parse language data file failed");
+        return;
+    }
+    cur = cur->xmlChildrenNode;
+    while (cur != nullptr && !xmlStrcmp(cur->name, reinterpret_cast<const xmlChar *>(secondRootTag))) {
+        xmlChar *langContents[ELEMENT_NUM] = { 0 }; // 2 represent langid, displayname;
+        xmlNodePtr langValue = cur->xmlChildrenNode;
+        for (size_t i = 0; i < ELEMENT_NUM; i++) {
+            if (langValue != nullptr) {
+                langContents[i] = xmlNodeGetContent(langValue);
+                langValue = langValue->next;
+            } else {
+                break;
+            }
+        }
+        // 0 represents langid index, 1 represents displayname index
+        locale2DisplayName.insert(
+            std::make_pair<std::string, std::string>(reinterpret_cast<const char *>(langContents[0]),
+                                                     reinterpret_cast<const char *>(langContents[1])));
+        for (size_t i = 0; i < ELEMENT_NUM; i++) {
+            if (langContents[i] != nullptr) {
+                xmlFree(langContents[i]);
+            }
+        }
+        cur = cur->next;
+    }
+    xmlFreeDoc(doc);
+}
+
+string LocaleConfig::GetDsiplayLanguageWithDialect(const std::string &localeStr, const std::string &displayLocale)
+{
+    std::string finalLocale = ComputeLocale(displayLocale);
+    if (finalLocale.compare(currentDialectLocale) != 0) {
+        std::string xmlPath = LANG_PATH + finalLocale + ".xml";
+        locale2DisplayName.clear();
+        ReadLangData(xmlPath.c_str());
+        currentDialectLocale = finalLocale;
+    }
+    if (locale2DisplayName.find(localeStr) != locale2DisplayName.end()) {
+        return locale2DisplayName.at(localeStr);
+    }
+    std::map<std::string, std::string> configs = {};
+    LocaleInfo locale(localeStr, configs);
+    std::string language = locale.GetLanguage();
+    std::string scripts = locale.GetScript();
+    std::string region = locale.GetRegion();
+    if (scripts.length() != 0) {
+        std::string languageAndScripts = language + "-" + scripts;
+        if (locale2DisplayName.find(languageAndScripts) != locale2DisplayName.end()) {
+            return locale2DisplayName.at(languageAndScripts);
+        }
+    }
+    if (region.length() != 0) {
+        std::string languageAndRegion = language + "-" + region;
+        if (locale2DisplayName.find(languageAndRegion) != locale2DisplayName.end()) {
+            return locale2DisplayName.at(languageAndRegion);
+        }
+    }
+    if (locale2DisplayName.find(language) != locale2DisplayName.end()) {
+        return locale2DisplayName.at(language);
+    }
+    return "";
 }
 
 string LocaleConfig::GetDisplayRegion(const string &region, const string &displayLocale, bool sentenceCase)
@@ -730,7 +877,10 @@ string LocaleConfig::GetDisplayRegion(const string &region, const string &displa
         originLocale = builder.build(status);
     } else {
         originLocale = icu::Locale::forLanguageTag(region, status);
-        originLocale.addLikelySubtags(status);
+    }
+    std::string country(originLocale.getCountry());
+    if (country.length() == 0) {
+        return "";
     }
     if (status != U_ZERO_ERROR) {
         return "";
