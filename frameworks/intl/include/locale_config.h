@@ -15,6 +15,7 @@
 #ifndef OHOS_GLOBAL_I18N_LOCALE_CONFIG_H
 #define OHOS_GLOBAL_I18N_LOCALE_CONFIG_H
 
+#include <map>
 #include <vector>
 #include <set>
 #include <string>
@@ -73,6 +74,13 @@ private:
     static const char *FORBIDDEN_REGIONS_NAME;
     static const char *FORBIDDEN_LANGUAGES_PATH;
     static const char *FORBIDDEN_LANGUAGES_NAME;
+    static const char *SUPPORT_LOCALES_PATH;
+    static const char *DEFAULT_LOCALE;
+    static const char *supportLocalesTag;
+    static const char *LANG_PATH;
+    static const char *rootTag;
+    static const char *secondRootTag;
+    static const uint32_t ELEMENT_NUM = 2;
 
     static const std::unordered_set<std::string>& GetSupportedLocales();
     static const std::unordered_set<std::string>& GetForbiddenRegions();
@@ -84,16 +92,23 @@ private:
     static void GetListFromFile(const char *path, const char *resourceName, std::unordered_set<std::string> &ret);
     static void Expunge(std::unordered_set<std::string> &src, const std::unordered_set<std::string> &another);
     static std::string GetMainLanguage(const std::string &language);
+    static std::string GetDsiplayLanguageWithDialect(const std::string &language, const std::string &displayLocale);
+    static std::string ComputeLocale(const std::string &displayLocale);
+    static void ReadLangData(const char *xmlPath);
     static std::unordered_set<std::string> supportedLocales;
     static std::unordered_set<std::string> supportedRegions;
     static std::unordered_set<std::string> whiteLanguages;
+    static std::map<std::string, std::string> supportedDialectLocales;
     static std::unordered_map<std::string, std::string> dialectMap;
+    static std::map<std::string, std::string> locale2DisplayName;
+    static std::string currentDialectLocale;
     static std::set<std::string> validCaTag;
     static std::set<std::string> validCoTag;
     static std::set<std::string> validKnTag;
     static std::set<std::string> validKfTag;
     static std::set<std::string> validNuTag;
     static std::set<std::string> validHcTag;
+    static std::set<std::string> dialectLang;
     static bool listsInitialized;
     static bool InitializeLists();
     static bool CheckPermission();
