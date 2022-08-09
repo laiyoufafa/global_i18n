@@ -173,7 +173,7 @@ HWTEST_F(LocaleConfigTest, LocaleConfigFuncTest010, TestSize.Level1)
  */
 HWTEST_F(LocaleConfigTest, LocaleConfigFuncTest011, TestSize.Level1)
 {
-    EXPECT_EQ(LocaleConfig::GetDisplayRegion("zh", "en-US", true), "China");
+    EXPECT_EQ(LocaleConfig::GetDisplayRegion("zh", "en-US", true), "");
 }
 
 /**
@@ -183,6 +183,6 @@ HWTEST_F(LocaleConfigTest, LocaleConfigFuncTest011, TestSize.Level1)
  */
 HWTEST_F(LocaleConfigTest, LocaleConfigFuncTest012, TestSize.Level1)
 {
-    EXPECT_EQ(LocaleConfig::GetDisplayRegion("zh-Hans", "en-US", true), "China");
+    EXPECT_EQ(LocaleConfig::GetDisplayRegion("zh-Hans", "en-US", true), "");
 }
 } // namespace
