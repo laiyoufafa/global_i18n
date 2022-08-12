@@ -12,4 +12,11 @@
 # limitations under the License.
 
 persist.global.language = root:root:0777
-persist.global.locale = root:root:0777
+persist.global.locale = root:root:0777forbidden_languages.xml
+forbidden_regions.xml
+lang
+language_config.para
+supported_locales.xml
+supported_regions.xml
+timezone
+white_languages.xml
