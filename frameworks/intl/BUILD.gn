@@ -95,6 +95,7 @@ ohos_shared_library("intl_util") {
     ":forbidden_regions_xml",
     ":lang_supported_locales",
     ":language_config.para",
+    ":language_config.para.dac",
     ":timezone_supported_locales",
     ":white_languages_xml",
     ":zh_Hans_lang_xml",
@@ -123,6 +124,12 @@ ohos_shared_library("intl_util") {
 
 ohos_prebuilt_etc("language_config.para") {
   source = "//base/global/i18n/frameworks/intl/etc/language_config.para"
+  part_name = "i18n"
+  module_install_dir = "etc/param"
+}
+
+ohos_prebuilt_etc("language_config.para.dac") {
+  source = "//base/global/i18n/frameworks/intl/etc/language_config.para.dac"
   part_name = "i18n"
   module_install_dir = "etc/param"
 }
