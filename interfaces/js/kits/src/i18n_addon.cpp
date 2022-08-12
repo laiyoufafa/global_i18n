@@ -17,7 +17,6 @@
 #include <vector>
 #include "character.h"
 #include "hilog/log.h"
-#include "hisysevent_adapter.h"
 #include "i18n_calendar.h"
 #include "unicode/locid.h"
 #include "unicode/datefmt.h"
@@ -163,7 +162,6 @@ napi_value I18nAddon::Init(napi_env env, napi_value exports)
     napi_value util = nullptr;
     status = napi_create_object(env, &util);
     if (status != napi_ok) {
-        ReportInitI18nFail("I18n init failed.");
         HiLog::Error(LABEL, "Failed to create util object at init");
         return nullptr;
     }
@@ -175,7 +173,6 @@ napi_value I18nAddon::Init(napi_env env, napi_value exports)
                                     sizeof(utilProperties) / sizeof(napi_property_descriptor),
                                     utilProperties);
     if (status != napi_ok) {
-        ReportInitI18nFail("I18n init failed.");
         HiLog::Error(LABEL, "Failed to set properties of util at init");
         return nullptr;
     }
@@ -200,7 +197,6 @@ napi_value I18nAddon::Init(napi_env env, napi_value exports)
     properties[27] = DECLARE_NAPI_PROPERTY("TimeZone", timezone); // 27 is properties index
     status = napi_define_properties(env, exports, propertiesNums, properties);
     if (status != napi_ok) {
-        ReportInitI18nFail("I18n init failed.");
         HiLog::Error(LABEL, "Failed to set properties at init");
         return nullptr;
     }
@@ -3173,7 +3169,6 @@ napi_value I18nAddon::SetUsingLocalDigitAddon(napi_env env, napi_callback_info i
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
 
     if (argv[0] == nullptr) {
-        ReportI18nParamError("Parameter type is error");
         HiLog::Error(LABEL, "Invalid parameter nullptr");
         return nullptr;
     }
