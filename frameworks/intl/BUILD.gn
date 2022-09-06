@@ -38,10 +38,7 @@ ohos_shared_library("preferred_language") {
     "-fPIC",
   ]
   deps = [ "//base/global/i18n/frameworks/intl:intl_util" ]
-  external_deps = [
-    "hiviewdfx_hilog_native:libhilog",
-    "init:libbegetutil",
-  ]
+  external_deps = [ "init:libbegetutil" ]
   subsystem_name = "global"
   part_name = "i18n"
 }
