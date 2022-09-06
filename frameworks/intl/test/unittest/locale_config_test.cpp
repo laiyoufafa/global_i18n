@@ -141,7 +141,7 @@ HWTEST_F(LocaleConfigTest, LocaleConfigFuncTest007, TestSize.Level1)
  */
 HWTEST_F(LocaleConfigTest, LocaleConfigFuncTest008, TestSize.Level1)
 {
-    EXPECT_EQ(LocaleConfig::GetDisplayLanguage("pt", "zh-Hans-CN", true), "葡萄牙文");
+    EXPECT_EQ(LocaleConfig::GetDisplayLanguage("pt", "zh-Hans-CN", true), "葡萄牙语");
 }
 
 /**
