@@ -41,9 +41,7 @@ ohos_shared_library("intl") {
   deps = [
     "//base/global/i18n/frameworks/intl:intl_util",
     "//foundation/arkui/napi:ace_napi",
-    "//third_party/icu/icu4c:shared_icui18n",
     "//third_party/icu/icu4c:shared_icuuc",
-    "//third_party/libphonenumber/cpp:phonenumber_standard",
   ]
   external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
   relative_install_dir = "module"
@@ -74,7 +72,6 @@ ohos_shared_library("i18n") {
     "//base/global/i18n/frameworks/intl:preferred_language",
     "//third_party/icu/icu4c:shared_icui18n",
     "//third_party/icu/icu4c:shared_icuuc",
-    "//third_party/libphonenumber/cpp:phonenumber_standard",
   ]
   external_deps = [
     "hiviewdfx_hilog_native:libhilog",
