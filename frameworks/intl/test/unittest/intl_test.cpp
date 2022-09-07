@@ -196,7 +196,7 @@ HWTEST_F(IntlTest, IntlFuncTest006, TestSize.Level1)
     EXPECT_EQ(out, expects);
     int64_t date1[] = {2021, 3, 14, 15, 5, 3};
     int64_t date2[] = {2021, 4, 5, 10, 5, 3};
-    expects = "2021/04/14水曜日～2021/05/05水曜日";
+    expects = "2021/4/14水曜日～2021/5/5水曜日";
     out = dateFormat->FormatRange(date1, 6, date2, 6);
     EXPECT_EQ(out, expects);
     delete dateFormat;
