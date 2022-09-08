@@ -86,6 +86,8 @@ public:
     static napi_value GetAvailableZoneCityIDs(napi_env env, napi_callback_info info);
     static napi_value GetCityDisplayName(napi_env env, napi_callback_info info);
     static napi_value GetTimezoneFromCity(napi_env env, napi_callback_info info);
+    static napi_value InitCharacter(napi_env env, napi_value exports);
+    static napi_value InitUtil(napi_env env, napi_value exports);
 
 private:
     static void CreateInitProperties(napi_property_descriptor *properties);
@@ -133,8 +135,7 @@ private:
     static napi_value AddLocale(napi_env env, napi_callback_info info);
     static napi_value GetIndex(napi_env env, napi_callback_info info);
     bool InitIndexUtilContext(napi_env env, napi_callback_info info, const std::string &localeTag);
-    static napi_value CreateUtilObject(napi_env env);
-    static napi_value CreateCharacterObject(napi_env env);
+    static napi_value CreateUnicodeObject(napi_env env);
 
     static napi_value I18nTimeZoneConstructor(napi_env env, napi_callback_info info);
     static napi_value GetID(napi_env env, napi_callback_info info);
@@ -153,6 +154,8 @@ private:
 
     static napi_value StaticGetTimeZone(napi_env, napi_value *argv, bool isZoneID);
     static napi_value CreateTimeZoneObject(napi_env env);
+
+    static napi_value ObjectConstructor(napi_env env, napi_callback_info info);
 
     napi_env env_;
     napi_ref wrapper_;
