@@ -17,6 +17,11 @@
 #ifdef TEL_CORE_SERVICE_EXISTS
 #include "core_service_client.h"
 #endif
+#ifdef SUPPORT_GRAPHICS
+#include "app_mgr_client.h"
+#include "ability_manager_client.h"
+#include "configuration.h"
+#endif
 #include <cctype>
 #include "hilog/log.h"
 #include "ipc_skeleton.h"
@@ -399,7 +404,16 @@ bool LocaleConfig::SetSystemLanguage(const string &language)
     if (!IsValidTag(language)) {
         return false;
     }
-    return SetParameter(LANGUAGE_KEY, language.data()) == 0;
+    if (SetParameter(LANGUAGE_KEY, language.data()) == 0) {
+#ifdef SUPPORT_GRAPHICS
+        auto appMgrClient = std::make_unique<AppExecFwk::AppMgrClient>();
+        AppExecFwk::Configuration configuration;
+        configuration.AddItem(AAFwk::GlobalConfigurationKey::SYSTEM_LANGUAGE, language);
+        appMgrClient->UpdateConfiguration(configuration);
+#endif
+        return true;
+    }
+    return false;
 }
 
 bool LocaleConfig::SetSystemRegion(const string &region)
