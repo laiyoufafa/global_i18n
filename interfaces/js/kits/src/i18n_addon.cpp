@@ -154,6 +154,8 @@ void I18nAddon::CreateInitProperties(napi_property_descriptor *properties)
     properties[25] = DECLARE_NAPI_FUNCTION("setUsingLocalDigit", SetUsingLocalDigitAddon);
     // 26 is properties index
     properties[26] = DECLARE_NAPI_FUNCTION("getUsingLocalDigit", GetUsingLocalDigitAddon);
+    // 28 is properties index
+    properties[28] = DECLARE_NAPI_FUNCTION("getAppPreferredLanguage", GetAppPreferredLanguage);
 }
 
 napi_value I18nAddon::Init(napi_env env, napi_value exports)
@@ -188,7 +190,7 @@ napi_value I18nAddon::Init(napi_env env, napi_value exports)
     if (!timezone) {
         return nullptr;
     }
-    size_t propertiesNums = 28;
+    size_t propertiesNums = 29;
     napi_property_descriptor properties[propertiesNums];
     CreateInitProperties(properties);
     properties[13] = DECLARE_NAPI_PROPERTY("I18NUtil", i18nUtil);  // 13 is properties index
@@ -2862,6 +2864,19 @@ napi_value I18nAddon::GetFirstPreferredLanguage(napi_env env, napi_callback_info
     status = napi_create_string_utf8(env, language.c_str(), NAPI_AUTO_LENGTH, &result);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "getFirstPreferrdLanguage: create string result failed");
+        return nullptr;
+    }
+    return result;
+}
+
+napi_value I18nAddon::GetAppPreferredLanguage(napi_env env, napi_callback_info info)
+{
+    std::string language = PreferredLanguage::GetAppPreferredLanguage();
+    napi_value result = nullptr;
+    napi_status status = napi_ok;
+    status = napi_create_string_utf8(env, language.c_str(), NAPI_AUTO_LENGTH, &result);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "getAppPreferrdLanguage: create string result failed");
         return nullptr;
     }
     return result;

@@ -28,6 +28,8 @@ public:
     static bool RemovePreferredLanguage(int index);
     static std::vector<std::string> GetPreferredLanguageList();
     static std::string GetFirstPreferredLanguage();
+    static void SetAppPreferredLanguage(std::string &language);
+    static std::string GetAppPreferredLanguage();
     static std::string GetPreferredLocale();
 
 private:
@@ -45,6 +47,7 @@ private:
     static const char *PREFERRED_LANGUAGES;
     static constexpr int CONFIG_LEN = 128;
     static constexpr uint32_t LANGUAGE_LEN = 2;
+    static thread_local std::string appPreferredLanguage;
 };
 } // namespace I18n
 } // namespace Global
