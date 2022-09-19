@@ -272,16 +272,6 @@ void PreferredLanguage::Split(const std::string &src, const std::string &sep, st
         dest.push_back(src.substr(begin));
     }
 }
-
-std::string PreferredLanguage::SetAppPreferredLanguage(std::string &language)
-{
-    appPreferredLanguage = language;
-}
-
-std::string PreferredLanguage::GetAppPreferredLanguage()
-{
-    return appPreferredLanguage;
-}
 } // namespace I18n
 } // namespace Global
 } // namespace OHOS

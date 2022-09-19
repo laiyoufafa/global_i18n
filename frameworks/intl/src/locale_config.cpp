@@ -342,7 +342,6 @@ string LocaleConfig::GetSystemLanguage()
 
 string LocaleConfig::GetSystemRegion()
 {
-    string locale = GetSystemLocale();
     char value[CONFIG_LEN];
     int code = GetParameter(LOCALE_KEY, "", value, CONFIG_LEN);
     if (code > 0) {
@@ -535,9 +534,7 @@ void LocaleConfig::Split(const string &src, const string &sep, vector<string> &d
 // language in white languages should have script.
 void LocaleConfig::GetSystemLanguages(vector<string> &ret)
 {
-    for (auto item : whiteLanguages) {
-        ret.push_back(item);
-    }
+    std::copy(whiteLanguages.begin(), whiteLanguages.end(), std::back_inserter(ret));
 }
 
 const unordered_set<string>& LocaleConfig::GetSupportedLocales()
@@ -552,9 +549,7 @@ const unordered_set<string>& LocaleConfig::GetSupportedRegions()
 
 void LocaleConfig::GetSystemCountries(vector<string> &ret)
 {
-    for (auto item : supportedRegions) {
-        ret.push_back(item);
-    }
+    std::copy(supportedRegions.begin(), supportedRegions.end(), std::back_inserter(ret));
 }
 
 bool LocaleConfig::IsSuggested(const string &language)
@@ -927,25 +922,6 @@ bool LocaleConfig::IsRTL(const string &locale)
     return curLocale.isRightToLeft();
 }
 
-std::string ContainTag(std::string &localeTag, std::string &defaultLocaleTag,
-    const std::string &extensionTag)
-{
-    std::string tag = localeTag;
-    std::size_t found = tag.find(extensionTag);
-    if (found == std::string::npos) {
-        tag = defaultLocaleTag;
-        found = tag.find(extensionTag);
-    }
-    if (found == std::string::npos) {
-        return "";
-    }
-
-    std::size_t start = found + 4;  // 4 is the tag length
-    std::size_t end = tag.find("-", start);
-
-    return tag.substr(start, end - start);
-}
-
 void parseExtension(const std::string &extension, std::map<std::string, std::string> &map)
 {
     std::string pattern = "-..-";
@@ -963,7 +939,7 @@ void setExtension(std::string &extension, const std::string &tag, const std::set
     const std::map<std::string, std::string> &extensionMap,
     const std::map<std::string, std::string> &defaultExtensionMap)
 {
-    std::string value = "";
+    std::string value;
     auto it = extensionMap.find(tag);
     if (it != extensionMap.end()) {
         value = it->second;
