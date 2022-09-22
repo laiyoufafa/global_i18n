@@ -1423,46 +1423,24 @@ napi_value I18nAddon::GetLocationName(napi_env env, napi_callback_info info)
     void *data = nullptr;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
     
-    napi_valuetype arg0Type = napi_valuetype::napi_undefined;
-    napi_typeof(env, argv[0], &arg0Type);
-    if (arg0Type != napi_valuetype::napi_string) {
-        napi_throw_type_error(env, nullptr, "Parameter number does not match");
+    int32_t code = 0;
+    std::string number = GetString(env, argv[0], code);
+    if (code) {
         return nullptr;
     }
-
-    napi_valuetype arg1Type = napi_valuetype::napi_undefined;
-    napi_typeof(env, argv[1], &arg1Type);
-    if (arg1Type != napi_valuetype::napi_string) {
-        napi_throw_type_error(env, nullptr, "Parameter locale does not match");
-        return nullptr;
-    }
-
-    size_t numLen = 0;
-    napi_status status = napi_get_value_string_utf8(env, argv[0], nullptr, 0, &numLen);
-    std::vector<char> numberBuf(numLen + 1);
-    status = napi_get_value_string_utf8(env, argv[0], numberBuf.data(), numLen + 1, &numLen);
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "Failed to get number string for GetLocationName");
-        return nullptr;
-    }
-
-    size_t len = 0;
-    status = napi_get_value_string_utf8(env, argv[1], nullptr, 0, &len);
-    std::vector<char> languageBuf(len + 1);
-    status = napi_get_value_string_utf8(env, argv[1], languageBuf.data(), len + 1, &len);
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "Failed to get locale string for GetLocationName");
+    std::string language = GetString(env, argv[1], code);
+    if (code) {
         return nullptr;
     }
     
     I18nAddon *obj = nullptr;
-    status = napi_unwrap(env, thisVar, reinterpret_cast<void **>(&obj));
+    napi_status status = napi_unwrap(env, thisVar, reinterpret_cast<void **>(&obj));
     if (status != napi_ok || !obj || !obj->phonenumberfmt_) {
         HiLog::Error(LABEL, "GetPhoneNumberFormat object failed");
         return nullptr;
     }
 
-    std::string resStr = obj->phonenumberfmt_->getLocationName(numberBuf.data(), languageBuf.data());
+    std::string resStr = obj->phonenumberfmt_->getLocationName(number.data(), language.data());
     napi_value result = nullptr;
     status = napi_create_string_utf8(env, resStr.c_str(), NAPI_AUTO_LENGTH, &result);
     if (status != napi_ok) {
@@ -3241,7 +3219,7 @@ napi_value I18nAddon::GetAvailableTimezoneIDs(napi_env env, napi_callback_info i
         return nullptr;
     }
     size_t index = 0;
-    for (std::set<std::string>::iterator it = timezoneIDs.begin(); it != timezoneIDs.end(); it++) {
+    for (std::set<std::string>::iterator it = timezoneIDs.begin(); it != timezoneIDs.end(); ++it) {
         napi_value value = nullptr;
         status = napi_create_string_utf8(env, (*it).c_str(), NAPI_AUTO_LENGTH, &value);
         if (status != napi_ok) {
@@ -3253,7 +3231,7 @@ napi_value I18nAddon::GetAvailableTimezoneIDs(napi_env env, napi_callback_info i
             HiLog::Error(LABEL, "Failed to set array item");
             return nullptr;
         }
-        index++;
+        ++index;
     }
     return result;
 }
@@ -3267,7 +3245,7 @@ napi_value I18nAddon::GetAvailableZoneCityIDs(napi_env env, napi_callback_info i
         HiLog::Error(LABEL, "Failed to create array");
         return nullptr;
     }
-    for (size_t i = 0; i < cityIDs.size(); i++) {
+    for (size_t i = 0; i < cityIDs.size(); ++i) {
         napi_value value = nullptr;
         status = napi_create_string_utf8(env, cityIDs[i].c_str(), NAPI_AUTO_LENGTH, &value);
         if (status != napi_ok) {
