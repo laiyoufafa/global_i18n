@@ -56,6 +56,9 @@ RelativeTimeFormat::RelativeTimeFormat(const std::vector<std::string> &localeTag
         locale = builder->setLanguageTag(icu::StringPiece(curLocale)).build(status);
         if (LocaleInfo::allValidLocales.count(locale.getLanguage()) > 0) {
             localeInfo = std::make_unique<LocaleInfo>(curLocale, configs);
+            if (localeInfo == nullptr) {
+                continue;
+            }
             locale = localeInfo->GetLocale();
             localeBaseName = localeInfo->GetBaseName();
             relativeTimeFormat = std::make_unique<icu::RelativeDateTimeFormatter>(locale, nullptr, style,
