@@ -599,7 +599,7 @@ napi_value I18nAddon::GetAvailableIDs(napi_env env, napi_callback_info info)
     napi_create_array(env, &result);
     uint32_t i = 0;
     const char *temp = nullptr;
-    while ((temp = strenum->next(nullptr, icuStatus)) != nullptr) {
+    while (strenum != nullptr && (temp = strenum->next(nullptr, icuStatus)) != nullptr) {
         if (icuStatus != U_ZERO_ERROR) {
             break;
         }
