@@ -1,16 +1,21 @@
-# 国际化组件<a name="ZH-CN_TOPIC_0000001101364976"></a>
+# 国际化部件
 
--   [简介](#section11660541593)
--   [目录](#section1464106163817)
--   [约束](#section1718733212019)
--   [说明](#section894511013511)
--   [相关仓](#section15583142420413)
+## 简介
 
-## 简介<a name="section11660541593"></a>
+**国际化部件**为应用提供了一系列国际化接口，包括：时间日期格式化、相对时间格式化、数字格式化、排序、单复数、日历、电话号码格式化、度量衡、字符属性、时区、音译、本地化数字、24小时制、换行符、索引、系统语言、系统地区、系统区域、偏好语言等相关接口。基于这些国际化接口，开发者可以设计并实现具有良好国际化能力的应用，从而可以高效、低成本的实现应用的本地化。国际化部件支持如下设备：润和DAYU200 RK3568。
 
-**国际化组件**提供时间日期格式化等国际化能力。
+![](figures/i18n.png)
 
-## 目录<a name="section1464106163817"></a>
+**国际化部件架构图说明:**
+
+- **Kits**为对外提供的js接口，分为intl和i18n两个模块。intl模块中包含了在ECMA 402标准定义的国际化接口，i18n模块包含了其他非ECMA 402定义的国际化接口。
+
+- **frameworks**为js接口的底层c++实现。
+
+- **libs**为js接口所依赖的国际化数据，包括ICU和libphonenumber两部分。
+
+
+## 目录
 
 国际化组件源代码目录结构如下所示：
 
@@ -23,27 +28,15 @@
 │   │   └── native          # 国际化框架native接口
 ```
 
-## 约束<a name="section1718733212019"></a>
+## 约束
 
 **语言限制**：JavaScript语言
 
 **支持范围限制**：支持的语言符合 ISO 639 标准 2 字母或 3 字母语言码，支持的文本符合 ISO 15924 标准 4 字母文本码，支持的国家符合 ISO 3166 标准 2 字母国家码。
 
-## 说明<a name="section894511013511"></a>
 
-提供时间日期格式化接口，使时间日期格式（如年月日顺序、月份和星期词汇、使用12或24小时制等）跟随系统设置满足不同区域用户的文化习惯。更详细的内容见API文档。示例如下：
+## 相关仓
 
-```
-const date = new Date(2021, 11, 17, 3, 24, 0);  // 创建包含日期和时间信息的Date对象
-fmt = new Intl.DateTimeFormat('en-US')  // 创建时间日期格式化实例
-console.log(fmt.format(date));  // 使用创建时间日期格式化对象实例进行格式化
-```
+[全球化子系统](https://gitee.com/openharmony/docs/blob/master/zh-cn/readme/%E5%85%A8%E7%90%83%E5%8C%96%E5%AD%90%E7%B3%BB%E7%BB%9F.md)
 
-## 相关仓<a name="section15583142420413"></a>
-
-全球化子系统
-
-**global\_i18n\_standard**
-
-global\_resmgr\_standard
-
+[global\_resource\_management](https://gitee.com/openharmony/global_resource_management/blob/master/README_zh.md)
