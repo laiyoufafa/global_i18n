@@ -168,6 +168,7 @@ private:
     static napi_value StaticGetTimeZone(napi_env, napi_value *argv, bool isZoneID);
     static napi_value CreateTimeZoneObject(napi_env env);
 
+    static napi_value CreateSystemObject(napi_env env);
     static napi_value GetSystemCountriesImpl(napi_env env, napi_callback_info info, bool throwError);
     static napi_value IsSuggestedImpl(napi_env env, napi_callback_info info, bool throwError);
     static napi_value GetDisplayLanguageImpl(napi_env env, napi_callback_info info, bool throwError);

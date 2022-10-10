@@ -2978,7 +2978,7 @@ napi_value I18nAddon::RemovePreferredLanguageImpl(napi_env env, napi_callback_in
     napi_value argv[1] = { 0 };
     napi_value thisVar = nullptr;
     void *data = nullptr;
-    size_t len = 0;
+    int len = 0;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
     if (status != napi_ok) {
         return nullptr;
@@ -3002,7 +3002,7 @@ napi_value I18nAddon::RemovePreferredLanguageImpl(napi_env env, napi_callback_in
         ErrorUtil::NapiThrow(env, I18N_NOT_VALID, throwError);
         return nullptr;
     }
-    len = PreferredLanguage::GetPreferredLanguageList().size();
+    len = static_cast<int>(PreferredLanguage::GetPreferredLanguageList().size());
     if (index < 0 || index > len - 1) {
         ErrorUtil::NapiThrow(env, I18N_NOT_VALID, throwError);
         return nullptr;
