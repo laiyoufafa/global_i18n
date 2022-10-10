@@ -193,13 +193,18 @@ napi_value I18nAddon::Init(napi_env env, napi_value exports)
     if (!timezone) {
         return nullptr;
     }
-    size_t propertiesNums = 29;
+    napi_value system = CreateSystemObject(env);
+    if (!system) {
+        return nullptr;
+    }
+    size_t propertiesNums = 30;
     napi_property_descriptor properties[propertiesNums];
     CreateInitProperties(properties);
     properties[13] = DECLARE_NAPI_PROPERTY("I18NUtil", i18nUtil);  // 13 is properties index
     properties[16] = DECLARE_NAPI_PROPERTY("Unicode", unicode);  // 16 is properties index
     properties[24] = DECLARE_NAPI_PROPERTY("Transliterator", transliterator); // 24 is properties index
     properties[27] = DECLARE_NAPI_PROPERTY("TimeZone", timezone); // 27 is properties index
+    properties[29] = DECLARE_NAPI_PROPERTY("System", system); // 29 is properties index
     status = napi_define_properties(env, exports, propertiesNums, properties);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Failed to set properties at init");
@@ -3439,6 +3444,47 @@ napi_value I18nAddon::CreateTimeZoneObject(napi_env env)
     return timezone;
 }
 
+napi_value I18nAddon::CreateSystemObject(napi_env env)
+{
+    napi_status status = napi_ok;
+    napi_value system = nullptr;
+    status = napi_create_object(env, &system);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "Failed to create system object at init");
+        return nullptr;
+    }
+    napi_property_descriptor systemProperties[] = {
+        DECLARE_NAPI_FUNCTION("getDisplayCountry", GetDisplayCountryWithError),
+        DECLARE_NAPI_FUNCTION("getDisplayLanguage", GetDisplayLanguageWithError),
+        DECLARE_NAPI_FUNCTION("getSystemLanguages", GetSystemLanguages),
+        DECLARE_NAPI_FUNCTION("getSystemCountries", GetSystemCountriesWithError),
+        DECLARE_NAPI_FUNCTION("isSuggested", IsSuggestedWithError),
+        DECLARE_NAPI_FUNCTION("getSystemLanguage", GetSystemLanguage),
+        DECLARE_NAPI_FUNCTION("setSystemLanguage", SetSystemLanguageWithError),
+        DECLARE_NAPI_FUNCTION("getSystemRegion", GetSystemRegion),
+        DECLARE_NAPI_FUNCTION("setSystemRegion", SetSystemRegionWithError),
+        DECLARE_NAPI_FUNCTION("getSystemLocale", GetSystemLocale),
+        DECLARE_NAPI_FUNCTION("setSystemLocale", SetSystemLocaleWithError),
+        DECLARE_NAPI_FUNCTION("is24HourClock", Is24HourClock),
+        DECLARE_NAPI_FUNCTION("set24HourClock", Set24HourClockWithError),
+        DECLARE_NAPI_FUNCTION("addPreferredLanguage", AddPreferredLanguageWithError),
+        DECLARE_NAPI_FUNCTION("removePreferredLanguage", RemovePreferredLanguageWithError),
+        DECLARE_NAPI_FUNCTION("getPreferredLanguageList", GetPreferredLanguageList),
+        DECLARE_NAPI_FUNCTION("getFirstPreferredLanguage", GetFirstPreferredLanguage),
+        DECLARE_NAPI_FUNCTION("getAppPreferredLanguage", GetFirstPreferredLanguage),
+        DECLARE_NAPI_FUNCTION("setUsingLocalDigit", SetUsingLocalDigitAddonWithError),
+        DECLARE_NAPI_FUNCTION("getUsingLocalDigit", GetUsingLocalDigitAddon),
+    };
+    status = napi_define_properties(env, system,
+                                    sizeof(systemProperties) / sizeof(napi_property_descriptor),
+                                    systemProperties);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "Failed to set properties of system at init");
+        return nullptr;
+    }
+    return system;
+}
+
 napi_value I18nAddon::GetAvailableTimezoneIDs(napi_env env, napi_callback_info info)
 {
     std::set<std::string> timezoneIDs = I18nTimeZone::GetAvailableIDs();
@@ -3640,48 +3686,6 @@ napi_value I18nAddon::InitUtil(napi_env env, napi_value exports)
     return exports;
 }
 
-napi_value I18nAddon::System(napi_env env, napi_value exports)
-{
-    napi_status status = napi_ok;
-    napi_property_descriptor properties[] = {
-        DECLARE_NAPI_FUNCTION("getDisplayCountry", GetDisplayCountryWithError),
-        DECLARE_NAPI_FUNCTION("getDisplayLanguage", GetDisplayLanguageWithError),
-        DECLARE_NAPI_FUNCTION("getSystemLanguages", GetSystemLanguages),
-        DECLARE_NAPI_FUNCTION("getSystemCountries", GetSystemCountriesWithError),
-        DECLARE_NAPI_FUNCTION("isSuggested", IsSuggestedWithError),
-        DECLARE_NAPI_FUNCTION("getSystemLanguage", GetSystemLanguage),
-        DECLARE_NAPI_FUNCTION("setSystemLanguage", SetSystemLanguageWithError),
-        DECLARE_NAPI_FUNCTION("getSystemRegion", GetSystemRegion),
-        DECLARE_NAPI_FUNCTION("setSystemRegion", SetSystemRegionWithError),
-        DECLARE_NAPI_FUNCTION("getSystemLocale", GetSystemLocale),
-        DECLARE_NAPI_FUNCTION("setSystemLocale", SetSystemLocaleWithError),
-        DECLARE_NAPI_FUNCTION("is24HourClock", Is24HourClock),
-        DECLARE_NAPI_FUNCTION("set24HourClock", Set24HourClockWithError),
-        DECLARE_NAPI_FUNCTION("addPreferredLanguage", AddPreferredLanguageWithError),
-        DECLARE_NAPI_FUNCTION("removePreferredLanguage", RemovePreferredLanguageWithError),
-        DECLARE_NAPI_FUNCTION("getPreferredLanguageList", GetPreferredLanguageList),
-        DECLARE_NAPI_FUNCTION("getFirstPreferredLanguage", GetFirstPreferredLanguage),
-        DECLARE_NAPI_FUNCTION("getAppPreferredLanguage", GetFirstPreferredLanguage),
-        DECLARE_NAPI_FUNCTION("setUsingLocalDigit", SetUsingLocalDigitAddonWithError),
-        DECLARE_NAPI_FUNCTION("getUsingLocalDigit", GetUsingLocalDigitAddon),
-    };
-
-    napi_value constructor = nullptr;
-    status = napi_define_class(env, "System", NAPI_AUTO_LENGTH, ObjectConstructor, nullptr,
-        sizeof(properties) / sizeof(napi_property_descriptor), properties, &constructor);
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "Define class failed when InitUtil");
-        return nullptr;
-    }
-
-    status = napi_set_named_property(env, exports, "System", constructor);
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "Set property failed when InitUtil");
-        return nullptr;
-    }
-    return exports;
-}
-
 napi_value Init(napi_env env, napi_value exports)
 {
     napi_value val = I18nAddon::Init(env, exports);
@@ -3693,7 +3697,6 @@ napi_value Init(napi_env env, napi_value exports)
     val = I18nAddon::InitTransliterator(env, val);
     val = I18nAddon::InitCharacter(env, val);
     val = I18nAddon::InitUtil(env, val);
-    val = I18nAddon::System(env, val);
     return val;
 }
 
