@@ -29,9 +29,9 @@ static const std::unordered_map<int32_t, std::string> ErrorCodeToMsg {
 
 void ErrorUtil::NapiThrow(napi_env env, int32_t errCode, bool throwError)
 {
-	if (!throwError) {
-		return;
-	}
+    if (!throwError) {
+        return;
+    }
     napi_value code = nullptr;
     napi_create_string_latin1(env, std::to_string(errCode).c_str(), NAPI_AUTO_LENGTH, &code);
 
