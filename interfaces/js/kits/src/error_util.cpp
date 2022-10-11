@@ -21,10 +21,10 @@ namespace OHOS {
 namespace Global {
 namespace I18n {
 static const std::unordered_map<int32_t, std::string> ErrorCodeToMsg {
-    {I18N_NO_PERMISSION, "Permission denied"},
-    {I18N_NOT_VALID, "Invalid parameter"},
-    {I18N_NOT_FOUND, "Required parameter not found"},
-    {I18N_OPTION_NOT_VALID, "Invalid option"}
+    {I18N_NO_PERMISSION, "The application does not have permission to call this function"},
+    {I18N_NOT_VALID, "Param value not valid"},
+    {I18N_NOT_FOUND, "Check param failed"},
+    {I18N_OPTION_NOT_VALID, "Invalid option name"}
 };
 
 void ErrorUtil::NapiThrow(napi_env env, int32_t errCode, bool throwError)
