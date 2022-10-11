@@ -1096,6 +1096,9 @@ napi_value I18nAddon::GetDisplayLanguageImpl(napi_env env, napi_callback_info in
     }
 
     std::string value = LocaleConfig::GetDisplayLanguage(localeBuf.data(), displayLocaleBuf.data(), sentenceCase);
+    if （value.length() == 0） {
+        ErrorUtil::NapiThrow(env, I18N_NOT_VALID, throwError);
+    }
     napi_value result = nullptr;
     status = napi_create_string_utf8(env, value.c_str(), NAPI_AUTO_LENGTH, &result);
     if (status != napi_ok) {
@@ -1154,6 +1157,9 @@ napi_value I18nAddon::GetDisplayCountryImpl(napi_env env, napi_callback_info inf
         napi_get_value_bool(env, argv[sentenceCaseIndex], &sentenceCase);
     }
     std::string value = LocaleConfig::GetDisplayRegion(localeBuf.data(), displayLocaleBuf.data(), sentenceCase);
+    if （value.length() == 0） {
+        ErrorUtil::NapiThrow(env, I18N_NOT_VALID, throwError);
+    }
     napi_value result = nullptr;
     status = napi_create_string_utf8(env, value.c_str(), NAPI_AUTO_LENGTH, &result);
     if (status != napi_ok) {
@@ -1205,6 +1211,7 @@ napi_value I18nAddon::IsSuggestedImpl(napi_env env, napi_callback_info info, boo
         status = napi_get_value_string_utf8(env, argv[1], regionBuf.data(), len + 1, &len);
         if (status != napi_ok) {
             HiLog::Error(LABEL, "Failed to get string item");
+            ErrorUtil::NapiThrow(env, I18N_NOT_VALID, throwError);
             return nullptr;
         }
         isSuggested = LocaleConfig::IsSuggested(languageBuf.data(), regionBuf.data());
@@ -2944,6 +2951,7 @@ napi_value I18nAddon::AddPreferredLanguageImpl(napi_env env, napi_callback_info 
     }
     if (status != napi_ok) {
         HiLog::Error(LABEL, "addPreferrdLanguage: get index failed");
+        ErrorUtil::NapiThrow(env, I18N_NOT_VALID, throwError);
         return nullptr;
     }
     bool success = PreferredLanguage::AddPreferredLanguage(language.data(), index);
