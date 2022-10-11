@@ -1096,7 +1096,7 @@ napi_value I18nAddon::GetDisplayLanguageImpl(napi_env env, napi_callback_info in
     }
 
     std::string value = LocaleConfig::GetDisplayLanguage(localeBuf.data(), displayLocaleBuf.data(), sentenceCase);
-    if （value.length() == 0） {
+    if (value.length() == 0) {
         ErrorUtil::NapiThrow(env, I18N_NOT_VALID, throwError);
     }
     napi_value result = nullptr;
@@ -1157,7 +1157,7 @@ napi_value I18nAddon::GetDisplayCountryImpl(napi_env env, napi_callback_info inf
         napi_get_value_bool(env, argv[sentenceCaseIndex], &sentenceCase);
     }
     std::string value = LocaleConfig::GetDisplayRegion(localeBuf.data(), displayLocaleBuf.data(), sentenceCase);
-    if （value.length() == 0） {
+    if (value.length() == 0) {
         ErrorUtil::NapiThrow(env, I18N_NOT_VALID, throwError);
     }
     napi_value result = nullptr;
