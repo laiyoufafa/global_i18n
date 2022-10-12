@@ -66,7 +66,10 @@ ohos_shared_library("i18n") {
   ]
   cflags_cc = [ "-frtti" ]
   remove_configs = [ "//build/config/compiler:no_rtti" ]
-  sources = [ "src/i18n_addon.cpp" ]
+  sources = [
+    "src/error_util.cpp",
+    "src/i18n_addon.cpp",
+  ]
   deps = [
     "//base/global/i18n/frameworks/intl:intl_util",
     "//base/global/i18n/frameworks/intl:preferred_language",
