@@ -3011,15 +3011,13 @@ napi_value I18nAddon::RemovePreferredLanguageImpl(napi_env env, napi_callback_in
         return nullptr;
     }
     len = static_cast<int>(PreferredLanguage::GetPreferredLanguageList().size());
-    if (index < 0 || index > len - 1) {
+    if ((index < 0 || index > len - 1) && throwError) {
         ErrorUtil::NapiThrow(env, I18N_NOT_VALID, throwError);
         return nullptr;
     }
     bool success = PreferredLanguage::RemovePreferredLanguage(index);
-    if (throwError) {
-        if (!success) {
-            ErrorUtil::NapiThrow(env, I18N_NO_PERMISSION, throwError);
-        }
+    if (!success && throwError) {
+        ErrorUtil::NapiThrow(env, I18N_NO_PERMISSION, throwError);
         return nullptr;
     }
     napi_value result = nullptr;
