@@ -66,6 +66,7 @@ private:
     static const char *DEFAULT_LOCALE_KEY;
     static const char *DEFAULT_LANGUAGE_KEY;
     static const char *DEFAULT_REGION_KEY;
+    static const char *SIM_COUNTRY_CODE_KEY;
     static const char *SUPPORTED_LOCALES_PATH;
     static const char *SUPPORTED_REGIONS_PATH;
     static constexpr int CONFIG_LEN = 128;
