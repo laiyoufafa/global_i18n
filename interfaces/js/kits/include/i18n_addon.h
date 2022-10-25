@@ -183,6 +183,8 @@ private:
 
     static napi_value ObjectConstructor(napi_env env, napi_callback_info info);
 
+    static bool ParseStringParam(napi_env env, napi_value argv, bool throwError, std::string &strParam);
+
     napi_env env_;
     napi_ref wrapper_;
     std::unique_ptr<PhoneNumberFormat> phonenumberfmt_ = nullptr;
