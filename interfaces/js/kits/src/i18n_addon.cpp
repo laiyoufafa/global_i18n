@@ -2910,6 +2910,36 @@ napi_value I18nAddon::AddPreferredLanguageWithError(napi_env env, napi_callback_
     return I18nAddon::AddPreferredLanguageImpl(env, info, true);
 }
 
+bool I18nAddon::ParseStringParam(napi_env env, napi_value argv, bool throwError, std::string &strParam)
+{
+    if (argv == nullptr) {
+        HiLog::Error(LABEL, "Missing parameter");
+        ErrorUtil::NapiThrow(env, I18N_NOT_FOUND, throwError);
+        return false;
+    }
+    napi_valuetype valueType = napi_valuetype::napi_undefined;
+    napi_typeof(env, argv, &valueType);
+    if (valueType != napi_valuetype::napi_string) {
+        ErrorUtil::NapiThrow(env, I18N_NOT_VALID, throwError);
+        return false;
+    }
+    size_t len = 0;
+    napi_status status = napi_get_value_string_utf8(env, argv, nullptr, 0, &len);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "get string parameter length failed");
+        ErrorUtil::NapiThrow(env, I18N_NOT_VALID, throwError);
+        return false;
+    }
+    std::vector<char> res(len + 1);
+    status = napi_get_value_string_utf8(env, argv, res.data(), len + 1, &len);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "get string parameter failed");
+        return false;
+    }
+    strParam = res.data();
+    return true;
+}
+
 napi_value I18nAddon::AddPreferredLanguageImpl(napi_env env, napi_callback_info info, bool throwError)
 {
     size_t argc = 2;
@@ -2920,31 +2950,12 @@ napi_value I18nAddon::AddPreferredLanguageImpl(napi_env env, napi_callback_info 
     if (status != napi_ok) {
         return nullptr;
     }
-    if (argv[0] == nullptr) {
-        HiLog::Error(LABEL, "Missing parameter");
-        ErrorUtil::NapiThrow(env, I18N_NOT_FOUND, throwError);
+
+    std::string language;
+    if (!ParseStringParam(env, argv[0], throwError, language)) {
         return nullptr;
     }
 
-    napi_valuetype valueType = napi_valuetype::napi_undefined;
-    napi_typeof(env, argv[0], &valueType);
-    if (valueType != napi_valuetype::napi_string) {
-        ErrorUtil::NapiThrow(env, I18N_NOT_VALID, throwError);
-        return nullptr;
-    }
-    size_t len = 0;
-    status = napi_get_value_string_utf8(env, argv[0], nullptr, 0, &len);
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "addPreferredLanguage: get language length failed");
-        ErrorUtil::NapiThrow(env, I18N_NOT_VALID, throwError);
-        return nullptr;
-    }
-    std::vector<char> language(len + 1);
-    status = napi_get_value_string_utf8(env, argv[0], language.data(), len + 1, &len);
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "addPreferrdLanguage: get language failed");
-        return nullptr;
-    }
     int index = 1000000;
     if (argv[1] != nullptr) {
         status = napi_get_value_int32(env, argv[1], &index);
@@ -3011,11 +3022,12 @@ napi_value I18nAddon::RemovePreferredLanguageImpl(napi_env env, napi_callback_in
         return nullptr;
     }
     len = static_cast<int>(PreferredLanguage::GetPreferredLanguageList().size());
-    if (index < 0 || index > len - 1) {
+    if ((index < 0 || index > len - 1) && throwError) {
         ErrorUtil::NapiThrow(env, I18N_NOT_VALID, throwError);
         return nullptr;
     }
     bool success = PreferredLanguage::RemovePreferredLanguage(index);
+    
     if (throwError) {
         if (!success) {
             ErrorUtil::NapiThrow(env, I18N_NO_PERMISSION, throwError);
