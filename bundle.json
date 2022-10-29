@@ -103,7 +103,8 @@
             ],
             "test": [
                 "//base/global/i18n/frameworks/intl/test:intl_test",
-                "//base/global/i18n/frameworks/zone/test:zone_util_test"
+                "//base/global/i18n/frameworks/zone/test:zone_util_test",
+                "//base/global/i18n/frameworks/intl/test/fuzztest:fuzztest"
             ]
         }
     }
