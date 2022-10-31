@@ -13,10 +13,9 @@
  * limitations under the License.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 #include <string>
-
 #include "character.h"
 #include "character_fuzzer.h"
 

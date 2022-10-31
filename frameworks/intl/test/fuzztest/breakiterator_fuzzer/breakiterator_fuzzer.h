@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef BREAK_ITERATOR_FUZZER_H
-#define BREAK_ITERATOR_FUZZER_H
+#ifndef GLOBAL_I18N_BREAK_ITERATOR_FUZZER_H
+#define GLOBAL_I18N_BREAK_ITERATOR_FUZZER_H
 #define FUZZ_PROJECT_NAME "breakiterator_fuzzer"
 
-#endif // BREAK_ITERATOR_FUZZER_H
+#endif // GLOBAL_I18N_BREAK_ITERATOR_FUZZER_H

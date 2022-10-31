@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
+#include <cstddef>
+#include <cstdint>
 #include <map>
-#include <stddef.h>
-#include <stdint.h>
 #include <string>
 #include <vector>
 #include "collator.h"
