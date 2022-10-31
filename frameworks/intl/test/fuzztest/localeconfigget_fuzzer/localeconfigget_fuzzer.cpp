@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 #include <string>
 #include <vector>
 #include "locale_config.h"
@@ -33,9 +33,10 @@ namespace OHOS {
 
         std::string input(reinterpret_cast<const char*>(data), size);
         LocaleConfig::IsSuggested(input);
-        if (input.length() > 2) {
-            std::string firstInput(input, 0, 2);
-            std::string secondInput(input, 2);
+        const size_t minimalLocaleLength = 2;
+        if (input.length() > minimalLocaleLength) {
+            std::string firstInput(input, 0, minimalLocaleLength);
+            std::string secondInput(input, minimalLocaleLength);
             LocaleConfig::IsSuggested(firstInput, secondInput);
             LocaleConfig::GetDisplayLanguage(firstInput, secondInput, true);
             LocaleConfig::GetDisplayLanguage(firstInput, secondInput, false);

@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 #include "breakiterator_fuzzer.h"
 #include "i18n_break_iterator.h"
 

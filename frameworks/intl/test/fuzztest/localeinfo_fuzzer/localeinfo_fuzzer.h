@@ -13,12 +13,8 @@
  * limitations under the License.
  */
 
-#include <cstdint>
-#include <unistd.h>
-#include <climits>
-#include <cstdio>
-#include <cstdlib>
-#include <fcntl.h>
+#ifndef GLOBAL_I18N_LOCALE_INFO_FUZZER_H
+#define GLOBAL_I18N_LOCALE_INFO_FUZZER_H
 
 #define FUZZ_PROJECT_NAME "localeinfo_fuzzer"
-
+#endif // GLOBAL_I18N_LOCALE_INFO_FUZZER_H
