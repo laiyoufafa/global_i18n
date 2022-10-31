@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 #include "str_util.h"
 #include "strutil_fuzzer.h"
 

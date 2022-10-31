@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 #include <string>
 #include "locale_info.h"
 #include "localeinfo_fuzzer.h"
