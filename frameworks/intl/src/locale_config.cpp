@@ -14,9 +14,6 @@
  */
 #include <regex>
 #include "accesstoken_kit.h"
-#ifdef TEL_CORE_SERVICE_EXISTS
-#include "core_service_client.h"
-#endif
 #ifdef SUPPORT_GRAPHICS
 #include "app_mgr_client.h"
 #include "ability_manager_client.h"
@@ -54,6 +51,7 @@ const char *LocaleConfig::HOUR_KEY = "persist.global.is24Hour";
 const char *LocaleConfig::DEFAULT_LOCALE_KEY = "const.global.locale";
 const char *LocaleConfig::DEFAULT_LANGUAGE_KEY = "const.global.language";
 const char *LocaleConfig::DEFAULT_REGION_KEY = "const.global.region";
+const char *LocaleConfig::SIM_COUNTRY_CODE_KEY = "telephony.sim.countryCode0";
 const char *LocaleConfig::SUPPORTED_LOCALES_NAME = "supported_locales";
 const char *LocaleConfig::SUPPORTED_REGIONS_NAME = "supported_regions";
 const char *LocaleConfig::WHITE_LANGUAGES_NAME = "white_languages";
@@ -618,10 +616,11 @@ void LocaleConfig::GetRelatedLocales(unordered_set<string> &relatedLocales, vect
 void LocaleConfig::GetCountriesFromSim(vector<string> &simCountries)
 {
     simCountries.push_back(GetSystemRegion());
-#ifdef TEL_CORE_SERVICE_EXISTS
-    simCountries.push_back(Str16ToStr8(
-        DelayedRefSingleton<Telephony::CoreServiceClient>::GetInstance().GetISOCountryCodeForSim(0)));
-#endif
+    char value[CONFIG_LEN];
+    int code = GetParameter(SIM_COUNTRY_CODE_KEY, "", value, CONFIG_LEN);
+    if (code > 0) {
+        simCountries.push_back(value);
+    }
 }
 
 void LocaleConfig::GetListFromFile(const char *path, const char *resourceName, unordered_set<string> &ret)
