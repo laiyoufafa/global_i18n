@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 #include <string>
 #include "i18n_timezone.h"
 #include "timezone_fuzzer.h"
