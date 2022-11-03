@@ -1086,7 +1086,7 @@ bool LocaleConfig::SetUsingLocalDigit(bool flag)
         // 2 is string -u length
         if (locale.find("-u") == (locale.length() - 2)) {
             // 2 is string -u length
-            locale = locale.substr(0, locale.length() - 2);
+            locale.resize(locale.length() - 2);
         }
     }
     if (!SetSystemLocale(locale)) {

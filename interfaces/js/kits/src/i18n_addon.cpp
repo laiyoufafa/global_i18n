@@ -483,10 +483,6 @@ napi_value I18nAddon::TransliteratorConstructor(napi_env env, napi_callback_info
     }
     std::unique_ptr<I18nAddon> obj = nullptr;
     obj = std::make_unique<I18nAddon>();
-    if (!obj) {
-        HiLog::Error(LABEL, "TransliteratorConstructor: Create I18nAddon failed");
-        return nullptr;
-    }
     status =
         napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()), I18nAddon::Destructor, nullptr, &obj->wrapper_);
     if (status != napi_ok) {
@@ -619,9 +615,7 @@ napi_value I18nAddon::GetAvailableIDs(napi_env env, napi_callback_info info)
         napi_set_element(env, result, i, val);
         ++i;
     }
-    if (strenum) {
-        delete strenum;
-    }
+    delete strenum;
     return result;
 }
 
@@ -1489,10 +1483,6 @@ napi_value I18nAddon::PhoneNumberFormatConstructor(napi_env env, napi_callback_i
     GetOptionValue(env, argv[1], "type", options);
     std::unique_ptr<I18nAddon> obj = nullptr;
     obj = std::make_unique<I18nAddon>();
-    if (!obj) {
-        HiLog::Error(LABEL, "Create I18nAddon failed");
-        return nullptr;
-    }
     status = napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()),
                        I18nAddon::Destructor, nullptr, &obj->wrapper_);
     if (status != napi_ok) {
@@ -1729,10 +1719,6 @@ napi_value I18nAddon::CalendarConstructor(napi_env env, napi_callback_info info)
     CalendarType type = GetCalendarType(env, argv[1]);
     std::unique_ptr<I18nAddon> obj = nullptr;
     obj = std::make_unique<I18nAddon>();
-    if (!obj) {
-        HiLog::Error(LABEL, "CalendarConstructor: Create I18nAddon failed");
-        return nullptr;
-    }
     status =
         napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()), I18nAddon::Destructor, nullptr, &obj->wrapper_);
     if (status != napi_ok) {
@@ -2290,10 +2276,6 @@ napi_value I18nAddon::BreakIteratorConstructor(napi_env env, napi_callback_info 
     }
     std::unique_ptr<I18nAddon> obj = nullptr;
     obj = std::make_unique<I18nAddon>();
-    if (!obj) {
-        HiLog::Error(LABEL, "BreakIteratorConstructor: Create I18nAddon failed");
-        return nullptr;
-    }
     status =
         napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()), I18nAddon::Destructor, nullptr, &obj->wrapper_);
     if (status != napi_ok) {
@@ -2669,10 +2651,6 @@ napi_value I18nAddon::IndexUtilConstructor(napi_env env, napi_callback_info info
     }
     std::unique_ptr<I18nAddon> obj = nullptr;
     obj = std::make_unique<I18nAddon>();
-    if (!obj) {
-        HiLog::Error(LABEL, "IndexUtilConstructor: Create I18nAddon failed");
-        return nullptr;
-    }
     status =
         napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()), I18nAddon::Destructor, nullptr, &obj->wrapper_);
     if (status != napi_ok) {
@@ -3147,9 +3125,6 @@ napi_value I18nAddon::I18nTimeZoneConstructor(napi_env env, napi_callback_info i
         return nullptr;
     }
     std::unique_ptr<I18nAddon> obj = std::make_unique<I18nAddon>();
-    if (!obj) {
-        return nullptr;
-    }
     status =
         napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()), I18nAddon::Destructor, nullptr, &obj->wrapper_);
     if (status != napi_ok) {
@@ -3670,9 +3645,6 @@ napi_value I18nAddon::ObjectConstructor(napi_env env, napi_callback_info info)
     }
     std::unique_ptr<I18nAddon> obj = nullptr;
     obj = std::make_unique<I18nAddon>();
-    if (!obj) {
-        return nullptr;
-    }
     status =
         napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()), I18nAddon::Destructor, nullptr, &obj->wrapper_);
     if (status != napi_ok) {
