@@ -319,10 +319,6 @@ napi_value IntlAddon::LocaleConstructor(napi_env env, napi_callback_info info)
     }
     std::unique_ptr<IntlAddon> obj = nullptr;
     obj = std::make_unique<IntlAddon>();
-    if (!obj) {
-        HiLog::Error(LABEL, "Create IntlAddon failed");
-        return nullptr;
-    }
     status =
         napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()), IntlAddon::Destructor, nullptr, &obj->wrapper_);
     if (status != napi_ok) {
@@ -402,10 +398,6 @@ napi_value IntlAddon::DateTimeFormatConstructor(napi_env env, napi_callback_info
     }
     std::unique_ptr<IntlAddon> obj = nullptr;
     obj = std::make_unique<IntlAddon>();
-    if (!obj) {
-        HiLog::Error(LABEL, "Create IntlAddon failed");
-        return nullptr;
-    }
     status =
         napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()), IntlAddon::Destructor, nullptr, &obj->wrapper_);
     if (status != napi_ok) {
@@ -469,10 +461,6 @@ napi_value IntlAddon::RelativeTimeFormatConstructor(napi_env env, napi_callback_
     }
     std::unique_ptr<IntlAddon> obj = nullptr;
     obj = std::make_unique<IntlAddon>();
-    if (!obj) {
-        HiLog::Error(LABEL, "Create IntlAddon failed");
-        return nullptr;
-    }
     status =
         napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()), IntlAddon::Destructor, nullptr, &obj->wrapper_);
     if (status != napi_ok) {
@@ -632,9 +620,6 @@ napi_value IntlAddon::NumberFormatConstructor(napi_env env, napi_callback_info i
     }
     std::unique_ptr<IntlAddon> obj = nullptr;
     obj = std::make_unique<IntlAddon>();
-    if (!obj) {
-        return nullptr;
-    }
     status =
         napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()), IntlAddon::Destructor, nullptr, &obj->wrapper_);
     if (status != napi_ok) {
@@ -1512,10 +1497,6 @@ napi_value IntlAddon::CollatorConstructor(napi_env env, napi_callback_info info)
     }
     std::unique_ptr<IntlAddon> obj = nullptr;
     obj = std::make_unique<IntlAddon>();
-    if (!obj) {
-        HiLog::Error(LABEL, "Create IntlAddon failed");
-        return nullptr;
-    }
     status =
         napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()), IntlAddon::Destructor, nullptr, &obj->wrapper_);
     if (status != napi_ok) {
@@ -1896,10 +1877,6 @@ napi_value IntlAddon::PluralRulesConstructor(napi_env env, napi_callback_info in
     }
     std::unique_ptr<IntlAddon> obj = nullptr;
     obj = std::make_unique<IntlAddon>();
-    if (!obj) {
-        HiLog::Error(LABEL, "Create IntlAddon failed");
-        return nullptr;
-    }
     status =
         napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()), IntlAddon::Destructor, nullptr, &obj->wrapper_);
     if (status != napi_ok) {

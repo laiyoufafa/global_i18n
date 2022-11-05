@@ -28,9 +28,9 @@ namespace Global {
 namespace I18n {
 const int RECV_CHAR_LEN = 100;
 using i18n::phonenumbers::PhoneNumberUtil;
-using p_exposeLocationName = void (*)(const char*, const char*, char*);
-void* dynamic_handler;
-p_exposeLocationName func;
+using ExposeLocationName = void (*)(const char*, const char*, char*);
+void* g_dynamicHandler;
+ExposeLocationName g_func;
 
 PhoneNumberFormat::PhoneNumberFormat(const std::string &countryTag,
                                      const std::map<std::string, std::string> &options)
@@ -60,10 +60,10 @@ PhoneNumberFormat::PhoneNumberFormat(const std::string &countryTag,
 
 PhoneNumberFormat::~PhoneNumberFormat()
 {
-    if (dynamic_handler != NULL) {
-        dlclose(dynamic_handler);
-        dynamic_handler = nullptr;
-        func = nullptr;
+    if (g_dynamicHandler != NULL) {
+        dlclose(g_dynamicHandler);
+        g_dynamicHandler = nullptr;
+        g_func = nullptr;
     }
 }
 
@@ -107,13 +107,13 @@ std::string PhoneNumberFormat::format(const std::string &number) const
 std::string PhoneNumberFormat::getLocationName(const std::string &number, const std::string &locale) const
 {
     const char* error = NULL;
-    if (dynamic_handler == NULL) {
+    if (g_dynamicHandler == NULL) {
         const char* geocodingSO = "libgeocoding.z.so";
-        dynamic_handler = dlopen(geocodingSO, RTLD_NOW);
+        g_dynamicHandler = dlopen(geocodingSO, RTLD_NOW);
         dlerror();
     }
-    if (!func) {
-        func = (p_exposeLocationName)dlsym(dynamic_handler, "exposeLocationName");
+    if (!g_func) {
+        g_func = (ExposeLocationName)dlsym(g_dynamicHandler, "exposeLocationName");
     }
     error = dlerror();
     if (error != NULL) {
@@ -122,7 +122,7 @@ std::string PhoneNumberFormat::getLocationName(const std::string &number, const 
     const char* numberStr = number.c_str();
     const char* localeStr = locale.c_str();
     char recvArr[RECV_CHAR_LEN];
-    func(numberStr, localeStr, recvArr);
+    g_func(numberStr, localeStr, recvArr);
     std::string locName = recvArr;
     return locName;
 }
