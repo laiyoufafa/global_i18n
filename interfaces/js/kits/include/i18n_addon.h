@@ -186,7 +186,6 @@ private:
     static bool ParseStringParam(napi_env env, napi_value argv, bool throwError, std::string &strParam);
 
     napi_env env_;
-    napi_ref wrapper_;
     std::unique_ptr<PhoneNumberFormat> phonenumberfmt_ = nullptr;
     std::unique_ptr<I18nCalendar> calendar_ = nullptr;
     std::unique_ptr<icu::Transliterator> transliterator_ = nullptr;
