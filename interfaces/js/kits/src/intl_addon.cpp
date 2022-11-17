@@ -28,11 +28,10 @@ static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = { LOG_CORE, 0xD001E00, "Int
 using namespace OHOS::HiviewDFX;
 static thread_local napi_ref *g_constructor = nullptr;
 
-IntlAddon::IntlAddon() : env_(nullptr), wrapper_(nullptr) {}
+IntlAddon::IntlAddon() : env_(nullptr) {}
 
 IntlAddon::~IntlAddon()
 {
-    napi_delete_reference(env_, wrapper_);
 }
 
 void IntlAddon::Destructor(napi_env env, void *nativeObject, void *hint)
@@ -320,7 +319,7 @@ napi_value IntlAddon::LocaleConstructor(napi_env env, napi_callback_info info)
     std::unique_ptr<IntlAddon> obj = nullptr;
     obj = std::make_unique<IntlAddon>();
     status =
-        napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()), IntlAddon::Destructor, nullptr, &obj->wrapper_);
+        napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()), IntlAddon::Destructor, nullptr, nullptr);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Wrap IntlAddon failed");
         return nullptr;
@@ -399,7 +398,7 @@ napi_value IntlAddon::DateTimeFormatConstructor(napi_env env, napi_callback_info
     std::unique_ptr<IntlAddon> obj = nullptr;
     obj = std::make_unique<IntlAddon>();
     status =
-        napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()), IntlAddon::Destructor, nullptr, &obj->wrapper_);
+        napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()), IntlAddon::Destructor, nullptr, nullptr);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Wrap IntlAddon failed");
         return nullptr;
@@ -462,7 +461,7 @@ napi_value IntlAddon::RelativeTimeFormatConstructor(napi_env env, napi_callback_
     std::unique_ptr<IntlAddon> obj = nullptr;
     obj = std::make_unique<IntlAddon>();
     status =
-        napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()), IntlAddon::Destructor, nullptr, &obj->wrapper_);
+        napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()), IntlAddon::Destructor, nullptr, nullptr);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Wrap IntlAddon failed");
         return nullptr;
@@ -621,7 +620,7 @@ napi_value IntlAddon::NumberFormatConstructor(napi_env env, napi_callback_info i
     std::unique_ptr<IntlAddon> obj = nullptr;
     obj = std::make_unique<IntlAddon>();
     status =
-        napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()), IntlAddon::Destructor, nullptr, &obj->wrapper_);
+        napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()), IntlAddon::Destructor, nullptr, nullptr);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Wrap IntlAddon failed");
         return nullptr;
@@ -1498,7 +1497,7 @@ napi_value IntlAddon::CollatorConstructor(napi_env env, napi_callback_info info)
     std::unique_ptr<IntlAddon> obj = nullptr;
     obj = std::make_unique<IntlAddon>();
     status =
-        napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()), IntlAddon::Destructor, nullptr, &obj->wrapper_);
+        napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()), IntlAddon::Destructor, nullptr, nullptr);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Wrap IntlAddon failed");
         return nullptr;
@@ -1878,7 +1877,7 @@ napi_value IntlAddon::PluralRulesConstructor(napi_env env, napi_callback_info in
     std::unique_ptr<IntlAddon> obj = nullptr;
     obj = std::make_unique<IntlAddon>();
     status =
-        napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()), IntlAddon::Destructor, nullptr, &obj->wrapper_);
+        napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()), IntlAddon::Destructor, nullptr, nullptr);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Wrap IntlAddon failed");
         return nullptr;
