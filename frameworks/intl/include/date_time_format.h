@@ -55,10 +55,6 @@ public:
     std::string GetHour() const;
     std::string GetMinute() const;
     std::string GetSecond() const;
-    std::string GetDayPeriod() const;
-    std::string GetLocaleMatcher() const;
-    std::string GetFormatMatcher() const;
-    std::string GetFractionalSecondDigits() const;
     static std::unique_ptr<DateTimeFormat> CreateInstance(const std::vector<std::string> &localeTags,
                                                           std::map<std::string, std::string> &configs);
 
@@ -94,7 +90,6 @@ private:
     char16_t hourChar = 'h';
     char16_t minuteChar = 'm';
     char16_t secondChar = 's';
-    char16_t fractionalSecondChar = 'S';
     char16_t timeZoneChar = 'z';
     char16_t weekdayChar = 'E';
     char16_t eraChar = 'G';

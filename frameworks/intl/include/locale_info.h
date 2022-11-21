@@ -45,7 +45,6 @@ public:
     std::string GetCaseFirst() const;
     std::string ToString() const;
     icu::Locale GetLocale() const;
-    icu::Locale GetLocaleTag() const;
     static const uint32_t SCRIPT_LEN = 4;
     static const uint32_t REGION_LEN = 2;
     static std::set<std::string> allValidLocales;
