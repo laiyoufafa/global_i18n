@@ -19,11 +19,11 @@ import("//build/test.gni")
 module_output_path = "global/i18n"
 
 ##############################fuzztest##########################################
-ohos_fuzztest("StrUtilFuzzTest") {
+ohos_fuzztest("UtilsFuzzTest") {
   module_out_path = module_output_path
 
   fuzz_config_file =
-      "//base/global/i18n/frameworks/intl/test/fuzztest/strutil_fuzzer"
+      "//base/global/i18n/frameworks/intl/test/fuzztest/utils_fuzzer"
 
   include_dirs = [
     "//base/global/i18n/frameworks/intl/include",
@@ -36,7 +36,7 @@ ohos_fuzztest("StrUtilFuzzTest") {
     "-Wno-unused-variable",
     "-fno-omit-frame-pointer",
   ]
-  sources = [ "strutil_fuzzer.cpp" ]
+  sources = [ "utils_fuzzer.cpp" ]
   configs = []
 
   deps = [

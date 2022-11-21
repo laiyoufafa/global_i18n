@@ -15,8 +15,8 @@
 
 #include <cstddef>
 #include <cstdint>
-#include "str_util.h"
-#include "strutil_fuzzer.h"
+#include "utils.h"
+#include "utils_fuzzer.h"
 
 namespace OHOS {
     bool DoSomethingInterestingWithMyAPI(const uint8_t* data, size_t size)

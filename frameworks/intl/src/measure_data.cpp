@@ -16,7 +16,7 @@
 #include <string>
 #include <unordered_map>
 #include <cmath>
-#include "str_util.h"
+#include "utils.h"
 
 namespace OHOS {
 namespace Global {
