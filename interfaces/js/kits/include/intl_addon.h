@@ -121,7 +121,6 @@ private:
         std::map<std::string, std::string> &map);
 
     napi_env env_;
-    napi_ref wrapper_;
     std::unique_ptr<LocaleInfo> locale_ = nullptr;
     std::unique_ptr<DateTimeFormat> datefmt_ = nullptr;
     std::unique_ptr<NumberFormat> numberfmt_ = nullptr;
