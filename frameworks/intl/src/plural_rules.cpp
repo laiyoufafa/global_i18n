@@ -148,6 +148,9 @@ PluralRules::~PluralRules()
 
 std::string PluralRules::Select(double number)
 {
+    if (pluralRules == nullptr) {
+        return "other";
+    }
     UErrorCode status = UErrorCode::U_ZERO_ERROR;
     icu::number::FormattedNumber formattedNumber = numberFormatter.formatDouble(number, status);
     if (status != UErrorCode::U_ZERO_ERROR) {

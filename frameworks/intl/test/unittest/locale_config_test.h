@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,6 +31,14 @@ int LocaleConfigFuncTest009(void);
 int LocaleConfigFuncTest010(void);
 int LocaleConfigFuncTest011(void);
 int LocaleConfigFuncTest012(void);
+int LocaleConfigFuncTest013(void);
+int LocaleConfigFuncTest014(void);
+int LocaleConfigFuncTest015(void);
+int LocaleConfigFuncTest016(void);
+int LocaleConfigFuncTest017(void);
+int LocaleConfigFuncTest018(void);
+int LocaleConfigFuncTest019(void);
+int LocaleConfigFuncTest020(void);
 } // namespace I18n
 } // namespace Global
 } // namespace OHOS
