@@ -19,18 +19,21 @@ ohos_unittest("intl_test") {
   module_out_path = module_output_path
 
   sources = [
+    "unittest/i18n_test.cpp",
     "unittest/intl_test.cpp",
     "unittest/locale_config_test.cpp",
   ]
   include_dirs = [
     "//base/global/i18n/frameworks/intl/include",
+    "//base/global/i18n/interfaces/native/inner_api/preferred_language/include",
     "//third_party/icu/icu4c/source/common",
+    "//third_party/icu/icu4c/source/common/unicode",
     "//third_party/icu/icu4c/source/i18n",
   ]
 
   external_deps = [ "init:libbegetutil" ]
   deps = [
-    "//base/global/i18n/frameworks/intl:intl_util",
+    "//base/global/i18n/frameworks/intl:build_module",
     "//third_party/googletest:gtest_main",
     "//third_party/icu/icu4c:shared_icui18n",
     "//third_party/icu/icu4c:shared_icuuc",
