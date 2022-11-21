@@ -36,6 +36,7 @@
 #include "ureslocs.h"
 #include "ustring.h"
 #include "ustr_imp.h"
+#include "utils.h"
 #include "locale_config.h"
 
 namespace OHOS {
@@ -326,26 +327,19 @@ bool LocaleConfig::listsInitialized = LocaleConfig::InitializeLists();
 
 string LocaleConfig::GetSystemLanguage()
 {
-    char value[CONFIG_LEN];
-    int code = GetParameter(LANGUAGE_KEY, "", value, CONFIG_LEN);
-    if (code > 0) {
-        return value;
+    std::string systemLanguage = ReadSystemParameter(LANGUAGE_KEY, CONFIG_LEN);
+    if (systemLanguage.empty()) {
+        systemLanguage = ReadSystemParameter(DEFAULT_LANGUAGE_KEY, CONFIG_LEN);
     }
-    code = GetParameter(DEFAULT_LANGUAGE_KEY, "", value, CONFIG_LEN);
-    if (code > 0) {
-        return value;
-    }
-    return "";
+    return systemLanguage;
 }
 
 string LocaleConfig::GetSystemRegion()
 {
-    char value[CONFIG_LEN];
-    int code = GetParameter(LOCALE_KEY, "", value, CONFIG_LEN);
-    if (code > 0) {
-        string tag(value, code);
+    std::string systemRegion = ReadSystemParameter(LOCALE_KEY, CONFIG_LEN);
+    if (!systemRegion.empty()) {
         UErrorCode status = U_ZERO_ERROR;
-        icu::Locale origin = icu::Locale::forLanguageTag(tag, status);
+        icu::Locale origin = icu::Locale::forLanguageTag(systemRegion, status);
         if (status == U_ZERO_ERROR) {
             const char *country = origin.getCountry();
             if (country != nullptr) {
@@ -353,25 +347,17 @@ string LocaleConfig::GetSystemRegion()
             }
         }
     }
-    code = GetParameter(DEFAULT_REGION_KEY, "", value, CONFIG_LEN);
-    if (code > 0) {
-        return value;
-    }
-    return "";
+    systemRegion = ReadSystemParameter(DEFAULT_LOCALE_KEY, CONFIG_LEN);
+    return systemRegion;
 }
 
 string LocaleConfig::GetSystemLocale()
 {
-    char value[CONFIG_LEN];
-    int code = GetParameter(LOCALE_KEY, "", value, CONFIG_LEN);
-    if (code > 0) {
-        return value;
+    std::string systemLocale = ReadSystemParameter(LOCALE_KEY, CONFIG_LEN);
+    if (systemLocale.empty()) {
+        systemLocale = ReadSystemParameter(DEFAULT_LOCALE_KEY, CONFIG_LEN);
     }
-    code = GetParameter(DEFAULT_LOCALE_KEY, "", value, CONFIG_LEN);
-    if (code > 0) {
-        return value;
-    }
-    return "";
+    return systemLocale;
 }
 
 bool LocaleConfig::CheckPermission()
@@ -1032,12 +1018,11 @@ std::string LocaleConfig::GetValidLocale(const std::string &localeTag)
 
 bool LocaleConfig::Is24HourClock()
 {
-    char value[CONFIG_LEN];
-    int code = GetParameter(HOUR_KEY, "", value, CONFIG_LEN);
-    if (code <= 0) {
+    std::string is24Hour = ReadSystemParameter(HOUR_KEY, CONFIG_LEN);
+    if (is24Hour.empty()) {
         return false;
     }
-    if (!strcmp(value, "true")) {
+    if (is24Hour.compare("true") == 0) {
         return true;
     }
     return false;

@@ -12,10 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "str_util.h"
 
 #include <string>
 #include <vector>
+#include "parameter.h"
+#include "utils.h"
 
 namespace OHOS {
 namespace Global {
@@ -37,6 +38,16 @@ void Split(const string &src, const string &sep, vector<string> &dest)
     if (begin != src.size()) {
         dest.push_back(src.substr(begin));
     }
+}
+
+std::string ReadSystemParameter(const char *paramKey, const int paramLength)
+{
+    char param[paramLength];
+    int status = GetParameter(paramKey, "", param, paramLength);
+    if (status > 0) {
+        return param;
+    }
+    return "";
 }
 } // namespace I18n
 } // namespace Global
