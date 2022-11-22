@@ -44,6 +44,8 @@ public:
     static std::string GetCityDisplayName(std::string &cityID, std::string &locale);
 
 private:
+    static const char *TIMEZONE_KEY;
+    static const char *DEFAULT_TIMEZONE;
     static const char *DEFAULT_LANGUAGE;
     static const char *DEFAULT_LOCALE;
     static const char *TIMEZONES_PATH;
@@ -59,10 +61,12 @@ private:
     static std::map<std::string, std::string> city2DisplayName;
     static std::map<std::string, std::string> city2TimeZoneID;
     static std::map<std::string, std::string> supportLocales;
+    static constexpr int SYS_PARAM_LEN = 128;
+    icu::TimeZone *timezone = nullptr;
+
     static void ReadTimeZoneData(const char *xmlPath);
     static std::string ComputeLocale(std::string &locale);
     icu::TimeZone* GetTimeZone();
-    icu::TimeZone *timezone;
 };
 } // namespace I18n
 } // namespace Global

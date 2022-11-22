@@ -26,7 +26,7 @@ group("fuzztest") {
     "numberformat_fuzzer:NumberFormatFuzzTest",
     "phonenumberformat_fuzzer:PhoneNumberFormatFuzzTest",
     "relativetimeformat_fuzzer:RelativeTimeFormatFuzzTest",
-    "strutil_fuzzer:StrUtilFuzzTest",
     "timezone_fuzzer:TimeZoneFuzzTest",
+    "utils_fuzzer:UtilsFuzzTest",
   ]
 }

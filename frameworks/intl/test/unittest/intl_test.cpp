@@ -23,6 +23,7 @@
 #include "number_format.h"
 #include "plural_rules.h"
 #include "relative_time_format.h"
+#include "utils.h"
 #include "intl_test.h"
 
 using namespace OHOS::Global::I18n;
@@ -570,7 +571,30 @@ HWTEST_F(IntlTest, IntlFuncTest0017, TestSize.Level1)
     if (it != options.end()) {
         EXPECT_EQ(it->second, "case");
     }
-    it = options.find("ignorePunctuation");
+    delete collator;
+}
+
+/**
+ * @tc.name: IntlFuncTest0018
+ * @tc.desc: Test Intl Collator
+ * @tc.type: FUNC
+ */
+HWTEST_F(IntlTest, IntlFuncTest0018, TestSize.Level1)
+{
+    // normal test case
+    vector<string> locales;
+    locales.push_back("zh-Hans");
+    locales.push_back("en-US");
+    map<string, string> inputOptions = {
+        { "ignorePunctuation", "true" },
+        { "collation", "pinyin"},
+        { "numeric", "true"},
+        { "caseFirst", "upper"}
+    };
+    Collator *collator = new Collator(locales, inputOptions);
+    map<string, string> options;
+    collator->ResolvedOptions(options);
+    map<string, string>::iterator it = options.find("ignorePunctuation");
     if (it != options.end()) {
         EXPECT_EQ(it->second, "true");
     }
@@ -584,17 +608,17 @@ HWTEST_F(IntlTest, IntlFuncTest0017, TestSize.Level1)
     }
     it = options.find("collation");
     if (it != options.end()) {
-        EXPECT_EQ(it->second, "default");
+        EXPECT_EQ(it->second, "pinyin");
     }
     delete collator;
 }
 
 /**
- * @tc.name: IntlFuncTest0018
+ * @tc.name: IntlFuncTest0019
  * @tc.desc: Test Intl Collator
  * @tc.type: FUNC
  */
-HWTEST_F(IntlTest, IntlFuncTest0018, TestSize.Level1)
+HWTEST_F(IntlTest, IntlFuncTest0019, TestSize.Level1)
 {
     // abnormal test case
     vector<string> locales;
@@ -634,7 +658,30 @@ HWTEST_F(IntlTest, IntlFuncTest0018, TestSize.Level1)
     if (it != options.end()) {
         EXPECT_EQ(it->second, "fake value");
     }
-    it = options.find("ignorePunctuation");
+    delete collator;
+}
+
+/**
+ * @tc.name: IntlFuncTest0020
+ * @tc.desc: Test Intl Collator
+ * @tc.type: FUNC
+ */
+HWTEST_F(IntlTest, IntlFuncTest0020, TestSize.Level1)
+{
+    // abnormal test case
+    vector<string> locales;
+    locales.push_back("fake locale");
+    map<string, string> inputOptions = {
+        { "ignorePunctuation", "fake value" },
+        { "collation", "fake value"},
+        { "numeric", "fake value"},
+        { "caseFirst", "fake value"},
+        { "fake key", "fake value"}
+    };
+    Collator *collator = new Collator(locales, inputOptions);    
+    map<string, string> options;
+    collator->ResolvedOptions(options);
+    map<string, string>::iterator it = options.find("ignorePunctuation");
     if (it != options.end()) {
         EXPECT_EQ(it->second, "fake value");
     }
@@ -654,11 +701,11 @@ HWTEST_F(IntlTest, IntlFuncTest0018, TestSize.Level1)
 }
 
 /**
- * @tc.name: IntlFuncTest0019
+ * @tc.name: IntlFuncTest0021
  * @tc.desc: Test Intl PluralRules
  * @tc.type: FUNC
  */
-HWTEST_F(IntlTest, IntlFuncTest0019, TestSize.Level1)
+HWTEST_F(IntlTest, IntlFuncTest0021, TestSize.Level1)
 {
     // normal test case
     vector<string> locales;
@@ -683,11 +730,11 @@ HWTEST_F(IntlTest, IntlFuncTest0019, TestSize.Level1)
 }
 
 /**
- * @tc.name: IntlFuncTest0020
+ * @tc.name: IntlFuncTest0022
  * @tc.desc: Test Intl PluralRules
  * @tc.type: FUNC
  */
-HWTEST_F(IntlTest, IntlFuncTest0020, TestSize.Level1)
+HWTEST_F(IntlTest, IntlFuncTest0022, TestSize.Level1)
 {
     // normal test case
     vector<string> locales;
@@ -712,11 +759,11 @@ HWTEST_F(IntlTest, IntlFuncTest0020, TestSize.Level1)
 }
 
 /**
- * @tc.name: IntlFuncTest0021
+ * @tc.name: IntlFuncTest0023
  * @tc.desc: Test Intl PluralRules
  * @tc.type: FUNC
  */
-HWTEST_F(IntlTest, IntlFuncTest0021, TestSize.Level1)
+HWTEST_F(IntlTest, IntlFuncTest0023, TestSize.Level1)
 {
     // normal test case
     vector<string> locales;
@@ -749,11 +796,11 @@ HWTEST_F(IntlTest, IntlFuncTest0021, TestSize.Level1)
 }
 
 /**
- * @tc.name: IntlFuncTest0022
+ * @tc.name: IntlFuncTest0024
  * @tc.desc: Test Intl PluralRules
  * @tc.type: FUNC
  */
-HWTEST_F(IntlTest, IntlFuncTest0022, TestSize.Level1)
+HWTEST_F(IntlTest, IntlFuncTest0024, TestSize.Level1)
 {
     // abnormal test cast
     // normal test case
@@ -787,11 +834,11 @@ HWTEST_F(IntlTest, IntlFuncTest0022, TestSize.Level1)
 }
 
 /**
- * @tc.name: IntlFuncTest0023
+ * @tc.name: IntlFuncTest0025
  * @tc.desc: Test Intl RelativeTimeFormat
  * @tc.type: FUNC
  */
-HWTEST_F(IntlTest, IntlFuncTest0023, TestSize.Level1)
+HWTEST_F(IntlTest, IntlFuncTest0025, TestSize.Level1)
 {
     vector<string> locales;
     locales.push_back("en-US");
@@ -803,67 +850,82 @@ HWTEST_F(IntlTest, IntlFuncTest0023, TestSize.Level1)
     string res = formatter->Format(number, unit);
     EXPECT_EQ(res, "in 2,022 years");
     vector<vector<string>> timeVector;
-    formatter->FormatToParts(number, unit , timeVector);
+    formatter->FormatToParts(number, unit, timeVector);
     EXPECT_EQ(timeVector.size(), 5);
 
     number = 3;
     unit = "quarter";
     res = formatter->Format(number, unit);
     EXPECT_EQ(res, "in 3 quarters");
-    formatter->FormatToParts(number, unit , timeVector);
+    formatter->FormatToParts(number, unit, timeVector);
     EXPECT_EQ(timeVector.size(), 8);
 
     number = 11;
     unit = "month";
     res = formatter->Format(number, unit);
     EXPECT_EQ(res, "in 11 months");
-    formatter->FormatToParts(number, unit , timeVector);
+    formatter->FormatToParts(number, unit, timeVector);
     EXPECT_EQ(timeVector.size(), 11);
 
     number = 2;
     unit = "week";
     res = formatter->Format(number, unit);
     EXPECT_EQ(res, "in 2 weeks");
-    formatter->FormatToParts(number, unit , timeVector);
+    formatter->FormatToParts(number, unit, timeVector);
     EXPECT_EQ(timeVector.size(), 14);
 
     number = 18;
     unit = "day";
     res = formatter->Format(number, unit);
     EXPECT_EQ(res, "in 18 days");
-    formatter->FormatToParts(number, unit , timeVector);
+    formatter->FormatToParts(number, unit, timeVector);
     EXPECT_EQ(timeVector.size(), 17);
+    delete formatter;
+}
 
-    number = 23;
-    unit = "hour";
-    res = formatter->Format(number, unit);
+/**
+ * @tc.name: IntlFuncTest0026
+ * @tc.desc: Test Intl RelativeTimeFormat
+ * @tc.type: FUNC
+ */
+HWTEST_F(IntlTest, IntlFuncTest0026, TestSize.Level1)
+{
+    vector<string> locales;
+    locales.push_back("en-US");
+    map<string, string> options;
+    RelativeTimeFormat *formatter = new RelativeTimeFormat(locales, options);
+    
+    double number = 23;
+    string unit = "hour";
+    string res = formatter->Format(number, unit);
     EXPECT_EQ(res, "in 23 hours");
-    formatter->FormatToParts(number, unit , timeVector);
-    EXPECT_EQ(timeVector.size(), 20);
+    vector<vector<string>> timeVector;
+    formatter->FormatToParts(number, unit, timeVector);
+    EXPECT_EQ(timeVector.size(), 3);
 
     number = 59;
     unit = "minute";
     res = formatter->Format(number, unit);
     EXPECT_EQ(res, "in 59 minutes");
-    formatter->FormatToParts(number, unit , timeVector);
-    EXPECT_EQ(timeVector.size(), 23);
+    formatter->FormatToParts(number, unit, timeVector);
+    EXPECT_EQ(timeVector.size(), 6);
 
     number = 1;
     unit = "second";
     res = formatter->Format(number, unit);
     EXPECT_EQ(res, "in 1 second");
-    formatter->FormatToParts(number, unit , timeVector);
-    EXPECT_EQ(timeVector.size(), 26);
+    formatter->FormatToParts(number, unit, timeVector);
+    EXPECT_EQ(timeVector.size(), 9);
 
     delete formatter;
 }
 
 /**
- * @tc.name: IntlFuncTest0024
+ * @tc.name: IntlFuncTest0027
  * @tc.desc: Test Intl RelativeTimeFormat
  * @tc.type: FUNC
  */
-HWTEST_F(IntlTest, IntlFuncTest0024, TestSize.Level1)
+HWTEST_F(IntlTest, IntlFuncTest0027, TestSize.Level1)
 {
     vector<string> locales;
     locales.push_back("zh-Hans");
@@ -879,67 +941,86 @@ HWTEST_F(IntlTest, IntlFuncTest0024, TestSize.Level1)
     string res = formatter->Format(number, unit);
     EXPECT_EQ(res, "2,022年后");
     vector<vector<string>> timeVector;
-    formatter->FormatToParts(number, unit , timeVector);
+    formatter->FormatToParts(number, unit, timeVector);
     EXPECT_EQ(timeVector.size(), 4);
 
     number = 3;
     unit = "quarter";
     res = formatter->Format(number, unit);
     EXPECT_EQ(res, "3个季度后");
-    formatter->FormatToParts(number, unit , timeVector);
+    formatter->FormatToParts(number, unit, timeVector);
     EXPECT_EQ(timeVector.size(), 6);
 
     number = 11;
     unit = "month";
     res = formatter->Format(number, unit);
     EXPECT_EQ(res, "11个月后");
-    formatter->FormatToParts(number, unit , timeVector);
+    formatter->FormatToParts(number, unit, timeVector);
     EXPECT_EQ(timeVector.size(), 8);
 
     number = 2;
     unit = "week";
     res = formatter->Format(number, unit);
     EXPECT_EQ(res, "2周后");
-    formatter->FormatToParts(number, unit , timeVector);
+    formatter->FormatToParts(number, unit, timeVector);
     EXPECT_EQ(timeVector.size(), 10);
+    delete formatter;
+}
 
-    number = 18;
-    unit = "day";
-    res = formatter->Format(number, unit);
+/**
+ * @tc.name: IntlFuncTest0028
+ * @tc.desc: Test Intl RelativeTimeFormat
+ * @tc.type: FUNC
+ */
+HWTEST_F(IntlTest, IntlFuncTest0028, TestSize.Level1)
+{
+    vector<string> locales;
+    locales.push_back("zh-Hans");
+    map<string, string> options = {
+        { "localeMatcher", "lookup" },
+        { "numeric", "auto" },
+        { "style", "long" }
+    };
+    RelativeTimeFormat *formatter = new RelativeTimeFormat(locales, options);
+    
+    double number = 18;
+    string unit = "day";
+    string res = formatter->Format(number, unit);
     EXPECT_EQ(res, "18天后");
-    formatter->FormatToParts(number, unit , timeVector);
-    EXPECT_EQ(timeVector.size(), 12);
+    vector<vector<string>> timeVector;
+    formatter->FormatToParts(number, unit, timeVector);
+    EXPECT_EQ(timeVector.size(), 2);
 
     number = 23;
     unit = "hour";
     res = formatter->Format(number, unit);
     EXPECT_EQ(res, "23小时后");
-    formatter->FormatToParts(number, unit , timeVector);
-    EXPECT_EQ(timeVector.size(), 14);
+    formatter->FormatToParts(number, unit, timeVector);
+    EXPECT_EQ(timeVector.size(), 4);
 
     number = 59;
     unit = "minute";
     res = formatter->Format(number, unit);
     EXPECT_EQ(res, "59分钟后");
-    formatter->FormatToParts(number, unit , timeVector);
-    EXPECT_EQ(timeVector.size(), 16);
+    formatter->FormatToParts(number, unit, timeVector);
+    EXPECT_EQ(timeVector.size(), 6);
 
     number = 1;
     unit = "second";
     res = formatter->Format(number, unit);
     EXPECT_EQ(res, "1秒钟后");
-    formatter->FormatToParts(number, unit , timeVector);
-    EXPECT_EQ(timeVector.size(), 18);
+    formatter->FormatToParts(number, unit, timeVector);
+    EXPECT_EQ(timeVector.size(), 8);
 
     delete formatter;
 }
 
 /**
- * @tc.name: IntlFuncTest0025
+ * @tc.name: IntlFuncTest0029
  * @tc.desc: Test Intl RelativeTimeFormatter
  * @tc.type: FUNC
  */
-HWTEST_F(IntlTest, IntlFuncTest0025, TestSize.Level1)
+HWTEST_F(IntlTest, IntlFuncTest0029, TestSize.Level1)
 {
     vector<string> locales;
     locales.push_back("xxxx");
@@ -974,11 +1055,11 @@ HWTEST_F(IntlTest, IntlFuncTest0025, TestSize.Level1)
 }
 
 /**
- * @tc.name: IntlFuncTest0026
+ * @tc.name: IntlFuncTest0030
  * @tc.desc: Test Intl NumberFormat
  * @tc.type: FUNC
  */
-HWTEST_F(IntlTest, IntlFuncTest0026, TestSize.Level1)
+HWTEST_F(IntlTest, IntlFuncTest0030, TestSize.Level1)
 {
     vector<string> locales;
     locales.push_back("en-US");
@@ -994,11 +1075,66 @@ HWTEST_F(IntlTest, IntlFuncTest0026, TestSize.Level1)
 }
 
 /**
- * @tc.name: IntlFuncTest0027
+ * @tc.name: IntlFuncTest0031
  * @tc.desc: Test Intl NumberFormat
  * @tc.type: FUNC
  */
-HWTEST_F(IntlTest, IntlFuncTest0027, TestSize.Level1)
+HWTEST_F(IntlTest, IntlFuncTest0031, TestSize.Level1)
+{
+    vector<string> locales;
+    locales.push_back("zh-Hans");
+    map<string, string> options = {
+        { "locale", "zh-Hans" },
+        { "currency", "EUR" },
+        { "currencySign", "narrowSymbol" },
+        { "currencyDisplay", "symbol" },
+        { "unit", "meter" },
+        { "unitDisplay", "long" },
+        { "unitUsage", "length-person" },
+        { "signDisplay", "always" },
+        { "compactDisplay", "long" },
+        { "notation", "standard" },
+        { "localeMatcher", "lookup" },
+        { "style", "decimal" },
+        { "numberingSystem", "latn" },
+        { "useGroup", "true" },
+        { "minimumIntegerDigits", "1" },
+        { "minimumFractionDigits", "0" },
+        { "maximumFractionDigits", "20" },
+        { "minimumSignificantDigits", "1" },
+        { "maximumSignificantDigits", "20" }
+    };
+    NumberFormat *formatter = new NumberFormat(locales, options);
+    
+    string formatRes = formatter->Format(123);
+    EXPECT_EQ(formatRes, "+123");
+    formatRes = formatter->Format(123.456);
+    EXPECT_EQ(formatRes, "+123.456");
+    
+    map<string, string> res;
+    formatter->GetResolvedOptions(res);
+    EXPECT_EQ(res.size(), 11);
+    map<string, string>::iterator it = res.find("locale");
+    if (it != res.end()) {
+        EXPECT_EQ(it->second, "zh-Hans");
+    }
+    it = res.find("signDisplay");
+    if (it != res.end()) {
+        EXPECT_EQ(it->second, "always");
+    }
+    it = res.find("notation");
+    if (it != res.end()) {
+        EXPECT_EQ(it->second, "standard");
+    }
+    delete formatter;
+}
+
+/**
+ * @tc.name: IntlFuncTest0032
+ * @tc.desc: Test Intl NumberFormat
+ * @tc.type: FUNC
+ */
+HWTEST_F(IntlTest, IntlFuncTest0032, TestSize.Level1)
 {
     vector<string> locales;
     locales.push_back("zh-Hans");
@@ -1024,28 +1160,9 @@ HWTEST_F(IntlTest, IntlFuncTest0027, TestSize.Level1)
         { "maximumSignificantDigits", "21" }
     };
     NumberFormat *formatter = new NumberFormat(locales, options);
-    
-    string formatRes = formatter->Format(123);
-    EXPECT_EQ(formatRes, "+123");
-    formatRes = formatter->Format(123.456);
-    EXPECT_EQ(formatRes, "+123.456");
-    
     map<string, string> res;
     formatter->GetResolvedOptions(res);
-    EXPECT_EQ(res.size(), 11);
-    map<string, string>::iterator it = res.find("locale");
-    if (it != res.end()) {
-        EXPECT_EQ(it->second, "zh-Hans");
-    }
-    it = res.find("signDisplay");
-    if (it != res.end()) {
-        EXPECT_EQ(it->second, "always");
-    }
-    it = res.find("notation");
-    if (it != res.end()) {
-        EXPECT_EQ(it->second, "standard");
-    }
-    it = res.find("style");
+    map<string, string>::iterator it = res.find("style");
     if (it != res.end()) {
         EXPECT_EQ(it->second, "decimal");
     }
@@ -1065,7 +1182,43 @@ HWTEST_F(IntlTest, IntlFuncTest0027, TestSize.Level1)
     if (it != res.end()) {
         EXPECT_EQ(it->second, "0");
     }
-    it = res.find("maximumFractionDigits");
+    delete formatter;
+}
+
+/**
+ * @tc.name: IntlFuncTest0033
+ * @tc.desc: Test Intl NumberFormat
+ * @tc.type: FUNC
+ */
+HWTEST_F(IntlTest, IntlFuncTest0033, TestSize.Level1)
+{
+    vector<string> locales;
+    locales.push_back("zh-Hans");
+    map<string, string> options = {
+        { "locale", "fake locale" },
+        { "currency", "fake currency" },
+        { "currencySign", "fake sign" },
+        { "currencyDisplay", "symbol" },
+        { "unit", "meter" },
+        { "unitDisplay", "fake value" },
+        { "unitUsage", "length-person" },
+        { "signDisplay", "always" },
+        { "compactDisplay", "long" },
+        { "notation", "fake value" },
+        { "localeMatcher", "best fit" },
+        { "style", "decimal" },
+        { "numberingSystem", "latn" },
+        { "useGroup", "fake value" },
+        { "minimumIntegerDigits", "1" },
+        { "minimumFractionDigits", "0" },
+        { "maximumFractionDigits", "21" },
+        { "minimumSignificantDigits", "1" },
+        { "maximumSignificantDigits", "21" }
+    };
+    NumberFormat *formatter = new NumberFormat(locales, options);
+    map<string, string> res;
+    formatter->GetResolvedOptions(res);
+    map<string, string>::iterator it = res.find("maximumFractionDigits");
     if (it != res.end()) {
         EXPECT_EQ(it->second, "21");
     }
@@ -1081,22 +1234,22 @@ HWTEST_F(IntlTest, IntlFuncTest0027, TestSize.Level1)
 }
 
 /**
- * @tc.name: IntlFuncTest0028
+ * @tc.name: IntlFuncTest0034
  * @tc.desc: Test Intl NumberFormat
  * @tc.type: FUNC
  */
-HWTEST_F(IntlTest, IntlFuncTest0028, TestSize.Level1)
+HWTEST_F(IntlTest, IntlFuncTest0034, TestSize.Level1)
 {
     vector<string> locales;
     locales.push_back("en-US");
     map<string, string> options = {
-        { "locale", "en-US" },
+        { "locale", "fake locale" },
         { "currency", "USD" },
         { "currencySign", "symbol" },
         { "currencyDisplay", "symbol" },
-        { "unit", "meter" },
+        { "unit", "fake unit" },
         { "unitDisplay", "long" },
-        { "unitUsage", "length-person" },
+        { "unitUsage", "fake usage" },
         { "signDisplay", "always" },
         { "compactDisplay", "long" },
         { "notation", "standard" },
@@ -1106,17 +1259,15 @@ HWTEST_F(IntlTest, IntlFuncTest0028, TestSize.Level1)
         { "useGrouping", "true" },
         { "minimumIntegerDigits", "1" },
         { "minimumFractionDigits", "0" },
-        { "maximumFractionDigits", "21" },
+        { "maximumFractionDigits", "20" },
         { "minimumSignificantDigits", "1" },
-        { "maximumSignificantDigits", "21" }
+        { "maximumSignificantDigits", "20" }
     };
     NumberFormat *formatter = new NumberFormat(locales, options);
-    
     string res = formatter->Format(123);
     EXPECT_EQ(res, "+$123");
     res = formatter->Format(123.456);
     EXPECT_EQ(res, "+$123.456");
-
     res = formatter->GetCurrency();
     EXPECT_EQ(res, "USD");
     res = formatter->GetCurrencySign();
@@ -1125,27 +1276,61 @@ HWTEST_F(IntlTest, IntlFuncTest0028, TestSize.Level1)
     EXPECT_EQ(res, "currency");
     res = formatter->GetNumberingSystem();
     EXPECT_EQ(res, "latn");
-    res = formatter->GetUseGrouping();
-    EXPECT_EQ(res, "true");
+    delete formatter;
+}
+
+/**
+ * @tc.name: IntlFuncTest0035
+ * @tc.desc: Test Intl NumberFormat
+ * @tc.type: FUNC
+ */
+HWTEST_F(IntlTest, IntlFuncTest0035, TestSize.Level1)
+{
+    vector<string> locales;
+    locales.push_back("en-US");
+    map<string, string> options = {
+        { "locale", "fake locale" },
+        { "currency", "USD" },
+        { "currencySign", "fake sign" },
+        { "currencyDisplay", "symbol" },
+        { "unit", "fake unit" },
+        { "unitDisplay", "long" },
+        { "unitUsage", "length-person" },
+        { "signDisplay", "fake display" },
+        { "compactDisplay", "long" },
+        { "notation", "standard" },
+        { "localeMatcher", "lookup" },
+        { "style", "currency" },
+        { "numberingSystem", "latn" },
+        { "useGrouping", "false" },
+        { "minimumIntegerDigits", "1" },
+        { "minimumFractionDigits", "0" },
+        { "maximumFractionDigits", "17" },
+        { "minimumSignificantDigits", "1" },
+        { "maximumSignificantDigits", "17" }
+    };
+    NumberFormat *formatter = new NumberFormat(locales, options);
+    string res = formatter->GetUseGrouping();
+    EXPECT_EQ(res, "false");
     res = formatter->GetMinimumIntegerDigits();
     EXPECT_EQ(res, "1");
     res = formatter->GetMinimumFractionDigits();
     EXPECT_EQ(res, "0");
     res = formatter->GetMaximumFractionDigits();
-    EXPECT_EQ(res, "21");
+    EXPECT_EQ(res, "17");
     res = formatter->GetMinimumSignificantDigits();
     EXPECT_EQ(res, "1");
     res = formatter->GetMaximumSignificantDigits();
-    EXPECT_EQ(res, "21");
+    EXPECT_EQ(res, "17");
     delete formatter;
 }
 
 /**
- * @tc.name: IntlFuncTest0029
+ * @tc.name: IntlFuncTest0036
  * @tc.desc: Test Intl DateTimeFormat
  * @tc.type: FUNC
  */
-HWTEST_F(IntlTest, IntlFuncTest0029, TestSize.Level1)
+HWTEST_F(IntlTest, IntlFuncTest0036, TestSize.Level1)
 {
     vector<string> locales;
     locales.push_back("en-US");
@@ -1164,11 +1349,11 @@ HWTEST_F(IntlTest, IntlFuncTest0029, TestSize.Level1)
 }
 
 /**
- * @tc.name: IntlFuncTest0030
+ * @tc.name: IntlFuncTest0037
  * @tc.desc: Test Intl DateTimeFormat
  * @tc.type: FUNC
  */
-HWTEST_F(IntlTest, IntlFuncTest0030, TestSize.Level1)
+HWTEST_F(IntlTest, IntlFuncTest0037, TestSize.Level1)
 {
     vector<string> locales;
     locales.push_back("zh-CN");
@@ -1182,12 +1367,12 @@ HWTEST_F(IntlTest, IntlFuncTest0030, TestSize.Level1)
         { "hour12", "false" },
         { "weekday", "long" },
         { "era", "long" },
-        { "year", "numeric" },
-        { "month", "numeric" },
-        { "day", "numeric" },
-        { "hour", "numeric" },
-        { "minute", "numeric" },
-        { "second", "numeric" },
+        { "year", "2-digit" },
+        { "month", "2-digit" },
+        { "day", "2-digit" },
+        { "hour", "2-digit" },
+        { "minute", "2-digit" },
+        { "second", "2-digit" },
         { "timeZoneName", "long" },
         { "dayPeriod", "long" },
         { "localeMatcher", "lookup" },
@@ -1214,7 +1399,41 @@ HWTEST_F(IntlTest, IntlFuncTest0030, TestSize.Level1)
     EXPECT_EQ(res, "Asia/Shanghai");
     res = formatter->GetTimeZoneName();
     EXPECT_EQ(res, "long");
-    res = formatter->GetNumberingSystem();
+    delete formatter;
+}
+
+/**
+ * @tc.name: IntlFuncTest0038
+ * @tc.desc: Test Intl DateTimeFormat
+ * @tc.type: FUNC
+ */
+HWTEST_F(IntlTest, IntlFuncTest0038, TestSize.Level1)
+{
+    vector<string> locales;
+    locales.push_back("zh-CN");
+    map<string, string> options = {
+        { "locale", "zh-CN" },
+        { "dateStyle", "full" },
+        { "timeStyle", "full" },
+        { "hourCycle", "h24" },
+        { "timeZone", "Asia/Shanghai" },
+        { "numberingSystem", "latn" },
+        { "hour12", "false" },
+        { "weekday", "long" },
+        { "era", "long" },
+        { "year", "numeric" },
+        { "month", "numeric" },
+        { "day", "numeric" },
+        { "hour", "numeric" },
+        { "minute", "numeric" },
+        { "second", "numeric" },
+        { "timeZoneName", "long" },
+        { "dayPeriod", "long" },
+        { "localeMatcher", "lookup" },
+        { "formatMatcher", "basic" }
+    };
+    DateTimeFormat *formatter = new DateTimeFormat(locales, options);
+    string res = formatter->GetNumberingSystem();
     EXPECT_EQ(res, "latn");
     res = formatter->GetHour12();
     EXPECT_EQ(res, "false");
@@ -1238,11 +1457,11 @@ HWTEST_F(IntlTest, IntlFuncTest0030, TestSize.Level1)
 }
 
 /**
- * @tc.name: IntlFuncTest0031
+ * @tc.name: IntlFuncTest0039
  * @tc.desc: Test Intl DateTimeFormat
  * @tc.type: FUNC
  */
-HWTEST_F(IntlTest, IntlFuncTest0031, TestSize.Level1)
+HWTEST_F(IntlTest, IntlFuncTest0039, TestSize.Level1)
 {
     vector<string> locales;
     locales.push_back("en-US");
@@ -1268,16 +1487,13 @@ HWTEST_F(IntlTest, IntlFuncTest0031, TestSize.Level1)
         { "formatMatcher", "basic" }
     };
     std::unique_ptr<DateTimeFormat> formatter = DateTimeFormat::CreateInstance(locales, inputOptions);
-
     const size_t size = 6;
     int64_t date[size] { 2022, 11, 19, 15, 18, 24 };
     string res = formatter->Format(date, size);
     EXPECT_EQ(res, "Dec 19, 2022, 3:18:24 PM GMT+8");
-    
     int64_t endDate[size] { 2023, 10, 18, 14, 17, 23 };
     res = formatter->FormatRange(date, size, endDate, size);
     EXPECT_EQ(res, "Dec 19, 2022, 3:18:24 PM GMT+8 \xE2\x80\x93 Nov 18, 2023, 2:17:23 PM GMT+8");
-
     map<string, string> options;
     formatter->GetResolvedOptions(options);
     EXPECT_EQ(options.size(), 20);
@@ -1293,7 +1509,42 @@ HWTEST_F(IntlTest, IntlFuncTest0031, TestSize.Level1)
     if (it != options.end()) {
         EXPECT_EQ(it->second, "long");
     }
-    it = options.find("hourCycle");
+}
+
+/**
+ * @tc.name: IntlFuncTest0040
+ * @tc.desc: Test Intl DateTimeFormat
+ * @tc.type: FUNC
+ */
+HWTEST_F(IntlTest, IntlFuncTest0040, TestSize.Level1)
+{
+    vector<string> locales;
+    locales.push_back("en-GB");
+    map<string, string> inputOptions = {
+        { "locale", "en-GB" },
+        { "dateStyle", "medium" },
+        { "timeStyle", "long" },
+        { "hourCycle", "h12" },
+        { "timeZone", "Asia/Shanghai" },
+        { "numberingSystem", "latn" },
+        { "hour12", "true" },
+        { "weekday", "long" },
+        { "era", "long" },
+        { "year", "numeric" },
+        { "month", "numeric" },
+        { "day", "numeric" },
+        { "hour", "numeric" },
+        { "minute", "numeric" },
+        { "second", "numeric" },
+        { "timeZoneName", "long" },
+        { "dayPeriod", "long" },
+        { "localeMatcher", "lookup" },
+        { "formatMatcher", "basic" }
+    };
+    std::unique_ptr<DateTimeFormat> formatter = DateTimeFormat::CreateInstance(locales, inputOptions);
+    map<string, string> options;
+    formatter->GetResolvedOptions(options);
+    map<string, string>::iterator it = options.find("hourCycle");
     if (it != options.end()) {
         EXPECT_EQ(it->second, "h12");
     }
@@ -1313,7 +1564,42 @@ HWTEST_F(IntlTest, IntlFuncTest0031, TestSize.Level1)
     if (it != options.end()) {
         EXPECT_EQ(it->second, "long");
     }
-    it = options.find("era");
+}
+
+/**
+ * @tc.name: IntlFuncTest0041
+ * @tc.desc: Test Intl DateTimeFormat
+ * @tc.type: FUNC
+ */
+HWTEST_F(IntlTest, IntlFuncTest0041, TestSize.Level1)
+{
+    vector<string> locales;
+    locales.push_back("en-US");
+    map<string, string> inputOptions = {
+        { "locale", "en-US" },
+        { "dateStyle", "medium" },
+        { "timeStyle", "medium" },
+        { "hourCycle", "h24" },
+        { "timeZone", "Asia/Shanghai" },
+        { "numberingSystem", "latn" },
+        { "hour12", "false" },
+        { "weekday", "long" },
+        { "era", "long" },
+        { "year", "2-digit" },
+        { "month", "2-digit" },
+        { "day", "2-digit" },
+        { "hour", "2-digit" },
+        { "minute", "2-digit" },
+        { "second", "2-digit" },
+        { "timeZoneName", "long" },
+        { "dayPeriod", "long" },
+        { "localeMatcher", "best fit" },
+        { "formatMatcher", "best fit" }
+    };
+    std::unique_ptr<DateTimeFormat> formatter = DateTimeFormat::CreateInstance(locales, inputOptions);
+    map<string, string> options;
+    formatter->GetResolvedOptions(options);
+    map<string, string>::iterator it = options.find("era");
     if (it != options.end()) {
         EXPECT_EQ(it->second, "long");
     }
@@ -1333,13 +1619,48 @@ HWTEST_F(IntlTest, IntlFuncTest0031, TestSize.Level1)
     if (it != options.end()) {
         EXPECT_EQ(it->second, "2-digit");
     }
-    it = options.find("minute");
+}
+
+/**
+ * @tc.name: IntlFuncTest0042
+ * @tc.desc: Test Intl DateTimeFormat
+ * @tc.type: FUNC
+ */
+HWTEST_F(IntlTest, IntlFuncTest0042, TestSize.Level1)
+{
+    vector<string> locales;
+    locales.push_back("en-US");
+    map<string, string> inputOptions = {
+        { "locale", "en-US" },
+        { "dateStyle", "full" },
+        { "timeStyle", "long" },
+        { "hourCycle", "h12" },
+        { "timeZone", "Asia/Singapore" },
+        { "numberingSystem", "latn" },
+        { "hour12", "true" },
+        { "weekday", "long" },
+        { "era", "long" },
+        { "year", "2-digit" },
+        { "month", "2-digit" },
+        { "day", "2-digit" },
+        { "hour", "numeric" },
+        { "minute", "numeric" },
+        { "second", "numeric" },
+        { "timeZoneName", "long" },
+        { "dayPeriod", "long" },
+        { "localeMatcher", "lookup" },
+        { "formatMatcher", "basic" }
+    };
+    std::unique_ptr<DateTimeFormat> formatter = DateTimeFormat::CreateInstance(locales, inputOptions);
+    map<string, string> options;
+    formatter->GetResolvedOptions(options);
+    map<string, string>::iterator it = options.find("minute");
     if (it != options.end()) {
-        EXPECT_EQ(it->second, "2-digit");
+        EXPECT_EQ(it->second, "numeric");
     }
     it = options.find("second");
     if (it != options.end()) {
-        EXPECT_EQ(it->second, "2-digit");
+        EXPECT_EQ(it->second, "numeric");
     }
     it = options.find("timeZoneName");
     if (it != options.end()) {
@@ -1349,7 +1670,42 @@ HWTEST_F(IntlTest, IntlFuncTest0031, TestSize.Level1)
     if (it != options.end()) {
         EXPECT_EQ(it->second, "long");
     }
-    it = options.find("localeMatcher");
+}
+
+/**
+ * @tc.name: IntlFuncTest0043
+ * @tc.desc: Test Intl DateTimeFormat
+ * @tc.type: FUNC
+ */
+HWTEST_F(IntlTest, IntlFuncTest0043, TestSize.Level1)
+{
+    vector<string> locales;
+    locales.push_back("en-US");
+    map<string, string> inputOptions = {
+        { "locale", "en-US" },
+        { "dateStyle", "long" },
+        { "timeStyle", "long" },
+        { "hourCycle", "h12" },
+        { "timeZone", "America/Los_Angeles" },
+        { "numberingSystem", "latn" },
+        { "hour12", "true" },
+        { "weekday", "long" },
+        { "era", "long" },
+        { "year", "numeric" },
+        { "month", "numeric" },
+        { "day", "numeric" },
+        { "hour", "2-digit" },
+        { "minute", "2-digit" },
+        { "second", "2-digit" },
+        { "timeZoneName", "long" },
+        { "dayPeriod", "long" },
+        { "localeMatcher", "lookup" },
+        { "formatMatcher", "basic" }
+    };
+    std::unique_ptr<DateTimeFormat> formatter = DateTimeFormat::CreateInstance(locales, inputOptions);
+    map<string, string> options;
+    formatter->GetResolvedOptions(options);
+    map<string, string>::iterator it = options.find("localeMatcher");
     if (it != options.end()) {
         EXPECT_EQ(it->second, "lookup");
     }
@@ -1360,11 +1716,11 @@ HWTEST_F(IntlTest, IntlFuncTest0031, TestSize.Level1)
 }
 
 /**
- * @tc.name: IntlFuncTest0032
+ * @tc.name: IntlFuncTest0044
  * @tc.desc: Test Intl LocaleInfo
  * @tc.type: FUNC
  */
-HWTEST_F(IntlTest, IntlFuncTest0032, TestSize.Level1)
+HWTEST_F(IntlTest, IntlFuncTest0044, TestSize.Level1)
 {
     string localeTag = "zh-Hans-CN";
     map<string, string> configs = {
@@ -1399,6 +1755,24 @@ HWTEST_F(IntlTest, IntlFuncTest0032, TestSize.Level1)
     icu::Locale icuLocale = locale->GetLocale();
     res = locale->ToString();
     EXPECT_EQ(res, "zh-Hans-CN-u-hc-h12-nu-latn-ca-chinese-co-pinyin-kf-upper-kn-true");
+    delete locale;
+}
+
+/**
+ * @tc.name: IntlFuncTest0045
+ * @tc.desc: Test Intl ReadSystemParameter
+ * @tc.type: FUNC
+ */
+HWTEST_F(IntlTest, IntlFuncTest0045, TestSize.Level1)
+{
+    string paramKey = "const.global.language";
+    int paramLength = 128;
+    string res = ReadSystemParameter(paramKey.c_str(), paramLength);
+    EXPECT_TRUE(res.length() > 0);
+
+    paramKey = "fake system param";
+    res = ReadSystemParameter(paramKey.c_str(), paramLength);
+    EXPECT_TRUE(res.length() == 0);
 }
 } // namespace I18n
 } // namespace Global

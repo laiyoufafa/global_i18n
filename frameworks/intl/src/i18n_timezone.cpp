@@ -25,6 +25,7 @@
 #include "type_traits"
 #include "umachine.h"
 #include "utility"
+#include "utils.h"
 #include "utypes.h"
 #include "vector"
 #include "unicode/locid.h"
@@ -33,6 +34,8 @@
 namespace OHOS {
 namespace Global {
 namespace I18n {
+const char *I18nTimeZone::TIMEZONE_KEY = "persist.time.timezone";
+const char *I18nTimeZone::DEFAULT_TIMEZONE = "GMT";
 const char *I18nTimeZone::DEFAULT_LANGUAGE = "/system/usr/ohos_timezone/en-Latn.xml";
 const char *I18nTimeZone::DEFAULT_LOCALE = "en-Latn";
 const char *I18nTimeZone::TIMEZONES_PATH = "/system/usr/ohos_timezone/";
@@ -53,7 +56,12 @@ I18nTimeZone::I18nTimeZone(std::string &id, bool isZoneID)
 {
     if (isZoneID) {
         if (id.empty()) {
-            timezone = icu::TimeZone::createDefault();
+            std::string systemTimezone = ReadSystemParameter(TIMEZONE_KEY, SYS_PARAM_LEN);
+            if (systemTimezone.length() == 0) {
+                systemTimezone = DEFAULT_TIMEZONE;
+            }
+            icu::UnicodeString unicodeZoneID(systemTimezone.data(), systemTimezone.length());
+            timezone = icu::TimeZone::createTimeZone(unicodeZoneID);
         } else {
             icu::UnicodeString unicodeZoneID(id.data(), id.length());
             timezone = icu::TimeZone::createTimeZone(unicodeZoneID);
@@ -101,6 +109,9 @@ int32_t I18nTimeZone::GetOffset(double date)
     int32_t dstOffset = 0;
     bool local = false;
     UErrorCode status = U_ZERO_ERROR;
+    if (timezone == nullptr) {
+        return 0;
+    }
     timezone->getOffset(date, (UBool)local, rawOffset, dstOffset, status);
     if (status != U_ZERO_ERROR) {
         return 0;
@@ -110,11 +121,17 @@ int32_t I18nTimeZone::GetOffset(double date)
 
 int32_t I18nTimeZone::GetRawOffset()
 {
+    if (timezone == nullptr) {
+        return 0;
+    }
     return timezone->getRawOffset();
 }
 
 std::string I18nTimeZone::GetID()
 {
+    if (timezone == nullptr) {
+        return "";
+    }
     icu::UnicodeString zoneID;
     timezone->getID(zoneID);
     std::string result;
@@ -124,6 +141,9 @@ std::string I18nTimeZone::GetID()
 
 std::string I18nTimeZone::GetDisplayName()
 {
+    if (timezone == nullptr) {
+        return "";
+    }
     std::string localeStr = LocaleConfig::GetSystemLocale();
     return GetDisplayName(localeStr, false);
 }

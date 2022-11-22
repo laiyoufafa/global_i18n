@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-#ifndef GLOBAL_I18N_STR_UTIL_FUZZER_H
-#define GLOBAL_I18N_STR_UTIL_FUZZER_H
+#ifndef GLOBAL_I18N_UTILS_FUZZER_H
+#define GLOBAL_I18N_UTILS_FUZZER_H
 
-#define FUZZ_PROJECT_NAME "strutil_fuzzer"
+#define FUZZ_PROJECT_NAME "utils_fuzzer"
 
-#endif // GLOBAL_I18N_STR_UTIL_FUZZER_H
+#endif // GLOBAL_I18N_UTILS_FUZZER_H

@@ -12,8 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef OHOS_GLOBAL_I18N_STR_UTIL_H
-#define OHOS_GLOBAL_I18N_STR_UTIL_H
+#ifndef OHOS_GLOBAL_I18N_UTILS_H
+#define OHOS_GLOBAL_I18N_UTILS_H
 
 #include <string>
 #include <vector>
@@ -22,6 +22,7 @@ namespace OHOS {
 namespace Global {
 namespace I18n {
 void Split(const std::string &src, const std::string &sep, std::vector<std::string> &dest);
+std::string ReadSystemParameter(const char *paramKey, const int paramLength);
 } // namespace I18n
 } // namespace Global
 } // namespace OHOS
