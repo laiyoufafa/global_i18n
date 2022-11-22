@@ -23,6 +23,7 @@
 #include "number_format.h"
 #include "plural_rules.h"
 #include "relative_time_format.h"
+#include "utils.h"
 #include "intl_test.h"
 
 using namespace OHOS::Global::I18n;
@@ -1399,6 +1400,23 @@ HWTEST_F(IntlTest, IntlFuncTest0032, TestSize.Level1)
     icu::Locale icuLocale = locale->GetLocale();
     res = locale->ToString();
     EXPECT_EQ(res, "zh-Hans-CN-u-hc-h12-nu-latn-ca-chinese-co-pinyin-kf-upper-kn-true");
+}
+
+/**
+ * @tc.name: IntlFuncTest0033
+ * @tc.desc: Test Intl ReadSystemParameter
+ * @tc.type: FUNC
+ */
+HWTEST_F(IntlTest, IntlFuncTest0033, TestSize.Level1)
+{
+    string paramKey = "const.global.language";
+    int paramLength = 128;
+    string res = ReadSystemParameter(paramKey.c_str(), paramLength);
+    EXPECT_TRUE(res.length() > 0);
+
+    paramKey = "fake system param";
+    res = ReadSystemParameter(paramKey.c_str(), paramLength);
+    EXPECT_TRUE(res.length() == 0);
 }
 } // namespace I18n
 } // namespace Global
