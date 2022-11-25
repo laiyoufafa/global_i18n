@@ -13,3 +13,8 @@
 
 persist.global.language = root:root:0777
 persist.global.locale = root:root:0777
+persist.global.is24Hour = root:root:0777
+persist.sys.preferredLanguages = root:root:0777
+const.global.locale = root:root:0444
+const.global.language = root:root:0444
+const.global.region = root:root:0444
