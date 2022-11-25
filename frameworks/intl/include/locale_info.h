@@ -63,6 +63,7 @@ private:
     std::string finalLocaleTag;
     std::string localeTag;
     icu::Locale locale;
+    bool localeStatus = false;
     std::string calendarTag = "-ca-";
     std::string collationTag = "-co-";
     std::string hourCycleTag = "-hc-";
@@ -76,6 +77,7 @@ private:
     void ComputeFinalLocaleTag(const std::string &localeTag);
     void ParseConfigs();
     void ParseLocaleTag(const std::string &localeTag);
+    void ResetFinalLocaleStatus();
 };
 } // namespace I18n
 } // namespace Global
