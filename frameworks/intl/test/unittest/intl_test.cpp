@@ -678,7 +678,7 @@ HWTEST_F(IntlTest, IntlFuncTest0020, TestSize.Level1)
         { "caseFirst", "fake value"},
         { "fake key", "fake value"}
     };
-    Collator *collator = new Collator(locales, inputOptions);    
+    Collator *collator = new Collator(locales, inputOptions);
     map<string, string> options;
     collator->ResolvedOptions(options);
     map<string, string>::iterator it = options.find("ignorePunctuation");
