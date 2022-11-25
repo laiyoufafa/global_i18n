@@ -47,6 +47,18 @@ std::set<std::string> LocaleInfo::GetValidLocales()
     return allValidLocales;
 }
 
+void LocaleInfo::ResetFinalLocaleStatus()
+{
+    finalLocaleTag = "";
+    calendar = "";
+    collation = "";
+    hourCycle = "";
+    numberingSystem = "";
+    numeric = "";
+    caseFirst = "";
+    configs = {};
+}
+
 LocaleInfo::LocaleInfo(const std::string &localeTag)
 {
     UErrorCode status = U_ZERO_ERROR;
@@ -60,7 +72,7 @@ LocaleInfo::LocaleInfo(const std::string &localeTag)
         Locale defaultLocale(defaultLocaleTag.c_str());
         locale = defaultLocale;
 
-        finalLocaleTag = "";
+        ResetFinalLocaleStatus();
         ComputeFinalLocaleTag(defaultLocaleTag);
     }
     language = locale.getLanguage();
@@ -87,17 +99,20 @@ LocaleInfo::LocaleInfo(const std::string &localeTag, std::map<std::string, std::
     }
     if (localeTag == "" || status != U_ZERO_ERROR) {
         std::string defaultLocaleTag = LocaleConfig::GetSystemLocale();
-        finalLocaleTag = "";
+        ResetFinalLocaleStatus();
         ComputeFinalLocaleTag(defaultLocaleTag);
         status = U_ZERO_ERROR;
         builder->clear();
         locale = builder->setLanguageTag(StringPiece(finalLocaleTag)).build(status);
     }
-    language = locale.getLanguage();
-    script = locale.getScript();
-    region = locale.getCountry();
-    baseName = locale.getBaseName();
-    std::replace(baseName.begin(), baseName.end(), '_', '-');
+    if (status == U_ZERO_ERROR) {
+        localeStatus = true;
+        language = locale.getLanguage();
+        script = locale.getScript();
+        region = locale.getCountry();
+        baseName = locale.getBaseName();
+        std::replace(baseName.begin(), baseName.end(), '_', '-');
+    }
 }
 
 LocaleInfo::~LocaleInfo() {}
@@ -263,6 +278,9 @@ Locale LocaleInfo::GetLocale() const
 
 std::string LocaleInfo::Maximize()
 {
+    if (!localeStatus) {
+        return "";
+    }
     UErrorCode status = U_ZERO_ERROR;
     Locale curLocale = locale;
     curLocale.addLikelySubtags(status);
@@ -281,6 +299,9 @@ std::string LocaleInfo::Maximize()
 
 std::string LocaleInfo::Minimize()
 {
+    if (!localeStatus) {
+        return "";
+    }
     UErrorCode status = U_ZERO_ERROR;
     Locale curLocale = locale;
     curLocale.minimizeSubtags(status);

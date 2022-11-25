@@ -489,6 +489,7 @@ napi_value I18nAddon::TransliteratorConstructor(napi_env env, napi_callback_info
         return nullptr;
     }
     if (!obj->InitTransliteratorContext(env, info, idTag)) {
+        obj.release();
         return nullptr;
     }
     obj.release();
