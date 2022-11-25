@@ -85,7 +85,7 @@ LocaleInfo::LocaleInfo(const std::string &localeTag, std::map<std::string, std::
         ComputeFinalLocaleTag(localeTag);
         locale = builder->setLanguageTag(StringPiece(finalLocaleTag)).build(status);
     }
-    if (status != U_ZERO_ERROR || localeTag == "") {
+    if (localeTag == "" || status != U_ZERO_ERROR) {
         std::string defaultLocaleTag = LocaleConfig::GetSystemLocale();
         finalLocaleTag = "";
         ComputeFinalLocaleTag(defaultLocaleTag);
