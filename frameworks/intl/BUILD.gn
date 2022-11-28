@@ -104,6 +104,7 @@ ohos_shared_library("intl_util") {
     "//third_party/libphonenumber/cpp:phonenumber_standard",
     "//third_party/libxml2:xml2",
   ]
+  use_exceptions = true
   external_deps = [
     "access_token:libaccesstoken_sdk",
     "c_utils:utils",

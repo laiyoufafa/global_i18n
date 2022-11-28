@@ -12,9 +12,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "number_format.h"
-#include "ohos/init_data.h"
 #include "locale_config.h"
+#include "ohos/init_data.h"
+#include "utils.h"
+#include "number_format.h"
 
 namespace OHOS {
 namespace Global {
@@ -63,6 +64,11 @@ NumberFormat::NumberFormat(const std::vector<std::string> &localeTags, std::map<
     for (size_t i = 0; i < localeTags.size(); i++) {
         std::string curLocale = localeTags[i];
         locale = builder->setLanguageTag(icu::StringPiece(curLocale)).build(status);
+        if (status != U_ZERO_ERROR) {
+            builder->clear();
+            status = U_ZERO_ERROR;
+            continue;
+        }
         if (LocaleInfo::allValidLocales.count(locale.getLanguage()) > 0) {
             localeInfo = new LocaleInfo(curLocale, configs);
             locale = localeInfo->GetLocale();
@@ -133,27 +139,37 @@ void NumberFormat::InitProperties()
 
 void NumberFormat::InitDigitsProperties()
 {
+    int32_t status = 0;
     if (!maximumSignificantDigits.empty() || !minimumSignificantDigits.empty()) {
-        if (!maximumSignificantDigits.empty()) {
-            int32_t maxSignificantDigits = std::stoi(maximumSignificantDigits);
+        int32_t maxSignificantDigits = ConvertString2Int(maximumSignificantDigits, status);
+        if (status == 0) {
             numberFormat = numberFormat.precision(icu::number::Precision::maxSignificantDigits(maxSignificantDigits));
         }
-        if (!minimumSignificantDigits.empty()) {
-            int32_t minSignificantDigits = std::stoi(minimumSignificantDigits);
+
+        status = 0;
+        int32_t minSignificantDigits = ConvertString2Int(minimumSignificantDigits, status);
+        if (status == 0) {
             numberFormat = numberFormat.precision(icu::number::Precision::minSignificantDigits(minSignificantDigits));
         }
     } else {
-        if (!minimumIntegerDigits.empty() && std::stoi(minimumIntegerDigits) > 1) {
+        int32_t minIntegerDigits = ConvertString2Int(minimumIntegerDigits, status);
+        if (status == 0 && minIntegerDigits > 1) {
             numberFormat =
-                numberFormat.integerWidth(icu::number::IntegerWidth::zeroFillTo(std::stoi(minimumIntegerDigits)));
+                numberFormat.integerWidth(icu::number::IntegerWidth::zeroFillTo(minIntegerDigits));
         }
-        if (!minimumFractionDigits.empty()) {
+
+        status = 0;
+        int32_t minFractionDigits = ConvertString2Int(minimumFractionDigits, status);
+        if (status == 0) {
             numberFormat =
-                numberFormat.precision(icu::number::Precision::minFraction(std::stoi(minimumFractionDigits)));
+                numberFormat.precision(icu::number::Precision::minFraction(minFractionDigits));
         }
-        if (!maximumFractionDigits.empty()) {
+
+        status = 0;
+        int32_t maxFractionDigits = ConvertString2Int(maximumFractionDigits, status);
+        if (status == 0) {
             numberFormat =
-                numberFormat.precision(icu::number::Precision::maxFraction(std::stoi(maximumFractionDigits)));
+                numberFormat.precision(icu::number::Precision::maxFraction(maxFractionDigits));
         }
     }
 }
