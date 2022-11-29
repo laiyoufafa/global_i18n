@@ -13,8 +13,10 @@
  * limitations under the License.
  */
 
+#include <stdexcept>
 #include <string>
 #include <vector>
+#include "hilog/log.h"
 #include "parameter.h"
 #include "utils.h"
 
@@ -22,7 +24,8 @@ namespace OHOS {
 namespace Global {
 namespace I18n {
 using namespace std;
-
+static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = { LOG_CORE, 0xD001E00, "Utils" };
+using namespace OHOS::HiviewDFX;
 void Split(const string &src, const string &sep, vector<string> &dest)
 {
     if (src == "") {
@@ -48,6 +51,21 @@ std::string ReadSystemParameter(const char *paramKey, const int paramLength)
         return param;
     }
     return "";
+}
+
+int32_t ConvertString2Int(const string &numberStr, int32_t& status)
+{
+    try {
+        return std::stoi(numberStr);
+    } catch(const std::invalid_argument& except) {
+        status = -1;
+        HiLog::Error(LABEL, "ConvertString2Int: invalid argument");
+        return -1;
+    } catch (const std::out_of_range& except) {
+        status = -1;
+        HiLog::Error(LABEL, "ConvertString2Int: invalid argument out of range");
+        return -1;
+    }
 }
 } // namespace I18n
 } // namespace Global

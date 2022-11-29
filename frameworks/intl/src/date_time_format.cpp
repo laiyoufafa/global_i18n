@@ -40,6 +40,11 @@ DateTimeFormat::DateTimeFormat(const std::vector<std::string> &localeTags, std::
     for (size_t i = 0; i < localeTags.size(); i++) {
         std::string curLocale = localeTags[i];
         locale = Locale::forLanguageTag(StringPiece(curLocale), status);
+        if (status != U_ZERO_ERROR) {
+            builder->clear();
+            status = U_ZERO_ERROR;
+            continue;
+        }
         if (LocaleInfo::allValidLocales.count(locale.getLanguage()) > 0) {
             InitWithLocale(curLocale, configs);
             if (!dateFormat) {

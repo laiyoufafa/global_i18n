@@ -54,6 +54,11 @@ RelativeTimeFormat::RelativeTimeFormat(const std::vector<std::string> &localeTag
     for (size_t i = 0; i < localeTags.size(); i++) {
         std::string curLocale = localeTags[i];
         locale = builder->setLanguageTag(icu::StringPiece(curLocale)).build(status);
+        if (status != U_ZERO_ERROR) {
+            builder->clear();
+            status = U_ZERO_ERROR;
+            continue;
+        }
         if (LocaleInfo::allValidLocales.count(locale.getLanguage()) > 0) {
             localeInfo = std::make_unique<LocaleInfo>(curLocale, configs);
             if (localeInfo == nullptr) {
