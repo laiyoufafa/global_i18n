@@ -56,6 +56,7 @@ private:
     std::unique_ptr<LocaleInfo> localeInfo = nullptr;
     icu::Locale locale;
     icu::Collator *collatorPtr = nullptr;
+    bool createSuccess = false;
 
     std::set<std::string> GetValidLocales();
     std::string ParseOption(std::map<std::string, std::string> &options, const std::string &key);

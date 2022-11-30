@@ -49,6 +49,7 @@ private:
     int maxFraction;
     int minSignificant;
     int maxSignificant;
+    bool createSuccess = false;
 
     std::set<std::string> GetValidLocales();
     std::string ParseOption(std::map<std::string, std::string> &options, const std::string &key);
