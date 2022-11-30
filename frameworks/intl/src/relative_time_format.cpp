@@ -48,35 +48,37 @@ RelativeTimeFormat::RelativeTimeFormat(const std::vector<std::string> &localeTag
     std::map<std::string, std::string> &configs)
 {
     UErrorCode status = U_ZERO_ERROR;
-    std::unique_ptr<icu::LocaleBuilder> builder = nullptr;
-    builder = std::make_unique<icu::LocaleBuilder>();
     ParseConfigs(configs);
     for (size_t i = 0; i < localeTags.size(); i++) {
         std::string curLocale = localeTags[i];
-        locale = builder->setLanguageTag(icu::StringPiece(curLocale)).build(status);
-        if (status != U_ZERO_ERROR) {
-            builder->clear();
-            status = U_ZERO_ERROR;
+        localeInfo = std::make_unique<LocaleInfo>(curLocale, configs);
+        if (!localeInfo->InitSuccess()) {
             continue;
         }
-        if (LocaleInfo::allValidLocales.count(locale.getLanguage()) > 0) {
-            localeInfo = std::make_unique<LocaleInfo>(curLocale, configs);
-            if (localeInfo == nullptr) {
-                continue;
-            }
+        if (LocaleInfo::allValidLocales.count(localeInfo->GetLanguage()) > 0) {
             locale = localeInfo->GetLocale();
             localeBaseName = localeInfo->GetBaseName();
             relativeTimeFormat = std::make_unique<icu::RelativeDateTimeFormatter>(locale, nullptr, style,
                 UDISPCTX_CAPITALIZATION_NONE, status);
+            if (status != U_ZERO_ERROR) {
+                status = U_ZERO_ERROR;
+                continue;
+            }
+            createSuccess = true;
             break;
         }
     }
-    if (!localeInfo || !relativeTimeFormat) {
+    if (!createSuccess) {
         localeInfo = std::make_unique<LocaleInfo>(LocaleConfig::GetSystemLocale(), configs);
-        locale = localeInfo->GetLocale();
-        localeBaseName = localeInfo->GetBaseName();
-        relativeTimeFormat = std::make_unique<icu::RelativeDateTimeFormatter>(locale, nullptr, style,
-            UDISPCTX_CAPITALIZATION_NONE, status);
+        if (localeInfo->InitSuccess()) {
+            locale = localeInfo->GetLocale();
+            localeBaseName = localeInfo->GetBaseName();
+            relativeTimeFormat = std::make_unique<icu::RelativeDateTimeFormatter>(locale, nullptr, style,
+                UDISPCTX_CAPITALIZATION_NONE, status);
+            if (status == U_ZERO_ERROR) {
+                createSuccess = true;
+            }
+        }
     }
     numberingSystem = localeInfo->GetNumberingSystem();
     if (numberingSystem == "") {
@@ -103,7 +105,7 @@ void RelativeTimeFormat::ParseConfigs(std::map<std::string, std::string> &config
 
 std::string RelativeTimeFormat::Format(double number, const std::string &unit)
 {
-    if (!relativeUnits.count(unit)) {
+    if (!createSuccess || !relativeUnits.count(unit)) {
         return "";
     }
     UErrorCode status = U_ZERO_ERROR;
@@ -149,7 +151,7 @@ void RelativeTimeFormat::ProcessIntegerField(const std::map<size_t, size_t> &ind
 void RelativeTimeFormat::FormatToParts(double number, const std::string &unit,
     std::vector<std::vector<std::string>> &timeVector)
 {
-    if (!relativeUnits.count(unit)) {
+    if (!createSuccess || !relativeUnits.count(unit)) {
         return;
     }
     UErrorCode status = U_ZERO_ERROR;

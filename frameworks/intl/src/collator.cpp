@@ -74,16 +74,17 @@ Collator::Collator(std::vector<std::string> &localeTags, std::map<std::string, s
 {
     ParseAllOptions(options);
 
-    UErrorCode status = UErrorCode::U_ZERO_ERROR;
     localeTags.push_back(LocaleConfig::GetSystemLocale());
     for (size_t i = 0; i < localeTags.size(); i++) {
         std::string curLocale = localeTags[i];
-        locale = icu::Locale::forLanguageTag(icu::StringPiece(curLocale), status);
-        if (LocaleInfo::allValidLocales.count(locale.getLanguage()) > 0) {
-            localeInfo = std::make_unique<LocaleInfo>(curLocale, options);
+        localeInfo = std::make_unique<LocaleInfo>(curLocale, options);
+        if (!localeInfo->InitSuccess()) {
+            continue;
+        }
+        if (LocaleInfo::allValidLocales.count(localeInfo->GetLanguage()) > 0) {
             locale = localeInfo->GetLocale();
             localeStr = localeInfo->GetBaseName();
-            bool createSuccess = InitCollator();
+            createSuccess = InitCollator();
             if (!createSuccess) {
                 continue;
             }
@@ -226,14 +227,17 @@ bool Collator::InitCollator()
     SetCollation(status);
     SetUsage(status);
     collatorPtr = icu::Collator::createInstance(locale, status);
+    if (status != U_ZERO_ERROR || collatorPtr == nullptr) {
+        if (collatorPtr != nullptr) {
+            delete collatorPtr;
+            collatorPtr = nullptr;
+        }
+        return false;
+    }
     SetNumeric(status);
     SetCaseFirst(status);
     SetSensitivity(status);
     SetIgnorePunctuation(status);
-
-    if (!collatorPtr) {
-        return false;
-    }
     return true;
 }
 

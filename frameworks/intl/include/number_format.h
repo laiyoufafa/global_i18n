@@ -82,7 +82,8 @@ private:
     std::string unitUsage;
     std::string unitType;
     std::string unitMeasSys;
-    LocaleInfo *localeInfo = nullptr;
+    bool createSuccess = false;
+    std::unique_ptr<LocaleInfo> localeInfo = nullptr;
     icu::number::LocalizedNumberFormatter numberFormat;
     icu::number::Notation notation = icu::number::Notation::simple();
     UNumberUnitWidth unitDisplay = UNumberUnitWidth::UNUM_UNIT_WIDTH_SHORT;
