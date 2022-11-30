@@ -63,42 +63,37 @@ NumberFormat::NumberFormat(const std::vector<std::string> &localeTags, std::map<
     ParseConfigs(configs);
     for (size_t i = 0; i < localeTags.size(); i++) {
         std::string curLocale = localeTags[i];
-        localeInfo = std::make_unique<LocaleInfo>(curLocale, configs);
-        if (!localeInfo->InitSuccess()) {
+        locale = builder->setLanguageTag(icu::StringPiece(curLocale)).build(status);
+        if (status != U_ZERO_ERROR) {
+            builder->clear();
+            status = U_ZERO_ERROR;
             continue;
         }
-        if (LocaleInfo::allValidLocales.count(localeInfo->GetLanguage()) > 0) {
+        if (LocaleInfo::allValidLocales.count(locale.getLanguage()) > 0) {
+            localeInfo = new LocaleInfo(curLocale, configs);
             locale = localeInfo->GetLocale();
             localeBaseName = localeInfo->GetBaseName();
             numberFormat = icu::number::NumberFormatter::withLocale(locale);
             icu::MeasureUnit::getAvailable(unitArray, MAX_UNIT_NUM, status);
-            if (status != U_ZERO_ERROR) {
-                status = U_ZERO_ERROR;
-                continue;
-            }
-            createSuccess = true;
             break;
         }
     }
-    if (!createSuccess) {
-        localeInfo = std::make_unique<LocaleInfo>(LocaleConfig::GetSystemLocale(), configs);
-        if (localeInfo->InitSuccess()) {
-            locale = localeInfo->GetLocale();
-            localeBaseName = localeInfo->GetBaseName();
-            numberFormat = icu::number::NumberFormatter::withLocale(locale);
-            icu::MeasureUnit::getAvailable(unitArray, MAX_UNIT_NUM, status);
-            if (status == U_ZERO_ERROR) {
-                createSuccess = true;
-            }
-        }
+    if (!localeInfo) {
+        localeInfo = new LocaleInfo(LocaleConfig::GetSystemLocale(), configs);
+        locale = localeInfo->GetLocale();
+        localeBaseName = localeInfo->GetBaseName();
+        numberFormat = icu::number::NumberFormatter::withLocale(locale);
+        icu::MeasureUnit::getAvailable(unitArray, MAX_UNIT_NUM, status);
     }
-    if (createSuccess) {
-        InitProperties();
-    }
+    InitProperties();
 }
 
 NumberFormat::~NumberFormat()
 {
+    if (localeInfo != nullptr) {
+        delete localeInfo;
+        localeInfo = nullptr;
+    }
 }
 
 void NumberFormat::InitProperties()
@@ -277,9 +272,6 @@ void NumberFormat::SetUnit(std::string &preferredUnit)
 
 std::string NumberFormat::Format(double number)
 {
-    if (!createSuccess) {
-        return "";
-    }
     double finalNumber = number;
     if (!unitUsage.empty()) {
         std::vector<std::string> preferredUnits;
@@ -360,9 +352,7 @@ void NumberFormat::GetDigitsResolvedOptions(std::map<std::string, std::string> &
         map.insert(std::make_pair("numberingSystem", localeInfo->GetNumberingSystem()));
     } else {
         auto numSys = std::unique_ptr<icu::NumberingSystem>(icu::NumberingSystem::createInstance(locale, status));
-        if (status == U_ZERO_ERROR) {
-            map.insert(std::make_pair("numberingSystem", numSys->getName()));
-        }
+        map.insert(std::make_pair("numberingSystem", numSys->getName()));
     }
     if (!useGrouping.empty()) {
         map.insert(std::make_pair("useGrouping", useGrouping));

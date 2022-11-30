@@ -94,24 +94,21 @@ void PluralRules::InitPluralRules(std::vector<std::string> &localeTags,
     localeTags.push_back(LocaleConfig::GetSystemLocale());
     for (size_t i = 0; i < localeTags.size(); i++) {
         std::string curLocale = localeTags[i];
-        localeInfo = std::make_unique<LocaleInfo>(curLocale, options);
-        if (!localeInfo->InitSuccess()) {
-            continue;
-        }
-        if (LocaleInfo::allValidLocales.count(localeInfo->GetLanguage()) > 0) {            
+        locale = icu::Locale::forLanguageTag(icu::StringPiece(curLocale), status);
+        if (LocaleInfo::allValidLocales.count(locale.getLanguage()) > 0) {
+            localeInfo = std::make_unique<LocaleInfo>(curLocale, options);
             locale = localeInfo->GetLocale();
             localeStr = localeInfo->GetBaseName();
             pluralRules = icu::PluralRules::forLocale(locale, uPluralType, status);
             if (status != UErrorCode::U_ZERO_ERROR || !pluralRules) {
-                if (pluralRules != nullptr) {
-                    delete pluralRules;
-                    pluralRules = nullptr;
-                }
                 continue;
             }
-            createSuccess = true;
             break;
         }
+    }
+    if (status != UErrorCode::U_ZERO_ERROR || !pluralRules) {
+        HiLog::Error(LABEL, "PluralRules object created failed");
+        return;
     }
 }
 
@@ -138,9 +135,7 @@ PluralRules::PluralRules(std::vector<std::string> &localeTags, std::map<std::str
 {
     ParseAllOptions(options);
     InitPluralRules(localeTags, options);
-    if (createSuccess) {
-        InitNumberFormatter();
-    }
+    InitNumberFormatter();
 }
 
 PluralRules::~PluralRules()
@@ -153,7 +148,7 @@ PluralRules::~PluralRules()
 
 std::string PluralRules::Select(double number)
 {
-    if (!createSuccess || pluralRules == nullptr) {
+    if (pluralRules == nullptr) {
         return "other";
     }
     UErrorCode status = UErrorCode::U_ZERO_ERROR;

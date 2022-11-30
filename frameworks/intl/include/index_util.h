@@ -34,7 +34,6 @@ public:
 
 private:
     std::unique_ptr<icu::AlphabeticIndex> index;
-    bool createSuccess = false;
 };
 } // namespace I18n
 } // namespace Global
