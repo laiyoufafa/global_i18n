@@ -105,6 +105,13 @@ LocaleInfo::LocaleInfo(const std::string &localeTag, std::map<std::string, std::
         builder->clear();
         locale = builder->setLanguageTag(StringPiece(finalLocaleTag)).build(status);
     }
+    if (status != U_ZERO_ERROR) {
+        std::string correctLocaleTag = "zh-Hans";
+        ResetFinalLocaleStatus();
+        status = U_ZERO_ERROR;
+        builder->clear();
+        locale = builder->setLanguageTag(StringPiece(correctLocaleTag)).build(status);
+    }
     if (status == U_ZERO_ERROR) {
         localeStatus = true;
         language = locale.getLanguage();
@@ -322,11 +329,6 @@ bool LocaleInfo::Init()
 {
     SetHwIcuDirectory();
     return true;
-}
-
-bool LocaleInfo::InitSuccess() const
-{
-    return localeStatus;
 }
 } // namespace I18n
 } // namespace Global

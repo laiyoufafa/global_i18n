@@ -556,9 +556,6 @@ int Convert(double &value, const string &fromUnit, const string &fromMeasSys, co
     icu::MeasureUnit unitArray[MAX_UNIT_NUM];
     UErrorCode icuStatus = U_ZERO_ERROR;
     icu::MeasureUnit::getAvailable(unitArray, MAX_UNIT_NUM, icuStatus);
-    if (icuStatus != U_ZERO_ERROR) {
-        return 0;
-    }
     for (icu::MeasureUnit curUnit : unitArray) {
         if (!strcmp(curUnit.getSubtype(), fromUnit.c_str())) {
             fromUnitType = curUnit.getType();

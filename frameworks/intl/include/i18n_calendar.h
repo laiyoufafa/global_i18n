@@ -63,7 +63,7 @@ public:
 private:
     icu::Calendar *calendar_;
     void InitCalendar(const icu::Locale &locale, CalendarType type);
-    void InitCalendar2(const icu::Locale &locale, CalendarType type, UErrorCode &status);
+    void InitCalendar2(const icu::Locale &locale, CalendarType type);
 };
 } // namespace I18n
 } // namespace Global
