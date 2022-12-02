@@ -96,6 +96,7 @@ private:
     char16_t amPmChar = 'a';
     std::string hourTwoDigitString = "HH";
     std::string hourNumericString = "H";
+    bool createSuccess = false;
     static const int32_t NUMERIC_LENGTH = 1;
     static const int32_t TWO_DIGIT_LENGTH = 2;
     static const int32_t SHORT_LENGTH = 3;
@@ -114,8 +115,8 @@ private:
     static bool icuInitialized;
     static bool Init();
     static std::map<std::string, icu::DateFormat::EStyle> dateTimeStyle;
-    void InitWithLocale(const std::string &curLocale, std::map<std::string, std::string> &configs);
-    void InitWithDefaultLocale(std::map<std::string, std::string> &configs);
+    bool InitWithLocale(const std::string &curLocale, std::map<std::string, std::string> &configs);
+    bool InitWithDefaultLocale(std::map<std::string, std::string> &configs);
     void ParseConfigsPartOne(std::map<std::string, std::string> &configs);
     void ParseConfigsPartTwo(std::map<std::string, std::string> &configs);
     void AddOptions(std::string option, char16_t optionChar);
@@ -134,6 +135,7 @@ private:
     void removeAmPmChar();
     int64_t GetArrayValue(int64_t *dateArray, size_t index, size_t size);
     bool CheckInitSuccess();
+    void FreeDateTimeFormat();
 };
 } // namespace I18n
 } // namespace Global
