@@ -49,12 +49,14 @@ private:
     int maxFraction;
     int minSignificant;
     int maxSignificant;
+    bool createSuccess = false;
 
     std::set<std::string> GetValidLocales();
     std::string ParseOption(std::map<std::string, std::string> &options, const std::string &key);
     void ParseAllOptions(std::map<std::string, std::string> &options);
     void InitPluralRules(std::vector<std::string> &localeTags, std::map<std::string, std::string> &options);
     void InitNumberFormatter();
+    int GetValidInteger(std::string &integerStr, int minValue, int maxValue, int defaultValue);
 };
 } // namespace I18n
 } // namespace Global

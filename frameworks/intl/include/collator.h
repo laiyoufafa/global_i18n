@@ -56,17 +56,18 @@ private:
     std::unique_ptr<LocaleInfo> localeInfo = nullptr;
     icu::Locale locale;
     icu::Collator *collatorPtr = nullptr;
+    bool createSuccess = false;
 
     std::set<std::string> GetValidLocales();
     std::string ParseOption(std::map<std::string, std::string> &options, const std::string &key);
     void ParseAllOptions(std::map<std::string, std::string> &options);
-    bool IsValidCollation(std::string &collation, UErrorCode &status);
-    void SetCollation(UErrorCode &status);
-    void SetUsage(UErrorCode &status);
-    void SetNumeric(UErrorCode &status);
-    void SetCaseFirst(UErrorCode &status);
-    void SetSensitivity(UErrorCode &status);
-    void SetIgnorePunctuation(UErrorCode &status);
+    bool IsValidCollation(std::string &collation);
+    void SetCollation();
+    void SetUsage();
+    void SetNumeric();
+    void SetCaseFirst();
+    void SetSensitivity();
+    void SetIgnorePunctuation();
     bool InitCollator();
 };
 } // namespace I18n

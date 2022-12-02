@@ -19,6 +19,7 @@
 
 #include "collator.h"
 #include "date_time_format.h"
+#include "locale_config.h"
 #include "locale_info.h"
 #include "number_format.h"
 #include "plural_rules.h"
@@ -637,7 +638,7 @@ HWTEST_F(IntlTest, IntlFuncTest0019, TestSize.Level1)
     const string param1 = "abc";
     const string param2 = "cba";
     CompareResult result = collator->Compare(param1, param2);
-    EXPECT_EQ(result, CompareResult::INVALID);
+    EXPECT_EQ(result, CompareResult::SMALLER);
     
     map<string, string> options;
     collator->ResolvedOptions(options);
@@ -646,9 +647,10 @@ HWTEST_F(IntlTest, IntlFuncTest0019, TestSize.Level1)
     if (it != options.end()) {
         EXPECT_EQ(it->second, "fake value");
     }
+    std::string systemLocale = LocaleConfig::GetSystemLocale();
     it = options.find("locale");
     if (it != options.end()) {
-        EXPECT_EQ(it->second, "");
+        EXPECT_EQ(it->second, systemLocale);
     }
     it = options.find("usage");
     if (it != options.end()) {
@@ -695,7 +697,7 @@ HWTEST_F(IntlTest, IntlFuncTest0020, TestSize.Level1)
     }
     it = options.find("collation");
     if (it != options.end()) {
-        EXPECT_EQ(it->second, "fake value");
+        EXPECT_EQ(it->second, "default");
     }
     delete collator;
 }

@@ -25,6 +25,12 @@ I18nBreakIterator::I18nBreakIterator(std::string localeTag)
 {
     UErrorCode status = U_ZERO_ERROR;
     iter = icu::BreakIterator::createLineInstance(localeTag.c_str(), status);
+    if (!U_SUCCESS(status)) {
+        if (iter != nullptr) {
+            delete iter;
+        }
+        iter = nullptr;
+    }
 }
 
 I18nBreakIterator::~I18nBreakIterator()

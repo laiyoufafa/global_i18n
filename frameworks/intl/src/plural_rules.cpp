@@ -28,6 +28,7 @@
 #include "unicode/unistr.h"
 #include "unicode/upluralrules.h"
 #include "utility"
+#include "utils.h"
 #include "utypes.h"
 #include "vector"
 
@@ -47,6 +48,22 @@ std::string PluralRules::ParseOption(std::map<std::string, std::string> &options
     }
 }
 
+int PluralRules::GetValidInteger(std::string &integerStr, int minValue, int maxValue, int defaultValue)
+{
+    int status = 0;
+    int validInteger = ConvertString2Int(integerStr, status);
+    if (status < 0) {
+        validInteger = defaultValue;
+    }
+    if (validInteger < minValue) {
+        validInteger = minValue;
+    }
+    if (validInteger > maxValue) {
+        validInteger = maxValue;
+    }
+    return validInteger;
+}
+
 void PluralRules::ParseAllOptions(std::map<std::string, std::string> &options)
 {
     localeMatcher = ParseOption(options, "localeMatcher");
@@ -54,7 +71,8 @@ void PluralRules::ParseAllOptions(std::map<std::string, std::string> &options)
     type = ParseOption(options, "type");
     type = (type == "") ? "cardinal" : type;
     std::string minIntegerStr = ParseOption(options, "minimumIntegerDigits");
-    minInteger = (minIntegerStr == "") ? 1 : std::stoi(minIntegerStr);
+    // 1 is minValue and defaultValue, 21 is maxValue
+    minInteger = GetValidInteger(minIntegerStr, 1, 21, 1);
 
     minFraction = 0;
     maxFraction = 0;
@@ -63,22 +81,21 @@ void PluralRules::ParseAllOptions(std::map<std::string, std::string> &options)
     std::string minSignificantStr = ParseOption(options, "minimumSignificantDigits");
     std::string maxSignificantStr = ParseOption(options, "maximumSignificantDigits");
     if (minSignificantStr != "" || maxSignificantStr != "") {
-        // 1 is the default value of minSignificant
-        minSignificant = (minSignificantStr == "") ? 1 : std::stoi(minSignificantStr);
-        // 21 is the default value of maxSignificant
-        maxSignificant = (maxSignificantStr == "") ? 21 : std::stoi(maxSignificantStr);
+        // 1 is minValue and defaultValue, 21 is maxValue
+        minSignificant = GetValidInteger(minSignificantStr, 1, 21, 1);
+        // 1 is minValue, 21 is maxValue and defaultValue
+        maxSignificant = GetValidInteger(maxSignificantStr, 1, 21, 21);
     } else {
         minSignificant = 0;
         maxSignificant = 0;
 
         if (minFractionStr != "" || maxFractionStr != "") {
-            minFraction = (minFractionStr == "") ? 0 : std::stoi(minFractionStr);
-            int maxFractionDefault = std::max(3, minFraction);  // 3 is the default valud of minFraction
-            maxFraction = (maxFractionStr == "") ? maxFractionDefault : std::stoi(maxFractionStr);
-            if (minFraction > maxFraction) {
-                HiLog::Error(LABEL, "minimumFractionDigits is greater than maximumFractionDigits");
-                return;
-            }
+            // 0 is minValue and defaultValue, 20 is maxValue
+            minFraction = GetValidInteger(minFractionStr, 0, 20, 0);
+            int maxFractionDefault = std::max(3, minFraction);  // 3 is the default value of minFraction
+            int maxFractionMin = std::max(1, minFraction);  // 1 is the min value of minFraction
+            // 21 is max value
+            maxFraction = GetValidInteger(maxFractionStr, maxFractionMin, 21, maxFractionDefault);
         } else {
             minFraction = 0;  // 0 is the default value of minFraction.
             maxFraction = 3;  // 3 is the default value of maxFraction
@@ -95,14 +112,22 @@ void PluralRules::InitPluralRules(std::vector<std::string> &localeTags,
     for (size_t i = 0; i < localeTags.size(); i++) {
         std::string curLocale = localeTags[i];
         locale = icu::Locale::forLanguageTag(icu::StringPiece(curLocale), status);
+        if (status != U_ZERO_ERROR) {
+            status = U_ZERO_ERROR;
+            continue;
+        }
         if (LocaleInfo::allValidLocales.count(locale.getLanguage()) > 0) {
             localeInfo = std::make_unique<LocaleInfo>(curLocale, options);
+            if (!localeInfo->InitSuccess()) {
+                continue;
+            }
             locale = localeInfo->GetLocale();
             localeStr = localeInfo->GetBaseName();
             pluralRules = icu::PluralRules::forLocale(locale, uPluralType, status);
             if (status != UErrorCode::U_ZERO_ERROR || !pluralRules) {
                 continue;
             }
+            createSuccess = true;
             break;
         }
     }
@@ -148,7 +173,7 @@ PluralRules::~PluralRules()
 
 std::string PluralRules::Select(double number)
 {
-    if (pluralRules == nullptr) {
+    if (!createSuccess || pluralRules == nullptr) {
         return "other";
     }
     UErrorCode status = UErrorCode::U_ZERO_ERROR;
