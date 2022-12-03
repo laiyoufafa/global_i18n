@@ -17,13 +17,13 @@
 #include <stringpiece.h>
 
 #include "locale_config.h"
-#include "locid.h"
 #include "map"
 #include "set"
 #include "strenum.h"
 #include "string"
-#include "unicode/ucol.h"
 #include "unicode/errorcode.h"
+#include "unicode/locid.h"
+#include "unicode/ucol.h"
 #include "unicode/uloc.h"
 #include "unistr.h"
 #include "urename.h"
@@ -73,17 +73,23 @@ void Collator::ParseAllOptions(std::map<std::string, std::string> &options)
 Collator::Collator(std::vector<std::string> &localeTags, std::map<std::string, std::string> &options)
 {
     ParseAllOptions(options);
-
-    UErrorCode status = UErrorCode::U_ZERO_ERROR;
+    UErrorCode status = U_ZERO_ERROR;
     localeTags.push_back(LocaleConfig::GetSystemLocale());
     for (size_t i = 0; i < localeTags.size(); i++) {
         std::string curLocale = localeTags[i];
         locale = icu::Locale::forLanguageTag(icu::StringPiece(curLocale), status);
+        if (status != U_ZERO_ERROR) {
+            status = U_ZERO_ERROR;
+            continue;
+        }
         if (LocaleInfo::allValidLocales.count(locale.getLanguage()) > 0) {
             localeInfo = std::make_unique<LocaleInfo>(curLocale, options);
+            if (!localeInfo->InitSuccess()) {
+                continue;
+            }
             locale = localeInfo->GetLocale();
             localeStr = localeInfo->GetBaseName();
-            bool createSuccess = InitCollator();
+            createSuccess = InitCollator();
             if (!createSuccess) {
                 continue;
             }
@@ -92,12 +98,16 @@ Collator::Collator(std::vector<std::string> &localeTags, std::map<std::string, s
     }
 }
 
-bool Collator::IsValidCollation(std::string &collation, UErrorCode &status)
+bool Collator::IsValidCollation(std::string &collation)
 {
+    UErrorCode status = U_ZERO_ERROR;
     const char *currentCollation = uloc_toLegacyType("collation", collation.c_str());
     if (currentCollation != nullptr) {
         std::unique_ptr<icu::StringEnumeration> enumeration(
             icu::Collator::getKeywordValuesForLocale("collation", icu::Locale(locale.getBaseName()), false, status));
+        if (!U_SUCCESS(status)) {
+            return false;
+        }
         int length;
         const char *validCollations = nullptr;
         if (enumeration != nullptr) {
@@ -115,10 +125,11 @@ bool Collator::IsValidCollation(std::string &collation, UErrorCode &status)
     return false;
 }
 
-void Collator::SetCollation(UErrorCode &status)
+void Collator::SetCollation()
 {
+    UErrorCode status = U_ZERO_ERROR;
     if (collation != "") {
-        if (IsValidCollation(collation, status)) {
+        if (IsValidCollation(collation)) {
             locale.setUnicodeKeywordValue("co", collation, status);
         } else {
             collation = "default";
@@ -127,7 +138,7 @@ void Collator::SetCollation(UErrorCode &status)
     } else {
         collation = localeInfo->GetCollation();
         if (collation != "") {
-            if (IsValidCollation(collation, status)) {
+            if (IsValidCollation(collation)) {
                 locale.setUnicodeKeywordValue("co", collation, status);
             } else {
                 locale.setUnicodeKeywordValue("co", nullptr, status);
@@ -140,15 +151,16 @@ void Collator::SetCollation(UErrorCode &status)
     }
 }
 
-void Collator::SetUsage(UErrorCode &status)
+void Collator::SetUsage()
 {
     if (usage == "search") {
         collation = "default";
+        UErrorCode status = U_ZERO_ERROR;
         locale.setUnicodeKeywordValue("co", nullptr, status);
     }
 }
 
-void Collator::SetNumeric(UErrorCode &status)
+void Collator::SetNumeric()
 {
     if (!collatorPtr) {
         return;
@@ -159,6 +171,7 @@ void Collator::SetNumeric(UErrorCode &status)
             numeric = "false";
         }
     }
+    UErrorCode status = U_ZERO_ERROR;
     if (numeric == "true") {
         collatorPtr->setAttribute(UColAttribute::UCOL_NUMERIC_COLLATION,
             UColAttributeValue::UCOL_ON, status);
@@ -168,7 +181,7 @@ void Collator::SetNumeric(UErrorCode &status)
     }
 }
 
-void Collator::SetCaseFirst(UErrorCode &status)
+void Collator::SetCaseFirst()
 {
     if (!collatorPtr) {
         return;
@@ -179,6 +192,7 @@ void Collator::SetCaseFirst(UErrorCode &status)
             caseFirst = "false";
         }
     }
+    UErrorCode status = U_ZERO_ERROR;
     if (caseFirst == "upper") {
         collatorPtr->setAttribute(UColAttribute::UCOL_CASE_FIRST,
             UColAttributeValue::UCOL_UPPER_FIRST, status);
@@ -191,7 +205,7 @@ void Collator::SetCaseFirst(UErrorCode &status)
     }
 }
 
-void Collator::SetSensitivity(UErrorCode &status)
+void Collator::SetSensitivity()
 {
     if (!collatorPtr) {
         return;
@@ -202,6 +216,7 @@ void Collator::SetSensitivity(UErrorCode &status)
         collatorPtr->setStrength(icu::Collator::SECONDARY);
     } else if (sensitivity == "case") {
         collatorPtr->setStrength(icu::Collator::PRIMARY);
+        UErrorCode status = U_ZERO_ERROR;
         collatorPtr->setAttribute(UColAttribute::UCOL_CASE_LEVEL,
             UColAttributeValue::UCOL_ON, status);
     } else {
@@ -209,12 +224,13 @@ void Collator::SetSensitivity(UErrorCode &status)
     }
 }
 
-void Collator::SetIgnorePunctuation(UErrorCode &status)
+void Collator::SetIgnorePunctuation()
 {
     if (!collatorPtr) {
         return;
     }
     if (ignorePunctuation == "true") {
+        UErrorCode status = U_ZERO_ERROR;
         collatorPtr->setAttribute(UColAttribute::UCOL_ALTERNATE_HANDLING,
             UColAttributeValue::UCOL_SHIFTED, status);
     }
@@ -222,18 +238,21 @@ void Collator::SetIgnorePunctuation(UErrorCode &status)
 
 bool Collator::InitCollator()
 {
+    SetCollation();
+    SetUsage();
     UErrorCode status = UErrorCode::U_ZERO_ERROR;
-    SetCollation(status);
-    SetUsage(status);
     collatorPtr = icu::Collator::createInstance(locale, status);
-    SetNumeric(status);
-    SetCaseFirst(status);
-    SetSensitivity(status);
-    SetIgnorePunctuation(status);
-
-    if (!collatorPtr) {
+    if (!U_SUCCESS(status) || collatorPtr == nullptr) {
+        if (collatorPtr != nullptr) {
+            delete collatorPtr;
+            collatorPtr = nullptr;
+        }
         return false;
     }
+    SetNumeric();
+    SetCaseFirst();
+    SetSensitivity();
+    SetIgnorePunctuation();
     return true;
 }
 

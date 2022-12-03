@@ -62,6 +62,7 @@ private:
     std::unique_ptr<LocaleInfo> localeInfo;
     std::unique_ptr<icu::RelativeDateTimeFormatter> relativeTimeFormat;
     UDateRelativeDateTimeFormatterStyle style = UDAT_STYLE_LONG;
+    bool createSuccess = false;
     static std::unordered_map<std::string, URelativeDateTimeUnit> relativeUnits;
     static std::unordered_map<std::string, UDateRelativeDateTimeFormatterStyle> relativeFormatStyle;
     void InsertInfo(std::vector<std::vector<std::string>> &timeVector, const std::string &unit, bool isInteger,

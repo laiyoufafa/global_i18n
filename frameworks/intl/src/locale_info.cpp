@@ -12,20 +12,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "locale_info.h"
 
 #include "algorithm"
 #include "locale_config.h"
-#include "localebuilder.h"
-#include "locid.h"
 #include "map"
 #include "memory"
 #include "ohos/init_data.h"
 #include "set"
-#include "stringpiece.h"
-#include "type_traits"
-#include "utypes.h"
-#include "uversion.h"
+#include "locale_info.h"
 
 namespace OHOS {
 namespace Global {
@@ -59,58 +53,20 @@ void LocaleInfo::ResetFinalLocaleStatus()
     configs = {};
 }
 
-LocaleInfo::LocaleInfo(const std::string &localeTag)
-{
-    UErrorCode status = U_ZERO_ERROR;
-    configs = {};
-    ComputeFinalLocaleTag(localeTag);
-    std::unique_ptr<icu::LocaleBuilder> builder = nullptr;
-    builder = std::make_unique<LocaleBuilder>();
-    Locale locale = builder->setLanguageTag(StringPiece(localeTag)).build(status);
-    if (status != U_ZERO_ERROR) {
-        std::string defaultLocaleTag = LocaleConfig::GetSystemLocale();
-        Locale defaultLocale(defaultLocaleTag.c_str());
-        locale = defaultLocale;
-
-        ResetFinalLocaleStatus();
-        ComputeFinalLocaleTag(defaultLocaleTag);
-    }
-    language = locale.getLanguage();
-    script = locale.getScript();
-    region = locale.getCountry();
-    baseName = language;
-    if (script.length() == SCRIPT_LEN) {
-        baseName += "-" + script;
-    }
-    if (region.length() == REGION_LEN) {
-        baseName += "-" + region;
-    }
-}
-
-LocaleInfo::LocaleInfo(const std::string &localeTag, std::map<std::string, std::string> &configMap)
+void LocaleInfo::InitLocaleInfo(const std::string &localeTag, std::map<std::string, std::string> &configMap)
 {
     UErrorCode status = U_ZERO_ERROR;
     configs = configMap;
-    std::unique_ptr<icu::LocaleBuilder> builder = nullptr;
-    builder = std::make_unique<LocaleBuilder>();
     if (localeTag != "") {
         ComputeFinalLocaleTag(localeTag);
-        locale = builder->setLanguageTag(StringPiece(finalLocaleTag)).build(status);
+        locale = icu::Locale::forLanguageTag(icu::StringPiece(finalLocaleTag), status);
     }
     if (localeTag == "" || status != U_ZERO_ERROR) {
         std::string defaultLocaleTag = LocaleConfig::GetSystemLocale();
         ResetFinalLocaleStatus();
         ComputeFinalLocaleTag(defaultLocaleTag);
         status = U_ZERO_ERROR;
-        builder->clear();
-        locale = builder->setLanguageTag(StringPiece(finalLocaleTag)).build(status);
-    }
-    if (status != U_ZERO_ERROR) {
-        std::string correctLocaleTag = "zh-Hans";
-        ResetFinalLocaleStatus();
-        status = U_ZERO_ERROR;
-        builder->clear();
-        locale = builder->setLanguageTag(StringPiece(correctLocaleTag)).build(status);
+        locale = icu::Locale::forLanguageTag(icu::StringPiece(finalLocaleTag), status);
     }
     if (status == U_ZERO_ERROR) {
         localeStatus = true;
@@ -120,6 +76,17 @@ LocaleInfo::LocaleInfo(const std::string &localeTag, std::map<std::string, std::
         baseName = locale.getBaseName();
         std::replace(baseName.begin(), baseName.end(), '_', '-');
     }
+}
+
+LocaleInfo::LocaleInfo(const std::string &localeTag)
+{
+    std::map<std::string, std::string> configMap;
+    InitLocaleInfo(localeTag, configMap);
+}
+
+LocaleInfo::LocaleInfo(const std::string &localeTag, std::map<std::string, std::string> &configMap)
+{
+    InitLocaleInfo(localeTag, configMap);
 }
 
 LocaleInfo::~LocaleInfo() {}
@@ -329,6 +296,11 @@ bool LocaleInfo::Init()
 {
     SetHwIcuDirectory();
     return true;
+}
+
+bool LocaleInfo::InitSuccess() const
+{
+    return localeStatus;
 }
 } // namespace I18n
 } // namespace Global
