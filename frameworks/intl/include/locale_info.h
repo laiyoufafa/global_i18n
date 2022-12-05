@@ -28,7 +28,7 @@ namespace Global {
 namespace I18n {
 class LocaleInfo {
 public:
-    explicit LocaleInfo(const std::string &locale);
+    explicit LocaleInfo(const std::string &localeTag);
     LocaleInfo(const std::string &localeTag, std::map<std::string, std::string> &configs);
     virtual ~LocaleInfo();
     std::string GetLanguage() const;
@@ -45,6 +45,7 @@ public:
     std::string GetCaseFirst() const;
     std::string ToString() const;
     icu::Locale GetLocale() const;
+    bool InitSuccess() const;
     static const uint32_t SCRIPT_LEN = 4;
     static const uint32_t REGION_LEN = 2;
     static std::set<std::string> allValidLocales;
@@ -61,7 +62,6 @@ private:
     std::string numeric;
     std::string caseFirst;
     std::string finalLocaleTag;
-    std::string localeTag;
     icu::Locale locale;
     bool localeStatus = false;
     std::string calendarTag = "-ca-";
@@ -78,6 +78,7 @@ private:
     void ParseConfigs();
     void ParseLocaleTag(const std::string &localeTag);
     void ResetFinalLocaleStatus();
+    void InitLocaleInfo(const std::string &localeTag, std::map<std::string, std::string> &configMap);
 };
 } // namespace I18n
 } // namespace Global

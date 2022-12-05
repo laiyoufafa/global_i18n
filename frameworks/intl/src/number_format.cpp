@@ -63,37 +63,47 @@ NumberFormat::NumberFormat(const std::vector<std::string> &localeTags, std::map<
     ParseConfigs(configs);
     for (size_t i = 0; i < localeTags.size(); i++) {
         std::string curLocale = localeTags[i];
-        locale = builder->setLanguageTag(icu::StringPiece(curLocale)).build(status);
+        locale = icu::Locale::forLanguageTag(icu::StringPiece(curLocale), status);
         if (status != U_ZERO_ERROR) {
-            builder->clear();
             status = U_ZERO_ERROR;
             continue;
         }
         if (LocaleInfo::allValidLocales.count(locale.getLanguage()) > 0) {
-            localeInfo = new LocaleInfo(curLocale, configs);
+            localeInfo = std::make_unique<LocaleInfo>(curLocale, configs);
+            if (!localeInfo->InitSuccess()) {
+                continue;
+            }
             locale = localeInfo->GetLocale();
             localeBaseName = localeInfo->GetBaseName();
             numberFormat = icu::number::NumberFormatter::withLocale(locale);
             icu::MeasureUnit::getAvailable(unitArray, MAX_UNIT_NUM, status);
+            if (!U_SUCCESS(status)) {
+                status = U_ZERO_ERROR;
+                continue;
+            }
+            createSuccess = true;
             break;
         }
     }
-    if (!localeInfo) {
-        localeInfo = new LocaleInfo(LocaleConfig::GetSystemLocale(), configs);
-        locale = localeInfo->GetLocale();
-        localeBaseName = localeInfo->GetBaseName();
-        numberFormat = icu::number::NumberFormatter::withLocale(locale);
-        icu::MeasureUnit::getAvailable(unitArray, MAX_UNIT_NUM, status);
+    if (!createSuccess) {
+        localeInfo = std::make_unique<LocaleInfo>(LocaleConfig::GetSystemLocale(), configs);
+        if (localeInfo->InitSuccess()) {
+            locale = localeInfo->GetLocale();
+            localeBaseName = localeInfo->GetBaseName();
+            numberFormat = icu::number::NumberFormatter::withLocale(locale);
+            icu::MeasureUnit::getAvailable(unitArray, MAX_UNIT_NUM, status);
+            if (!U_SUCCESS(status)) {
+                createSuccess = true;
+            }
+        }
     }
-    InitProperties();
+    if (createSuccess) {
+        InitProperties();
+    }
 }
 
 NumberFormat::~NumberFormat()
 {
-    if (localeInfo != nullptr) {
-        delete localeInfo;
-        localeInfo = nullptr;
-    }
 }
 
 void NumberFormat::InitProperties()
@@ -118,7 +128,7 @@ void NumberFormat::InitProperties()
         }
         UErrorCode status = U_ZERO_ERROR;
         UMeasurementSystem measSys = ulocdata_getMeasurementSystem(localeBaseName.c_str(), &status);
-        if (status == U_ZERO_ERROR && measSys >= 0) {
+        if (U_SUCCESS(status) && measSys >= 0) {
             unitMeasSys = measurementSystem[measSys];
         }
         numberFormat = numberFormat.unitWidth(unitDisplay);
@@ -272,6 +282,9 @@ void NumberFormat::SetUnit(std::string &preferredUnit)
 
 std::string NumberFormat::Format(double number)
 {
+    if (!createSuccess) {
+        return "";
+    }
     double finalNumber = number;
     if (!unitUsage.empty()) {
         std::vector<std::string> preferredUnits;
@@ -345,14 +358,16 @@ void NumberFormat::GetResolvedOptions(std::map<std::string, std::string> &map)
 
 void NumberFormat::GetDigitsResolvedOptions(std::map<std::string, std::string> &map)
 {
-    UErrorCode status = U_ZERO_ERROR;
     if (!numberingSystem.empty()) {
         map.insert(std::make_pair("numberingSystem", numberingSystem));
     } else if (!(localeInfo->GetNumberingSystem()).empty()) {
         map.insert(std::make_pair("numberingSystem", localeInfo->GetNumberingSystem()));
     } else {
+        UErrorCode status = U_ZERO_ERROR;
         auto numSys = std::unique_ptr<icu::NumberingSystem>(icu::NumberingSystem::createInstance(locale, status));
-        map.insert(std::make_pair("numberingSystem", numSys->getName()));
+        if (U_SUCCESS(status)) {
+            map.insert(std::make_pair("numberingSystem", numSys->getName()));
+        }
     }
     if (!useGrouping.empty()) {
         map.insert(std::make_pair("useGrouping", useGrouping));

@@ -696,6 +696,9 @@ string LocaleConfig::GetMainLanguage(const string &language)
     icu::LocaleBuilder builder = icu::LocaleBuilder().setLanguage(origin.getLanguage()).
         setScript(origin.getScript()).setRegion(origin.getCountry());
     icu::Locale temp = builder.setExtension('u', "").build(status);
+    if (status != U_ZERO_ERROR) {
+        return "";
+    }
     string fullLanguage = temp.toLanguageTag<string>(status);
     if (status != U_ZERO_ERROR) {
         return "";
@@ -705,6 +708,9 @@ string LocaleConfig::GetMainLanguage(const string &language)
     }
     builder.setRegion("");
     temp = builder.build(status);
+    if (status != U_ZERO_ERROR) {
+        return "";
+    }
     fullLanguage = temp.toLanguageTag<string>(status);
     if (status != U_ZERO_ERROR) {
         return "";

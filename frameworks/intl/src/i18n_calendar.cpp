@@ -43,9 +43,21 @@ I18nCalendar::I18nCalendar(std::string localeTag)
     icu::Locale tempLocale = icu::Locale::forLanguageTag(localeTag, status);
     if (status != U_ZERO_ERROR) {
         calendar_ = new icu::GregorianCalendar(status);
+        if (!U_SUCCESS(status)) {
+            if (calendar_ != nullptr) {
+                delete calendar_;
+            }
+            calendar_ = nullptr;
+        }
         return;
     }
     calendar_ = icu::Calendar::createInstance(tempLocale, status);
+    if (status != U_ZERO_ERROR) {
+        if (calendar_ != nullptr) {
+            delete calendar_;
+        }
+        calendar_ = nullptr;
+    }
 }
 
 I18nCalendar::I18nCalendar(std::string localeTag, CalendarType type)
@@ -54,6 +66,12 @@ I18nCalendar::I18nCalendar(std::string localeTag, CalendarType type)
     icu::Locale tempLocale = icu::Locale::forLanguageTag(localeTag, status);
     if (status != U_ZERO_ERROR) {
         calendar_ = new icu::GregorianCalendar(status);
+        if (!U_SUCCESS(status)) {
+            if (calendar_ != nullptr) {
+                delete calendar_;
+            }
+            calendar_ = nullptr;
+        }
         return;
     }
     InitCalendar(tempLocale, type);
@@ -92,14 +110,19 @@ void I18nCalendar::InitCalendar(const icu::Locale &locale, CalendarType type)
             break;
         }
         default: {
-            InitCalendar2(locale, type);
+            InitCalendar2(locale, type, status);
         }
+    }
+    if (!U_SUCCESS(status)) {
+        if (calendar_ != nullptr) {
+            delete calendar_;
+        }
+        calendar_ = nullptr;
     }
 }
 
-void I18nCalendar::InitCalendar2(const icu::Locale &locale, CalendarType type)
+void I18nCalendar::InitCalendar2(const icu::Locale &locale, CalendarType type, UErrorCode &status)
 {
-    UErrorCode status = U_ZERO_ERROR;
     switch (type) {
         case ISLAMIC_TBLA: {
             calendar_ = new icu::IslamicCalendar(locale, status, icu::IslamicCalendar::ECalculationType::TBLA);
@@ -129,7 +152,9 @@ void I18nCalendar::InitCalendar2(const icu::Locale &locale, CalendarType type)
 
 I18nCalendar::~I18nCalendar()
 {
-    delete calendar_;
+    if (calendar_ != nullptr) {
+        delete calendar_;
+    }
 }
 
 void I18nCalendar::SetTime(double value)
