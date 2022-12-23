@@ -1045,7 +1045,16 @@ bool LocaleConfig::Set24HourClock(bool option)
     } else {
         optionStr = "false";
     }
-    return SetParameter(HOUR_KEY, optionStr.data()) == 0;
+    if (SetParameter(HOUR_KEY, optionStr.data()) == 0) {
+#ifdef SUPPORT_GRAPHICS
+        auto appMgrClient = std::make_unique<AppExecFwk::AppMgrClient>();
+        AppExecFwk::Configuration configuration;
+        configuration.AddItem(AAFwk::GlobalConfigurationKey::SYSTEM_HOUR, optionStr);
+        appMgrClient->UpdateConfiguration(configuration);
+#endif
+        return true;
+    }
+    return false;
 }
 
 bool LocaleConfig::SetUsingLocalDigit(bool flag)
