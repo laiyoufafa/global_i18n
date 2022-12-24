@@ -13,12 +13,16 @@
  * limitations under the License.
  */
 #include "date_time_format.h"
-#include "ohos/init_data.h"
 #include "locale_config.h"
+#include "ohos/init_data.h"
+#include "utils.h"
 
 namespace OHOS {
 namespace Global {
 namespace I18n {
+const char *DateTimeFormat::TIMEZONE_KEY = "persist.time.timezone";
+const char *DateTimeFormat::DEFAULT_TIMEZONE = "GMT";
+
 using namespace icu;
 bool DateTimeFormat::icuInitialized = DateTimeFormat::Init();
 
@@ -486,7 +490,16 @@ int64_t DateTimeFormat::GetArrayValue(int64_t *dateArray, size_t index, size_t s
     }
 }
 
-std::string DateTimeFormat::Format(int64_t *date, size_t size)
+std::string DateTimeFormat::GetSystemTimezone()
+{
+    std::string systemTimezone = ReadSystemParameter(TIMEZONE_KEY, SYS_PARAM_LEN);
+    if (systemTimezone.length() == 0) {
+        systemTimezone = DEFAULT_TIMEZONE;
+    }
+    return systemTimezone;
+}
+
+std::string DateTimeFormat::Format(int64_t milliseconds)
 {
     if (!createSuccess) {
         return "";
@@ -494,27 +507,18 @@ std::string DateTimeFormat::Format(int64_t *date, size_t size)
     UErrorCode status = U_ZERO_ERROR;
     std::string result;
     UnicodeString dateString;
-    int64_t year = GetArrayValue(date, YEAR_INDEX, size);
-    int64_t month = GetArrayValue(date, MONTH_INDEX, size);
-    int64_t day = GetArrayValue(date, DAY_INDEX, size);
-    int64_t hour = GetArrayValue(date, HOUR_INDEX, size);
-    int64_t minute = GetArrayValue(date, MINUTE_INDEX, size);
-    int64_t second = GetArrayValue(date, SECOND_INDEX, size);
     calendar->clear();
-    calendar->set(year, month, day, hour, minute, second);
-    if (!timeZone.empty()) {
-        UDate timestamp = calendar->getTime(status);
-        auto zone = std::unique_ptr<TimeZone>(TimeZone::createTimeZone(timeZone.c_str()));
-        calendar->setTimeZone(*zone);
-        dateFormat->setTimeZone(*zone);
-        calendar->setTime(timestamp, status);
-    }
+    std::string timezoneStr = timeZone.empty() ? GetSystemTimezone() : timeZone;
+    auto zone = std::unique_ptr<TimeZone>(TimeZone::createTimeZone(timezoneStr.c_str()));
+    calendar->setTimeZone(*zone);
+    dateFormat->setTimeZone(*zone);
+    calendar->setTime((UDate)milliseconds, status);
     dateFormat->format(calendar->getTime(status), dateString, status);
     dateString.toUTF8String(result);
     return result;
 }
 
-std::string DateTimeFormat::FormatRange(int64_t *fromDate, size_t fromDateSize, int64_t *toDate, size_t toDateSize)
+std::string DateTimeFormat::FormatRange(int64_t fromMilliseconds, int64_t toMilliseconds)
 {
     if (!createSuccess) {
         return "";
@@ -522,40 +526,20 @@ std::string DateTimeFormat::FormatRange(int64_t *fromDate, size_t fromDateSize, 
     UErrorCode status = U_ZERO_ERROR;
     std::string result;
     UnicodeString dateString;
-    int64_t year = GetArrayValue(fromDate, YEAR_INDEX, fromDateSize);
-    int64_t month = GetArrayValue(fromDate, MONTH_INDEX, fromDateSize);
-    int64_t day = GetArrayValue(fromDate, DAY_INDEX, fromDateSize);
-    int64_t hour = GetArrayValue(fromDate, HOUR_INDEX, fromDateSize);
-    int64_t minute = GetArrayValue(fromDate, MINUTE_INDEX, fromDateSize);
-    int64_t second = GetArrayValue(fromDate, SECOND_INDEX, fromDateSize);
     calendar->clear();
-    calendar->set(year, month, day, hour, minute, second);
-    if (!timeZone.empty()) {
-        UDate timestamp = calendar->getTime(status);
-        auto zone = std::unique_ptr<TimeZone>(TimeZone::createTimeZone(timeZone.c_str()));
-        calendar->setTimeZone(*zone);
-        dateIntvFormat->setTimeZone(*zone);
-        calendar->setTime(timestamp, status);
-    }
-    year = GetArrayValue(toDate, YEAR_INDEX, toDateSize);
-    month = GetArrayValue(toDate, MONTH_INDEX, toDateSize);
-    day = GetArrayValue(toDate, DAY_INDEX, toDateSize);
-    hour = GetArrayValue(toDate, HOUR_INDEX, toDateSize);
-    minute = GetArrayValue(toDate, MINUTE_INDEX, toDateSize);
-    second = GetArrayValue(toDate, SECOND_INDEX, toDateSize);
+    std::string timezoneStr = timeZone.empty() ? GetSystemTimezone() : timeZone;
+    auto zone = std::unique_ptr<TimeZone>(TimeZone::createTimeZone(timezoneStr.c_str()));
+    calendar->setTimeZone(*zone);
+    dateIntvFormat->setTimeZone(*zone);
+    calendar->setTime((UDate)fromMilliseconds, status);
+
     auto toCalendar = std::unique_ptr<Calendar>(Calendar::createInstance(locale, status));
     if (status != U_ZERO_ERROR || toCalendar == nullptr) {
         return "";
     }
     toCalendar->clear();
-    toCalendar->set(year, month, day, hour, minute, second);
-    if (!timeZone.empty()) {
-        UDate timestamp = toCalendar->getTime(status);
-        auto zone = std::unique_ptr<TimeZone>(TimeZone::createTimeZone(timeZone.c_str()));
-        toCalendar->setTimeZone(*zone);
-        dateIntvFormat->setTimeZone(*zone);
-        toCalendar->setTime(timestamp, status);
-    }
+    toCalendar->setTimeZone(*zone);
+    toCalendar->setTime((UDate)toMilliseconds, status);
     FieldPosition pos = 0;
     dateIntvFormat->format(*calendar, *toCalendar, dateString, pos, status);
     dateString.toUTF8String(result);

@@ -37,8 +37,8 @@ class DateTimeFormat {
 public:
     DateTimeFormat(const std::vector<std::string> &localeTags, std::map<std::string, std::string> &configs);
     virtual ~DateTimeFormat();
-    std::string Format(int64_t *date, size_t size);
-    std::string FormatRange(int64_t *fromDate, size_t fromDateSize, int64_t *toDate, size_t toDateSize);
+    std::string Format(int64_t milliseconds);
+    std::string FormatRange(int64_t fromMilliseconds, int64_t toMilliseconds);
     void GetResolvedOptions(std::map<std::string, std::string> &map);
     std::string GetDateStyle() const;
     std::string GetTimeStyle() const;
@@ -113,6 +113,9 @@ private:
     static const int HALF_HOUR = 30;
     static const int HOURS_OF_A_DAY = 24;
     static bool icuInitialized;
+    static const char *TIMEZONE_KEY;
+    static const char *DEFAULT_TIMEZONE;
+    static constexpr int SYS_PARAM_LEN = 128;
     static bool Init();
     static std::map<std::string, icu::DateFormat::EStyle> dateTimeStyle;
     bool InitWithLocale(const std::string &curLocale, std::map<std::string, std::string> &configs);
@@ -136,6 +139,7 @@ private:
     int64_t GetArrayValue(int64_t *dateArray, size_t index, size_t size);
     bool CheckInitSuccess();
     void FreeDateTimeFormat();
+    std::string GetSystemTimezone();
 };
 } // namespace I18n
 } // namespace Global
