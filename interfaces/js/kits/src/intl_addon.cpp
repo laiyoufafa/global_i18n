@@ -490,13 +490,9 @@ napi_value IntlAddon::FormatDateTime(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    int64_t year = GetYear(env, argv, 0);
-    int64_t month = GetMonth(env, argv, 0);
-    int64_t day = GetDay(env, argv, 0);
-    int64_t hour = GetHour(env, argv, 0);
-    int64_t minute = GetMinute(env, argv, 0);
-    int64_t second = GetSecond(env, argv, 0);
-    if (year == -1 || month == -1 || day == -1 || hour == -1 || minute == -1 || second == -1) {
+    
+    int64_t milliseconds = GetMilliseconds(env, argv, 0);
+    if (milliseconds == -1) {
         return nullptr;
     }
     IntlAddon *obj = nullptr;
@@ -505,8 +501,7 @@ napi_value IntlAddon::FormatDateTime(napi_env env, napi_callback_info info)
         HiLog::Error(LABEL, "Get DateTimeFormat object failed");
         return nullptr;
     }
-    int64_t date[] = { year, month, day, hour, minute, second };
-    std::string value = obj->datefmt_->Format(date, sizeof(date) / sizeof(int64_t));
+    std::string value = obj->datefmt_->Format(milliseconds);
     napi_value result = nullptr;
     status = napi_create_string_utf8(env, value.c_str(), NAPI_AUTO_LENGTH, &result);
     if (status != napi_ok) {
@@ -527,22 +522,9 @@ napi_value IntlAddon::FormatDateTimeRange(napi_env env, napi_callback_info info)
         HiLog::Error(LABEL, "Parameter wrong");
         return nullptr;
     }
-    int64_t firstYear = GetYear(env, argv, 0);
-    int64_t firstMonth = GetMonth(env, argv, 0);
-    int64_t firstDay = GetDay(env, argv, 0);
-    int64_t firstHour = GetHour(env, argv, 0);
-    int64_t firstMinute = GetMinute(env, argv, 0);
-    int64_t firstSecond = GetSecond(env, argv, 0);
-    int64_t firstDate[] = { firstYear, firstMonth, firstDay, firstHour, firstMinute, firstSecond };
-    int64_t secondYear = GetYear(env, argv, 1);
-    int64_t secondMonth = GetMonth(env, argv, 1);
-    int64_t secondDay = GetDay(env, argv, 1);
-    int64_t secondHour = GetHour(env, argv, 1);
-    int64_t secondMinute = GetMinute(env, argv, 1);
-    int64_t secondSecond = GetSecond(env, argv, 1);
-    int64_t secondDate[] = { secondYear, secondMonth, secondDay, secondHour, secondMinute, secondSecond };
-    if (firstYear == -1 || firstMonth == -1 || firstDay == -1 || firstHour == -1 || firstMinute == -1 ||
-        firstSecond == -1) {
+    int64_t firstMilliseconds = GetMilliseconds(env, argv, 0);
+    int64_t secondMilliseconds = GetMilliseconds(env, argv, 1);
+    if (firstMilliseconds == -1 || secondMilliseconds == -1) {
         return nullptr;
     }
     IntlAddon *obj = nullptr;
@@ -551,8 +533,7 @@ napi_value IntlAddon::FormatDateTimeRange(napi_env env, napi_callback_info info)
         HiLog::Error(LABEL, "Get DateTimeFormat object failed");
         return nullptr;
     }
-    std::string value = obj->datefmt_->FormatRange(firstDate, sizeof(firstDate) / sizeof(int64_t), secondDate,
-        sizeof(secondDate) / sizeof(int64_t));
+    std::string value = obj->datefmt_->FormatRange(firstMilliseconds, secondMilliseconds);
     napi_value result = nullptr;
     status = napi_create_string_utf8(env, value.c_str(), NAPI_AUTO_LENGTH, &result);
     if (status != napi_ok) {
@@ -648,142 +629,27 @@ bool IntlAddon::InitNumberFormatContext(napi_env env, napi_callback_info info, s
     return numberfmt_ != nullptr;
 }
 
-int64_t IntlAddon::GetYear(napi_env env, napi_value *argv, int index)
+int64_t IntlAddon::GetMilliseconds(napi_env env, napi_value *argv, int index)
 {
     napi_value funcGetDateInfo = nullptr;
-    napi_status status = napi_get_named_property(env, argv[index], "getFullYear", &funcGetDateInfo);
+    napi_status status = napi_get_named_property(env, argv[index], "getTime", &funcGetDateInfo);
     if (status != napi_ok) {
-        HiLog::Error(LABEL, "Get year property failed");
+        HiLog::Error(LABEL, "Get Milliseconds property failed");
         return -1;
     }
     napi_value ret_value = nullptr;
     status = napi_call_function(env, argv[index], funcGetDateInfo, 0, nullptr, &ret_value);
     if (status != napi_ok) {
-        HiLog::Error(LABEL, "Get year function failed");
+        HiLog::Error(LABEL, "Get Milliseconds function failed");
         return -1;
     }
-    int64_t year = 0;
-    status = napi_get_value_int64(env, ret_value, &year);
+    int64_t milliseconds = 0;
+    status = napi_get_value_int64(env, ret_value, &milliseconds);
     if (status != napi_ok) {
-        HiLog::Error(LABEL, "Get year failed");
+        HiLog::Error(LABEL, "Get Milliseconds failed");
         return -1;
     }
-    return year;
-}
-
-int64_t IntlAddon::GetMonth(napi_env env, napi_value *argv, int index)
-{
-    napi_value funcGetDateInfo = nullptr;
-    napi_status status = napi_get_named_property(env, argv[index], "getMonth", &funcGetDateInfo);
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "Get month property failed");
-        return -1;
-    }
-    napi_value ret_value = nullptr;
-    status = napi_call_function(env, argv[index], funcGetDateInfo, 0, nullptr, &ret_value);
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "Get month function failed");
-        return -1;
-    }
-    int64_t month = 0;
-    status = napi_get_value_int64(env, ret_value, &month);
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "Get month failed");
-        return -1;
-    }
-    return month;
-}
-
-int64_t IntlAddon::GetDay(napi_env env, napi_value *argv, int index)
-{
-    napi_value funcGetDateInfo = nullptr;
-    napi_status status = napi_get_named_property(env, argv[index], "getDate", &funcGetDateInfo);
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "Get day property failed");
-        return -1;
-    }
-    napi_value ret_value = nullptr;
-    status = napi_call_function(env, argv[index], funcGetDateInfo, 0, nullptr, &ret_value);
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "Get day function failed");
-        return -1;
-    }
-    int64_t day = 0;
-    status = napi_get_value_int64(env, ret_value, &day);
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "Get day failed");
-        return -1;
-    }
-    return day;
-}
-
-int64_t IntlAddon::GetHour(napi_env env, napi_value *argv, int index)
-{
-    napi_value funcGetDateInfo = nullptr;
-    napi_status status = napi_get_named_property(env, argv[index], "getHours", &funcGetDateInfo);
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "Get hour property failed");
-        return -1;
-    }
-    napi_value ret_value = nullptr;
-    status = napi_call_function(env, argv[index], funcGetDateInfo, 0, nullptr, &ret_value);
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "Get hour function failed");
-        return -1;
-    }
-    int64_t hour = 0;
-    status = napi_get_value_int64(env, ret_value, &hour);
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "Get hour failed");
-        return -1;
-    }
-    return hour;
-}
-
-int64_t IntlAddon::GetMinute(napi_env env, napi_value *argv, int index)
-{
-    napi_value funcGetDateInfo = nullptr;
-    napi_status status = napi_get_named_property(env, argv[index], "getMinutes", &funcGetDateInfo);
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "Get minute property failed");
-        return -1;
-    }
-    napi_value ret_value = nullptr;
-    status = napi_call_function(env, argv[index], funcGetDateInfo, 0, nullptr, &ret_value);
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "Get minute function failed");
-        return -1;
-    }
-    int64_t minute = 0;
-    status = napi_get_value_int64(env, ret_value, &minute);
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "Get minute failed");
-        return -1;
-    }
-    return minute;
-}
-
-int64_t IntlAddon::GetSecond(napi_env env, napi_value *argv, int index)
-{
-    napi_value funcGetDateInfo = nullptr;
-    napi_status status = napi_get_named_property(env, argv[index], "getSeconds", &funcGetDateInfo);
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "Get second property failed");
-        return -1;
-    }
-    napi_value ret_value = nullptr;
-    status = napi_call_function(env, argv[index], funcGetDateInfo, 0, nullptr, &ret_value);
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "Get second function failed");
-        return -1;
-    }
-    int64_t second = 0;
-    status = napi_get_value_int64(env, ret_value, &second);
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "Get second failed");
-        return -1;
-    }
-    return second;
+    return milliseconds;
 }
 
 napi_value IntlAddon::GetLanguage(napi_env env, napi_callback_info info)

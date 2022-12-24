@@ -101,12 +101,7 @@ private:
     static napi_value PluralRulesConstructor(napi_env env, napi_callback_info info);
     static napi_value Select(napi_env env, napi_callback_info info);
 
-    static int64_t GetYear(napi_env env, napi_value *argv, int index);
-    static int64_t GetMonth(napi_env env, napi_value *argv, int index);
-    static int64_t GetDay(napi_env env, napi_value *argv, int index);
-    static int64_t GetHour(napi_env env, napi_value *argv, int index);
-    static int64_t GetMinute(napi_env env, napi_value *argv, int index);
-    static int64_t GetSecond(napi_env env, napi_value *argv, int index);
+    static int64_t GetMilliseconds(napi_env env, napi_value *argv, int index);
     bool InitLocaleContext(napi_env env, napi_callback_info info, const std::string localeTag,
         std::map<std::string, std::string> &map);
     bool InitDateTimeFormatContext(napi_env env, napi_callback_info info, std::vector<std::string> localeTags,
