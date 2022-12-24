@@ -157,7 +157,7 @@ void I18nAddon::CreateInitProperties(napi_property_descriptor *properties)
     // 26 is properties index
     properties[26] = DECLARE_NAPI_FUNCTION("getUsingLocalDigit", GetUsingLocalDigitAddon);
     // 28 is properties index
-    properties[28] = DECLARE_NAPI_FUNCTION("getAppPreferredLanguage", GetFirstPreferredLanguage);
+    properties[28] = DECLARE_NAPI_FUNCTION("getAppPreferredLanguage", GetAppPreferredLanguage);
 }
 
 napi_value I18nAddon::Init(napi_env env, napi_value exports)
@@ -3059,6 +3059,23 @@ napi_value I18nAddon::GetFirstPreferredLanguage(napi_env env, napi_callback_info
     return result;
 }
 
+napi_value I18nAddon::GetAppPreferredLanguage(napi_env env, napi_callback_info info)
+{
+#ifdef SUPPORT_APP_PREFERRED_LANGUAGE
+    std::string language = PreferredLanguage::GetAppPreferredLanguage();
+#else
+    std::string language = PreferredLanguage::GetFirstPreferredLanguage();
+#endif
+    napi_value result = nullptr;
+    napi_status status = napi_ok;
+    status = napi_create_string_utf8(env, language.c_str(), NAPI_AUTO_LENGTH, &result);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "getAppPreferrdLanguage: create string result failed");
+        return nullptr;
+    }
+    return result;
+}
+
 napi_value I18nAddon::InitI18nTimeZone(napi_env env, napi_value exports)
 {
     napi_status status = napi_ok;
@@ -3465,7 +3482,7 @@ napi_value I18nAddon::CreateSystemObject(napi_env env)
         DECLARE_NAPI_FUNCTION("removePreferredLanguage", RemovePreferredLanguageWithError),
         DECLARE_NAPI_FUNCTION("getPreferredLanguageList", GetPreferredLanguageList),
         DECLARE_NAPI_FUNCTION("getFirstPreferredLanguage", GetFirstPreferredLanguage),
-        DECLARE_NAPI_FUNCTION("getAppPreferredLanguage", GetFirstPreferredLanguage),
+        DECLARE_NAPI_FUNCTION("getAppPreferredLanguage", GetAppPreferredLanguage),
         DECLARE_NAPI_FUNCTION("setUsingLocalDigit", SetUsingLocalDigitAddonWithError),
         DECLARE_NAPI_FUNCTION("getUsingLocalDigit", GetUsingLocalDigitAddon),
     };

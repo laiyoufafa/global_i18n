@@ -40,6 +40,17 @@ ohos_shared_library("preferred_language") {
   ]
   deps = [ "//base/global/i18n/frameworks/intl:intl_util" ]
   external_deps = [ "init:libbegetutil" ]
+  if (i18n_support_app_preferred_language) {
+    include_dirs +=
+        [ "//base/global/resource_management/frameworks/resmgr/include" ]
+    external_deps += [
+      "bundle_framework:appexecfwk_base",
+      "bundle_framework:appexecfwk_core",
+      "ipc:ipc_core",
+      "resource_management:global_resmgr",
+    ]
+    defines = [ "SUPPORT_APP_PREFERRED_LANGUAGE" ]
+  }
   subsystem_name = "global"
   part_name = "i18n"
 }

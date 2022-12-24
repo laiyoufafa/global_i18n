@@ -13,4 +13,5 @@
 
 declare_args() {
   i18n_support_ui = true
+  i18n_support_app_preferred_language = true
 }

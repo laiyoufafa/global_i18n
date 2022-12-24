@@ -85,6 +85,7 @@ public:
     static napi_value RemovePreferredLanguageWithError(napi_env env, napi_callback_info info);
     static napi_value GetPreferredLanguageList(napi_env env, napi_callback_info info);
     static napi_value GetFirstPreferredLanguage(napi_env env, napi_callback_info info);
+    static napi_value GetAppPreferredLanguage(napi_env env, napi_callback_info info);
     static napi_value InitI18nTimeZone(napi_env env, napi_value exports);
     static napi_value GetI18nTimeZone(napi_env env, napi_callback_info info);
     static napi_value GetDateOrder(napi_env env, napi_callback_info info);

@@ -28,6 +28,9 @@ public:
     static bool RemovePreferredLanguage(int index);
     static std::vector<std::string> GetPreferredLanguageList();
     static std::string GetFirstPreferredLanguage();
+#ifdef SUPPORT_APP_PREFERRED_LANGUAGE
+    static std::string GetAppPreferredLanguage();
+#endif
     static std::string GetPreferredLocale();
 
 private:
@@ -35,10 +38,13 @@ private:
                                              const std::string& language);
     static bool AddPreferredLanguageExist(std::vector<std::string> &preferredLangList, int languageIdx, int index,
                                           const std::string& language);
-    static bool IsMatched(const std::string& preferred, const std::string& resource);
     static bool IsValidLanguage(const std::string &language);
     static bool IsValidTag(const std::string &tag);
     static void Split(const std::string &src, const std::string &sep, std::vector<std::string> &dest);
+#ifdef SUPPORT_APP_PREFERRED_LANGUAGE
+    static std::set<std::string> GetResources();
+    static bool IsMatched(const std::string& preferred, const std::string& resource);
+#endif
     static const char *RESOURCE_PATH_HEAD;
     static const char *RESOURCE_PATH_TAILOR;
     static const char *RESOURCE_PATH_SPLITOR;
