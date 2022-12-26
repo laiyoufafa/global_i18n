@@ -12,13 +12,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "preferred_language.h"
-
+#ifdef SUPPORT_APP_PREFERRED_LANGUAGE
+#include <regex>
+#include "bundle_mgr_client.h"
+#include "hap_resource.h"
+#include "ipc_skeleton.h"
+#endif
 #include "locale_config.h"
 #include "locale_info.h"
 #include "parameter.h"
+#include "preferred_language.h"
 #include "vector"
-
 
 namespace OHOS {
 namespace Global {
@@ -183,6 +187,44 @@ std::vector<std::string> PreferredLanguage::GetPreferredLanguageList()
     return list;
 }
 
+std::string PreferredLanguage::GetFirstPreferredLanguage()
+{
+    std::vector<std::string> preferredLanguageList = GetPreferredLanguageList();
+    return preferredLanguageList[0];
+}
+
+#ifdef SUPPORT_APP_PREFERRED_LANGUAGE
+std::set<std::string> PreferredLanguage::GetResources()
+{
+    pid_t uid = OHOS::IPCSkeleton::GetCallingUid();
+    std::string bundleName = "";
+    OHOS::AppExecFwk::BundleMgrClient client;
+    client.GetBundleNameForUid(uid, bundleName);
+    const std::string resourcePath = RESOURCE_PATH_HEAD + bundleName + RESOURCE_PATH_SPLITOR + bundleName +
+        RESOURCE_PATH_TAILOR;
+    const OHOS::Global::Resource::HapResource *resource =
+        OHOS::Global::Resource::HapResource::LoadFromIndex(resourcePath.c_str(), nullptr);
+    const std::vector<std::string> qualifiers = resource->GetQualifiers();
+    std::set<std::string> result;
+    std::regex languagePattern("type:0.*str:([a-z]{2})");
+    std::regex countryPattern("type:1.*str:([A-Z]{2})");
+    for (size_t i = 0; i < qualifiers.size(); i++) {
+        std::smatch match;
+        bool found = regex_search(qualifiers[i], match, languagePattern);
+        if (!found) {
+            continue;
+        }
+        std::string locale = match.str(1);
+        found = regex_search(qualifiers[i], match, countryPattern);
+        if (found) {
+            locale += "-";
+            locale += match.str(1);
+        }
+        result.insert(locale);
+    }
+    return result;
+}
+
 bool PreferredLanguage::IsMatched(const std::string& preferred, const std::string& resource)
 {
     LocaleInfo preferredLocaleInfo(preferred);
@@ -214,11 +256,29 @@ bool PreferredLanguage::IsMatched(const std::string& preferred, const std::strin
     return false;
 }
 
-std::string PreferredLanguage::GetFirstPreferredLanguage()
+std::string PreferredLanguage::GetAppPreferredLanguage()
 {
     std::vector<std::string> preferredLanguageList = GetPreferredLanguageList();
+    std::set<std::string> resources = GetResources();
+    int minmumMatchedIdx = -1;
+    for (size_t i = 0; i < preferredLanguageList.size(); i++) {
+        for (std::set<std::string>::iterator it = resources.begin(); it != resources.end(); ++it) {
+            std::string preferredLanguage = preferredLanguageList[i];
+            if (preferredLanguage == "en-Qaag") {
+                preferredLanguage = "en-Latn";
+            }
+            if (IsMatched(preferredLanguage, *it)) {
+                minmumMatchedIdx = (int)i;
+                break;
+            }
+        }
+    }
+    if (minmumMatchedIdx != -1) {
+        return preferredLanguageList[minmumMatchedIdx];
+    }
     return preferredLanguageList[0];
 }
+#endif
 
 std::string PreferredLanguage::GetPreferredLocale()
 {

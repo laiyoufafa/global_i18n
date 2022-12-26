@@ -40,7 +40,10 @@
         "syscap": [
             "SystemCapability.Global.I18n"
         ],
-        "features": ["i18n_support_ui"],
+        "features": [
+            "i18n_support_ui",
+            "i18n_support_app_preferred_language"
+        ],
         "adapted_system_type": [
             "standard"
         ],
