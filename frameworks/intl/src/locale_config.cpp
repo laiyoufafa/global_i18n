@@ -37,6 +37,7 @@
 #include "ustring.h"
 #include "ustr_imp.h"
 #include "utils.h"
+#include "tokenid_kit.h"
 #include "locale_config.h"
 
 namespace OHOS {
@@ -362,6 +363,12 @@ string LocaleConfig::GetSystemLocale()
 
 bool LocaleConfig::CheckPermission()
 {
+    uint64_t tokenId = IPCSkeleton::GetCallingFullTokenID();
+    bool isSystemApp = OHOS::Security::AccessToken::TokenIdKit::IsSystemAppByFullTokenID(tokenId);
+    if (!isSystemApp) {
+        HiLog::Info(LABEL, "LocaleConfig::CheckPermission: Get permission failed, because current app is not system app");
+        return false;
+    }
     Security::AccessToken::AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
     int result = Security::AccessToken::PermissionState::PERMISSION_GRANTED;
     if (Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(callerToken)
