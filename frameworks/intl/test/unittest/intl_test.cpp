@@ -62,7 +62,7 @@ void IntlTest::TearDown(void)
 HWTEST_F(IntlTest, IntlFuncTest001, TestSize.Level1)
 {
     string locale = "zh-CN-u-hc-h12";
-    string expects = "公元2021年4月14日星期三 下午3:05:03";
+    string expects = "公元1970年1月1日星期四 上午8:20:34";
     vector<string> locales;
     locales.push_back("jessie");
     locales.push_back(locale);
@@ -79,8 +79,8 @@ HWTEST_F(IntlTest, IntlFuncTest001, TestSize.Level1)
         EXPECT_TRUE(false);
         return;
     }
-    int64_t date[] = { 2021, 3, 14, 15, 5, 3 };
-    string out = dateFormat->Format(date, 6);
+    int64_t milliseconds = 1234567;
+    string out = dateFormat->Format(milliseconds);
     EXPECT_EQ(out, expects);
     EXPECT_EQ(dateFormat->GetYear(), "numeric");
     EXPECT_EQ(dateFormat->GetMonth(), "long");
@@ -156,7 +156,7 @@ HWTEST_F(IntlTest, IntlFuncTest003, TestSize.Level1)
 HWTEST_F(IntlTest, IntlFuncTest004, TestSize.Level1)
 {
     string locale = "en-GB";
-    string expects = "14 April 2021, 15:05 – 5 May 2021, 10:05";
+    string expects = "2 January 1970, 18:17 – 12 January 1970, 18:20";
     vector<string> locales;
     locales.push_back(locale);
     string dateStyle = "long";
@@ -168,9 +168,9 @@ HWTEST_F(IntlTest, IntlFuncTest004, TestSize.Level1)
         EXPECT_TRUE(false);
         return;
     }
-    int64_t date1[] = {2021, 3, 14, 15, 5, 3};
-    int64_t date2[] = {2021, 4, 5, 10, 5, 3};
-    string out = dateFormat->FormatRange(date1, 6, date2, 6);
+    int64_t fromMilliseconds = 123456789;
+    int64_t toMilliseconds = 987654321;
+    string out = dateFormat->FormatRange(fromMilliseconds, toMilliseconds);
     EXPECT_EQ(out, expects);
     EXPECT_EQ(dateFormat->GetDateStyle(), dateStyle);
     EXPECT_EQ(dateFormat->GetTimeStyle(), timeStyle);
@@ -185,7 +185,7 @@ HWTEST_F(IntlTest, IntlFuncTest004, TestSize.Level1)
 HWTEST_F(IntlTest, IntlFuncTest005, TestSize.Level1)
 {
     string locale = "ja";
-    string expects = "2021年4月14日水曜日";
+    string expects = "1970年1月2日金曜日";
     vector<string> locales;
     locales.push_back(locale);
     map<string, string> options = { { "year", "numeric" },
@@ -197,13 +197,13 @@ HWTEST_F(IntlTest, IntlFuncTest005, TestSize.Level1)
         EXPECT_TRUE(false);
         return;
     }
-    int64_t date[] = { 2021, 3, 14, 15, 5, 3 };
-    string out = dateFormat->Format(date, 6);
+    int64_t milliseconds = 123456789;
+    string out = dateFormat->Format(milliseconds);
     EXPECT_EQ(out, expects);
-    int64_t date1[] = {2021, 3, 14, 15, 5, 3};
-    int64_t date2[] = {2021, 4, 5, 10, 5, 3};
-    expects = "2021/4/14水曜日～2021/5/5水曜日";
-    out = dateFormat->FormatRange(date1, 6, date2, 6);
+    int64_t fromMilliseconds = 123456789;
+    int64_t toMilliseconds = 987654321;
+    expects = "1970/1/2金曜日～1970/1/12月曜日";
+    out = dateFormat->FormatRange(fromMilliseconds, toMilliseconds);
     EXPECT_EQ(out, expects);
     delete dateFormat;
 }
@@ -392,14 +392,14 @@ HWTEST_F(IntlTest, IntlFuncTest0012, TestSize.Level1)
     map<string, string> options = {};
     vector<string> locales;
     locales.push_back(locale);
-    std::string expects = "4/14/21";
+    std::string expects = "3/11/82";
     DateTimeFormat *dateFormat = new (std::nothrow) DateTimeFormat(locales, options);
     if (!dateFormat) {
         EXPECT_TRUE(false);
         return;
     }
-    int64_t date[] = {2021, 3, 14, 15, 5, 3};
-    string out = dateFormat->Format(date, 6);
+    int64_t milliseconds = 123456789123456;
+    string out = dateFormat->Format(milliseconds);
     EXPECT_EQ(out, expects);
     delete dateFormat;
 }
@@ -434,7 +434,7 @@ HWTEST_F(IntlTest, IntlFuncTest0013, TestSize.Level1)
 HWTEST_F(IntlTest, IntlFuncTest0014, TestSize.Level1)
 {
     string locale = "zh-CN-u-hc-h12";
-    string expects = "北美太平洋夏令时间";
+    string expects = "北美太平洋标准时间";
     vector<string> locales;
     locales.push_back("jessie");
     locales.push_back(locale);
@@ -444,8 +444,8 @@ HWTEST_F(IntlTest, IntlFuncTest0014, TestSize.Level1)
         EXPECT_TRUE(false);
         return;
     }
-    int64_t date[] = { 2021, 3, 14, 15, 5, 3 };
-    string out = dateFormat->Format(date, 6);
+    int64_t milliseconds = 123456789;
+    string out = dateFormat->Format(milliseconds);
     EXPECT_TRUE(out.find(expects) != out.npos);
     delete dateFormat;
 }
@@ -1339,14 +1339,13 @@ HWTEST_F(IntlTest, IntlFuncTest0036, TestSize.Level1)
     map<string, string> options;
     DateTimeFormat *formatter = new DateTimeFormat(locales, options);
 
-    const size_t size = 6;
-    int64_t date[size] { 2022, 11, 19, 15, 18, 24 };
-    string res = formatter->Format(date, size);
-    EXPECT_EQ(res, "12/19/22");
+    int64_t milliseconds = 123456789;
+    string res = formatter->Format(milliseconds);
+    EXPECT_EQ(res, "1/2/70");
     
-    int64_t endDate[size] { 2023, 10, 18, 14, 17, 23 };
-    res = formatter->FormatRange(date, size, endDate, size);
-    EXPECT_EQ(res, "12/19/22 \xE2\x80\x93 11/18/23");
+    int64_t milliseconds2 = 987654321;
+    res = formatter->FormatRange(milliseconds, milliseconds2);
+    EXPECT_EQ(res, "1/2/70 \xE2\x80\x93 1/12/70");
     delete formatter;
 }
 
@@ -1382,14 +1381,13 @@ HWTEST_F(IntlTest, IntlFuncTest0037, TestSize.Level1)
     };
     DateTimeFormat *formatter = new DateTimeFormat(locales, options);
 
-    const size_t size = 6;
-    int64_t date[size] { 2022, 11, 19, 15, 18, 24 };
-    string res = formatter->Format(date, size);
+    int64_t milliseconds = 123456789;
+    string res = formatter->Format(milliseconds);
     // 2022年12月19日 GMT+8 15:18:24
     EXPECT_TRUE(res.length() > 0);
     
-    int64_t endDate[size] { 2023, 10, 18, 14, 17, 23 };
-    res = formatter->FormatRange(date, size, endDate, size);
+    int64_t milliseconds2 = 987654321;
+    res = formatter->FormatRange(milliseconds, milliseconds2);
     // 2022/12/19 GMT+8 15:18:24 \xE2\x80\x93 2023/11/18 GMT+8 14:17:23
     EXPECT_TRUE(res.length() > 0);
 
@@ -1491,13 +1489,12 @@ HWTEST_F(IntlTest, IntlFuncTest0039, TestSize.Level1)
         { "formatMatcher", "basic" }
     };
     std::unique_ptr<DateTimeFormat> formatter = DateTimeFormat::CreateInstance(locales, inputOptions);
-    const size_t size = 6;
-    int64_t date[size] { 2022, 11, 19, 15, 18, 24 };
-    string res = formatter->Format(date, size);
+    int64_t milliseconds = 123456789;
+    string res = formatter->Format(milliseconds);
     // Dec 19, 2022, 3:18:24 PM GMT+8
     EXPECT_TRUE(res.length() > 0);
-    int64_t endDate[size] { 2023, 10, 18, 14, 17, 23 };
-    res = formatter->FormatRange(date, size, endDate, size);
+    int64_t milliseconds2 = 987654321;
+    res = formatter->FormatRange(milliseconds, milliseconds2);
     // Dec 19, 2022, 3:18:24 PM GMT+8 \xE2\x80\x93 Nov 18, 2023, 2:17:23 PM GMT+8
     EXPECT_TRUE(res.length() > 0);
     map<string, string> options;
