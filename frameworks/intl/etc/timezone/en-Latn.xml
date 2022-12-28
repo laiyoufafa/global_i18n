@@ -130,7 +130,7 @@
     </timezone>
     <timezone>
         <city>Pago Pago</city>
-        <id>Pacific/Pago-Pago</id>
+        <id>Pacific/Pago_Pago</id>
         <display_name>Pago Pago (American Samoa)</display_name>
     </timezone>
 </timezones>

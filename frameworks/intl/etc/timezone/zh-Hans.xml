@@ -130,7 +130,7 @@
     </timezone>
     <timezone>
         <city>Pago Pago</city>
-        <id>Pacific/Pago-Pago</id>
+        <id>Pacific/Pago_Pago</id>
         <display_name>帕果-帕果 (美属萨摩耶)</display_name>
     </timezone>
 </timezones>
