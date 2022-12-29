@@ -366,13 +366,14 @@ bool LocaleConfig::CheckPermission()
     uint64_t tokenId = IPCSkeleton::GetCallingFullTokenID();
     bool isSystemApp = OHOS::Security::AccessToken::TokenIdKit::IsSystemAppByFullTokenID(tokenId);
     if (!isSystemApp) {
-        HiLog::Info(LABEL, "LocaleConfig::CheckPermission: Get permission failed, because current app is not system app");
+        HiLog::Info(LABEL, 
+            "LocaleConfig::CheckPermission: Get permission failed, because current app is not system app");
         return false;
     }
     Security::AccessToken::AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
     int result = Security::AccessToken::PermissionState::PERMISSION_GRANTED;
-    if (Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(callerToken)
-        == Security::AccessToken::ATokenTypeEnum::TOKEN_HAP) {
+    if (Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(callerToken) ==
+        Security::AccessToken::ATokenTypeEnum::TOKEN_HAP) {
         result = Security::AccessToken::AccessTokenKit::VerifyAccessToken(callerToken,
                                                                           "ohos.permission.UPDATE_CONFIGURATION");
     } else {

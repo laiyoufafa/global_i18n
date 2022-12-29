@@ -15,7 +15,7 @@
 #ifndef OHOS_GLOBAL_I18N_BREAKITERATOR_H
 #define OHOS_GLOBAL_I18N_BREAKITERATOR_H
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "iosfwd"
 #include "unicode/brkiter.h"
@@ -28,16 +28,16 @@ class I18nBreakIterator {
 public:
     explicit I18nBreakIterator(std::string lcoaleTag);
     virtual ~I18nBreakIterator();
-    int32_t current();
-    int32_t first();
-    int32_t last();
-    int32_t next(int32_t number);
-    int32_t next();
-    int32_t previous();
-    int32_t following(int32_t offset);
-    void setText(const char* text);
-    void getText(std::string &str);
-    bool isBoundary(int32_t offset);
+    int32_t Current();
+    int32_t First();
+    int32_t Last();
+    int32_t Next(int32_t number);
+    int32_t Next();
+    int32_t Previous();
+    int32_t Following(int32_t offset);
+    void SetText(const char* text);
+    void GetText(std::string &str);
+    bool IsBoundary(int32_t offset);
 private:
     icu::BreakIterator *iter = nullptr;
     icu::UnicodeString ftext = "";

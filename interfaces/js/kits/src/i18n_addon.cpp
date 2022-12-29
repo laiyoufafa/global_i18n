@@ -425,7 +425,7 @@ void I18nAddon::ProcessNormal(char ch, int *order, size_t orderSize, int *length
         if (lengths[0] >= 3) { // 3 is the index of order
             return;
         }
-        order[lengths[0]] = (int) adjust;
+        order[lengths[0]] = static_cast<int>(adjust);
         ++lengths[0];
         lengths[index] = 1;
     } else {
@@ -2362,7 +2362,7 @@ napi_value I18nAddon::Current(napi_env env, napi_callback_info info)
         HiLog::Error(LABEL, "Get BreakIterator object failed");
         return nullptr;
     }
-    int value = obj->brkiter_->current();
+    int value = obj->brkiter_->Current();
     napi_value result = nullptr;
     status = napi_create_int32(env, value, &result);
     if (status != napi_ok) {
@@ -2385,7 +2385,7 @@ napi_value I18nAddon::First(napi_env env, napi_callback_info info)
         HiLog::Error(LABEL, "Get BreakIterator object failed");
         return nullptr;
     }
-    int value = obj->brkiter_->first();
+    int value = obj->brkiter_->First();
     napi_value result = nullptr;
     status = napi_create_int32(env, value, &result);
     if (status != napi_ok) {
@@ -2408,7 +2408,7 @@ napi_value I18nAddon::Last(napi_env env, napi_callback_info info)
         HiLog::Error(LABEL, "Get BreakIterator object failed");
         return nullptr;
     }
-    int value = obj->brkiter_->last();
+    int value = obj->brkiter_->Last();
     napi_value result = nullptr;
     status = napi_create_int32(env, value, &result);
     if (status != napi_ok) {
@@ -2431,7 +2431,7 @@ napi_value I18nAddon::Previous(napi_env env, napi_callback_info info)
         HiLog::Error(LABEL, "Get BreakIterator object failed");
         return nullptr;
     }
-    int value = obj->brkiter_->previous();
+    int value = obj->brkiter_->Previous();
     napi_value result = nullptr;
     status = napi_create_int32(env, value, &result);
     if (status != napi_ok) {
@@ -2468,7 +2468,7 @@ napi_value I18nAddon::Next(napi_env env, napi_callback_info info)
             return nullptr;
         }
     }
-    value = obj->brkiter_->next(value);
+    value = obj->brkiter_->Next(value);
     napi_value result = nullptr;
     status = napi_create_int32(env, value, &result);
     if (status != napi_ok) {
@@ -2512,7 +2512,7 @@ napi_value I18nAddon::SetText(napi_env env, napi_callback_info info)
         HiLog::Error(LABEL, "Get string value failed");
         return nullptr;
     }
-    obj->brkiter_->setText(buf.data());
+    obj->brkiter_->SetText(buf.data());
     return nullptr;
 }
 
@@ -2531,7 +2531,7 @@ napi_value I18nAddon::GetText(napi_env env, napi_callback_info info)
     }
     napi_value value = nullptr;
     std::string temp;
-    obj->brkiter_->getText(temp);
+    obj->brkiter_->GetText(temp);
     status = napi_create_string_utf8(env, temp.c_str(), NAPI_AUTO_LENGTH, &value);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Get field length failed");
@@ -2568,7 +2568,7 @@ napi_value I18nAddon::Following(napi_env env, napi_callback_info info)
         HiLog::Error(LABEL, "Retrieve following value failed");
         return nullptr;
     }
-    value = obj->brkiter_->following(value);
+    value = obj->brkiter_->Following(value);
     napi_value result = nullptr;
     status = napi_create_int32(env, value, &result);
     if (status != napi_ok) {
@@ -2606,7 +2606,7 @@ napi_value I18nAddon::IsBoundary(napi_env env, napi_callback_info info)
         HiLog::Error(LABEL, "Retrieve following value failed");
         return nullptr;
     }
-    bool boundary = obj->brkiter_->isBoundary(value);
+    bool boundary = obj->brkiter_->IsBoundary(value);
     napi_value result = nullptr;
     status = napi_get_boolean(env, boundary, &result);
     if (status != napi_ok) {

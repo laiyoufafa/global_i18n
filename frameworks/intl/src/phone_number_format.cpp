@@ -113,7 +113,7 @@ std::string PhoneNumberFormat::getLocationName(const std::string &number, const 
         dlerror();
     }
     if (!g_func) {
-        g_func = (ExposeLocationName)dlsym(g_dynamicHandler, "exposeLocationName");
+        g_func = reinterpret_cast<ExposeLocationName>(dlsym(g_dynamicHandler, "exposeLocationName"));
     }
     error = dlerror();
     if (error != NULL) {
