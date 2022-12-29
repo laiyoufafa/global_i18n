@@ -135,7 +135,7 @@ private:
     void GetAdditionalResolvedOptions(std::map<std::string, std::string> &map);
     void FixPatternPartOne();
     void FixPatternPartTwo();
-    void removeAmPmChar();
+    void RemoveAmPmChar();
     int64_t GetArrayValue(int64_t *dateArray, size_t index, size_t size);
     bool CheckInitSuccess();
     void FreeDateTimeFormat();

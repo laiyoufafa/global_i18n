@@ -28,17 +28,17 @@ namespace OHOS {
         std::string text(reinterpret_cast<const char*>(data), size - 1);
         int32_t number = static_cast<int32_t>(data[size - 1]);
         I18nBreakIterator iterator(text);
-        iterator.setText(text.c_str());
+        iterator.SetText(text.c_str());
         std::string str;
-        iterator.getText(str);
-        iterator.isBoundary(number);
-        iterator.current();
-        iterator.first();
-        iterator.last();
-        iterator.next(number);
-        iterator.next();
-        iterator.previous();
-        iterator.following(number);
+        iterator.GetText(str);
+        iterator.IsBoundary(number);
+        iterator.Current();
+        iterator.First();
+        iterator.Last();
+        iterator.Next(number);
+        iterator.Next();
+        iterator.Previous();
+        iterator.Following(number);
         return true;
     }
 }

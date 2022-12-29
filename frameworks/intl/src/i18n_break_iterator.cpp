@@ -40,7 +40,7 @@ I18nBreakIterator::~I18nBreakIterator()
     }
 }
 
-int32_t I18nBreakIterator::current()
+int32_t I18nBreakIterator::Current()
 {
     if (iter != nullptr) {
         return iter->current();
@@ -48,7 +48,7 @@ int32_t I18nBreakIterator::current()
     return OFF_BOUND;
 }
 
-int32_t I18nBreakIterator::first()
+int32_t I18nBreakIterator::First()
 {
     if (iter != nullptr) {
         return iter->first();
@@ -56,7 +56,7 @@ int32_t I18nBreakIterator::first()
     return OFF_BOUND;
 }
 
-int32_t I18nBreakIterator::last()
+int32_t I18nBreakIterator::Last()
 {
     if (iter != nullptr) {
         return iter->last();
@@ -64,7 +64,7 @@ int32_t I18nBreakIterator::last()
     return OFF_BOUND;
 }
 
-int32_t I18nBreakIterator::previous()
+int32_t I18nBreakIterator::Previous()
 {
     if (iter != nullptr) {
         return iter->previous();
@@ -72,7 +72,7 @@ int32_t I18nBreakIterator::previous()
     return OFF_BOUND;
 }
 
-int32_t I18nBreakIterator::next(int32_t number)
+int32_t I18nBreakIterator::Next(int32_t number)
 {
     if (iter != nullptr) {
         return iter->next(number);
@@ -80,7 +80,7 @@ int32_t I18nBreakIterator::next(int32_t number)
     return OFF_BOUND;
 }
 
-int32_t I18nBreakIterator::next()
+int32_t I18nBreakIterator::Next()
 {
     if (iter != nullptr) {
         return iter->next();
@@ -88,7 +88,7 @@ int32_t I18nBreakIterator::next()
     return OFF_BOUND;
 }
 
-int32_t I18nBreakIterator::following(int32_t offset)
+int32_t I18nBreakIterator::Following(int32_t offset)
 {
     if (iter != nullptr) {
         return iter->following(offset);
@@ -96,7 +96,7 @@ int32_t I18nBreakIterator::following(int32_t offset)
     return OFF_BOUND;
 }
 
-void I18nBreakIterator::setText(const char *text)
+void I18nBreakIterator::SetText(const char *text)
 {
     if (iter != nullptr) {
         ftext = text;
@@ -104,14 +104,14 @@ void I18nBreakIterator::setText(const char *text)
     }
 }
 
-void I18nBreakIterator::getText(std::string &str)
+void I18nBreakIterator::GetText(std::string &str)
 {
     if (iter != nullptr) {
         ftext.toUTF8String(str);
     }
 }
 
-bool I18nBreakIterator::isBoundary(int32_t offset)
+bool I18nBreakIterator::IsBoundary(int32_t offset)
 {
     if (iter != nullptr) {
         return iter->isBoundary(offset);

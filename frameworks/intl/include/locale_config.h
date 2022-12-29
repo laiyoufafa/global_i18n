@@ -98,7 +98,7 @@ private:
     static std::string GetMainLanguage(const std::string &language);
     static std::string GetDsiplayLanguageWithDialect(const std::string &language, const std::string &displayLocale);
     static std::string ComputeLocale(const std::string &displayLocale);
-    static void ReadLangData(const char *xmlPath);
+    static void ReadLangData(const char *langDataPath);
     static std::unordered_set<std::string> supportedLocales;
     static std::unordered_set<std::string> supportedRegions;
     static std::unordered_set<std::string> whiteLanguages;

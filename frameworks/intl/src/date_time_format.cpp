@@ -177,7 +177,7 @@ void DateTimeFormat::FixPatternPartOne()
             icu::UnicodeString::fromUTF8(StringPiece("H")));
         pattern.findAndReplace(icu::UnicodeString::fromUTF8(StringPiece("K")),
             icu::UnicodeString::fromUTF8(StringPiece("H")));
-        removeAmPmChar();
+        RemoveAmPmChar();
     } else if (hourCycle != "") {
         FixPatternPartTwo();
     }
@@ -206,7 +206,7 @@ void DateTimeFormat::FixPatternPartTwo()
             icu::UnicodeString::fromUTF8(StringPiece("K")));
         pattern.findAndReplace(icu::UnicodeString::fromUTF8(StringPiece("k")),
             icu::UnicodeString::fromUTF8(StringPiece("K")));
-        removeAmPmChar();
+        RemoveAmPmChar();
     } else if (hourCycle == "h24") {
         pattern.findAndReplace(icu::UnicodeString::fromUTF8(StringPiece("h")),
             icu::UnicodeString::fromUTF8(StringPiece("H")));
@@ -214,11 +214,11 @@ void DateTimeFormat::FixPatternPartTwo()
             icu::UnicodeString::fromUTF8(StringPiece("H")));
         pattern.findAndReplace(icu::UnicodeString::fromUTF8(StringPiece("K")),
             icu::UnicodeString::fromUTF8(StringPiece("H")));
-        removeAmPmChar();
+        RemoveAmPmChar();
     }
 }
 
-void DateTimeFormat::removeAmPmChar()
+void DateTimeFormat::RemoveAmPmChar()
 {
     std::string patternString = "";
     pattern.toUTF8String(patternString);

@@ -15,7 +15,7 @@
 #ifndef OHOS_GLOBAL_I18N_CALENDAR_H
 #define OHOS_GLOBAL_I18N_CALENDAR_H
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "iosfwd"
 #include "locid.h"
@@ -47,7 +47,7 @@ public:
     explicit I18nCalendar(std::string localeTag);
     I18nCalendar(std::string localeTag, CalendarType type);
     virtual ~I18nCalendar();
-    void SetTime(double time);
+    void SetTime(double value);
     void Set(int32_t year, int32_t month, int32_t date);
     void Set(UCalendarDateFields field, int32_t value);
     std::string GetTimeZone(void);

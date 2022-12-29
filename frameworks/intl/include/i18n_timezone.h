@@ -15,7 +15,7 @@
 #ifndef OHOS_GLOBAL_I18N_TIMEZONE_H
 #define OHOS_GLOBAL_I18N_TIMEZONE_H
 
-#include <stdint.h>
+#include <cstdint>
 #include <map>
 #include <set>
 #include <string>
