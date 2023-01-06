@@ -366,7 +366,7 @@ bool LocaleConfig::CheckPermission()
     uint64_t tokenId = IPCSkeleton::GetCallingFullTokenID();
     bool isSystemApp = OHOS::Security::AccessToken::TokenIdKit::IsSystemAppByFullTokenID(tokenId);
     if (!isSystemApp) {
-        HiLog::Info(LABEL, 
+        HiLog::Info(LABEL,
             "LocaleConfig::CheckPermission: Get permission failed, because current app is not system app");
         return false;
     }
