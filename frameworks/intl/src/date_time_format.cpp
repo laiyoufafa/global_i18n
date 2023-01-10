@@ -456,10 +456,9 @@ void DateTimeFormat::ComputePartOfPattern(std::string option, char16_t character
 {
     if (!option.empty()) {
         UnicodeString curPartOfPattern = UnicodeString(character);
-        int32_t length = curPartOfPattern.length();
-        if (option == "2-digit" && length == TWO_DIGIT_LENGTH) {
+        if (option == "2-digit") {
             pattern.findAndReplace(curPartOfPattern, UnicodeString::fromUTF8(StringPiece(twoDigitChar)));
-        } else if (option == "numeric" && length == NUMERIC_LENGTH) {
+        } else if (option == "numeric") {
             pattern.findAndReplace(curPartOfPattern, UnicodeString::fromUTF8(StringPiece(numericChar)));
         }
     }
