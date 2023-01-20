@@ -42,20 +42,28 @@ void IntlAddon::Destructor(napi_env env, void *nativeObject, void *hint)
     reinterpret_cast<IntlAddon *>(nativeObject)->~IntlAddon();
 }
 
+napi_value IntlAddon::SetProperty(napi_env env, napi_callback_info info)
+{
+    // do nothing but provided as an input parameter for DECLARE_NAPI_GETTER_SETTER;
+    napi_value result = nullptr;
+    NAPI_CALL(env, napi_get_undefined(env, &result));
+    return result;
+}
+
 napi_value IntlAddon::InitLocale(napi_env env, napi_value exports)
 {
     napi_status status = napi_ok;
     napi_property_descriptor properties[] = {
-        DECLARE_NAPI_GETTER("language", GetLanguage),
-        DECLARE_NAPI_GETTER("baseName", GetBaseName),
-        DECLARE_NAPI_GETTER("region", GetRegion),
-        DECLARE_NAPI_GETTER("script", GetScript),
-        DECLARE_NAPI_GETTER("calendar", GetCalendar),
-        DECLARE_NAPI_GETTER("collation", GetCollation),
-        DECLARE_NAPI_GETTER("hourCycle", GetHourCycle),
-        DECLARE_NAPI_GETTER("numberingSystem", GetNumberingSystem),
-        DECLARE_NAPI_GETTER("numeric", GetNumeric),
-        DECLARE_NAPI_GETTER("caseFirst", GetCaseFirst),
+        DECLARE_NAPI_GETTER_SETTER("language", GetLanguage, SetProperty),
+        DECLARE_NAPI_GETTER_SETTER("baseName", GetBaseName, SetProperty),
+        DECLARE_NAPI_GETTER_SETTER("region", GetRegion, SetProperty),
+        DECLARE_NAPI_GETTER_SETTER("script", GetScript, SetProperty),
+        DECLARE_NAPI_GETTER_SETTER("calendar", GetCalendar, SetProperty),
+        DECLARE_NAPI_GETTER_SETTER("collation", GetCollation, SetProperty),
+        DECLARE_NAPI_GETTER_SETTER("hourCycle", GetHourCycle, SetProperty),
+        DECLARE_NAPI_GETTER_SETTER("numberingSystem", GetNumberingSystem, SetProperty),
+        DECLARE_NAPI_GETTER_SETTER("numeric", GetNumeric, SetProperty),
+        DECLARE_NAPI_GETTER_SETTER("caseFirst", GetCaseFirst, SetProperty),
         DECLARE_NAPI_FUNCTION("toString", ToString),
         DECLARE_NAPI_FUNCTION("minimize", Minimize),
         DECLARE_NAPI_FUNCTION("maximize", Maximize),
