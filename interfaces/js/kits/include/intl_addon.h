@@ -115,6 +115,8 @@ private:
     bool InitPluralRulesContext(napi_env env, napi_callback_info info, std::vector<std::string> localeTags,
         std::map<std::string, std::string> &map);
 
+    static napi_value SetProperty(napi_env env, napi_callback_info info);
+
     napi_env env_;
     std::unique_ptr<LocaleInfo> locale_ = nullptr;
     std::unique_ptr<DateTimeFormat> datefmt_ = nullptr;
