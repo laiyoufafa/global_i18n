@@ -91,6 +91,7 @@ ohos_shared_library("intl_util") {
     "src/relative_time_format.cpp",
     "src/utils.cpp",
   ]
+  version_script = "libintl_util.map"
   cflags_cc = [
     "-Wall",
     "-fPIC",
