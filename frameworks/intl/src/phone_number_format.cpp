@@ -16,6 +16,7 @@
 
 #include <dlfcn.h>
 
+#include "locale_config.h"
 #include "locid.h"
 #include "map"
 #include "new"
@@ -117,7 +118,14 @@ std::string PhoneNumberFormat::getLocationName(const std::string &number, const 
     }
     error = dlerror();
     if (error != NULL) {
-        return "";
+        i18n::phonenumbers::PhoneNumber phoneNumber;
+        PhoneNumberUtil::ErrorType type = util->Parse(number, country, &phoneNumber);
+        if (type != PhoneNumberUtil::ErrorType::NO_PARSING_ERROR) {
+            return "";
+        }
+        std::string regionCode;
+        util->GetRegionCodeForNumber(phoneNumber, &regionCode);
+        return LocaleConfig::GetDisplayRegion(regionCode, locale, false);
     }
     const char* numberStr = number.c_str();
     const char* localeStr = locale.c_str();
