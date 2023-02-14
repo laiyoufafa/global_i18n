@@ -25,6 +25,7 @@
 #include "libxml/parser.h"
 #include "locale_info.h"
 #include "localebuilder.h"
+#include "locdspnm.h"
 #include "locid.h"
 #include "ohos/init_data.h"
 #include "parameter.h"
@@ -246,66 +247,27 @@ int32_t GetDialectName(const char *localeName, char *name, size_t nameCapacity, 
     return temp.size();
 }
 
-int32_t GetDisplayName(const char *locale, const char *displayLocale, UChar *dest, int32_t destCapacity,
-    UErrorCode &status)
-{
-    if (status != U_ZERO_ERROR) {
-        return 0;
-    }
-    if ((destCapacity < 0) || (destCapacity > 0  && !dest)) {
-        status = U_ILLEGAL_ARGUMENT_ERROR;
-        return 0;
-    }
-    char localeBuffer[ULOC_FULLNAME_CAPACITY];
-    int32_t length = GetDialectName(locale, localeBuffer, sizeof(localeBuffer), status);
-    if (status != U_ZERO_ERROR || !length) {
-        status = U_ILLEGAL_ARGUMENT_ERROR;
-        return 0;
-    }
-    const UChar *str = uloc_getTableStringWithFallback(U_ICUDATA_LANG, displayLocale, "Languages",
-        nullptr, localeBuffer, &length, &status);
-    if (status <= U_ZERO_ERROR) {
-        int32_t len = (length < destCapacity) ? length : destCapacity;
-        if ((len > 0) && (str != nullptr)) {
-            u_memcpy(dest, str, len);
-        }
-    } else {
-        status = U_USING_DEFAULT_WARNING;
-        return 0;
-    }
-    return u_terminateUChars(dest, destCapacity, length, &status);
-}
-
-void GetDisplayLanguageImpl(const char *locale, const char *displayLocale, icu::UnicodeString &result)
-{
-    UChar *buffer = result.getBuffer(50);  // size 50 is enough to hold language name
-    if (!buffer) {
-        result.truncate(0);
-        return;
-    }
-    UErrorCode status = U_ZERO_ERROR;
-    int32_t length = GetDisplayName(locale, displayLocale, buffer, result.getCapacity(), status);
-    result.releaseBuffer(U_SUCCESS(status) ? length : 0);
-}
-
-string GetDisplayLanguageInner(const string &language, const string &displayLocale, bool sentenceCase)
+string GetDisplayLanguageInner(const string &language, const string &displayLocaleTag, bool sentenceCase)
 {
     icu::UnicodeString unistr;
     // 0 is the start position of language, 2 is the length of zh and fa
-    if (!language.compare(0, 2, "zh") || !language.compare(0, 2, "fa")) {
-        UErrorCode error = U_ZERO_ERROR;
-        icu::Locale disLocale = icu::Locale::forLanguageTag(displayLocale, error);
-        if (error != U_ZERO_ERROR) {
-            return language;
+    if (!language.compare(0, 2, "zh") || !language.compare(0, 2, "fa") || !language.compare(0, 2, "ro")) {
+        UErrorCode status = U_ZERO_ERROR;
+        icu::Locale displayLocale = icu::Locale::forLanguageTag(displayLocaleTag.c_str(), status);
+        if (status != U_ZERO_ERROR) {
+            return "";
         }
-        const char *name = disLocale.getName();
-        if (!name) {
-            return language;
+        icu::LocaleDisplayNames *dspNames = icu::LocaleDisplayNames::createInstance(displayLocale,
+            UDialectHandling::ULDN_DIALECT_NAMES);
+        icu::Locale tempLocale = icu::Locale::forLanguageTag(language.c_str(), status);
+        if (status != U_ZERO_ERROR) {
+            return "";
         }
-        GetDisplayLanguageImpl(language.c_str(), name, unistr);
+        dspNames->localeDisplayName(tempLocale, unistr);
+        delete dspNames;
     } else {
         UErrorCode status = U_ZERO_ERROR;
-        icu::Locale displayLoc = icu::Locale::forLanguageTag(displayLocale, status);
+        icu::Locale displayLoc = icu::Locale::forLanguageTag(displayLocaleTag, status);
         if (status != U_ZERO_ERROR) {
             return "";
         }
