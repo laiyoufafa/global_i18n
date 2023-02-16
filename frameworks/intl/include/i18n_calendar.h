@@ -59,7 +59,7 @@ public:
     int32_t GetFirstDayOfWeek(void);
     bool IsWeekend(int64_t date, UErrorCode &status);
     bool IsWeekend(void);
-    std::string GetDisplayName(std::string &displayLocale);
+    std::string GetDisplayName(std::string &displayLocaleTag);
 private:
     icu::Calendar *calendar_;
     void InitCalendar(const icu::Locale &locale, CalendarType type);

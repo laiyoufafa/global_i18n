@@ -22,6 +22,7 @@
 #include "indiancal.h"
 #include "islamcal.h"
 #include "japancal.h"
+#include "locdspnm.h"
 #include "persncal.h"
 #include "string"
 #include "ureslocs.h"
@@ -266,33 +267,24 @@ bool I18nCalendar::IsWeekend(void)
     return false;
 }
 
-std::string I18nCalendar::GetDisplayName(std::string &displayLocale)
+std::string I18nCalendar::GetDisplayName(std::string &displayLocaleTag)
 {
-    icu::UnicodeString unistr;
-    int32_t destCapacity = 50;
-    UChar *buffer = unistr.getBuffer(destCapacity);
-    if (buffer == 0 || !calendar_) {
+    if (calendar_ == nullptr) {
         return "";
     }
     const char *type = calendar_->getType();
-    if (!type) {
+    if (type == nullptr) {
         return "";
     }
-    int32_t length;
     UErrorCode status = U_ZERO_ERROR;
-    const UChar *str = uloc_getTableStringWithFallback(U_ICUDATA_LANG, displayLocale.c_str(), "Types", "calendar",
-        type, &length, &status);
-    int32_t len;
-    if (status == U_ZERO_ERROR) {
-        len = (length < destCapacity) ? length : destCapacity;
-        if ((len > 0) && (str != nullptr)) {
-            u_memcpy(buffer, str, len);
-        }
-    } else {
+    icu::Locale displayLocale = icu::Locale::forLanguageTag(displayLocaleTag, status);
+    if (status != U_ZERO_ERROR) {
         return "";
     }
-    len = u_terminateUChars(buffer, destCapacity, length, &status);
-    unistr.releaseBuffer(U_SUCCESS(status) ? len : 0);
+    icu::LocaleDisplayNames *dspName = icu::LocaleDisplayNames::createInstance(displayLocale);
+    icu::UnicodeString unistr;
+    dspName->keyValueDisplayName("calendar", type, unistr);
+    delete dspName;
     std::string ret;
     unistr.toUTF8String<std::string>(ret);
     return ret;
