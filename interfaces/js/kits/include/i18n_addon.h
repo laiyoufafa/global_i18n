@@ -20,6 +20,7 @@
 #include "napi/native_api.h"
 #include "i18n_break_iterator.h"
 #include "i18n_calendar.h"
+#include "i18n_normalizer.h"
 #include "i18n_timezone.h"
 #include "index_util.h"
 #include "napi/native_node_api.h"
@@ -102,6 +103,7 @@ public:
     static napi_value InitCharacter(napi_env env, napi_value exports);
     static napi_value InitUtil(napi_env env, napi_value exports);
     static napi_value System(napi_env env, napi_value exports);
+    static napi_value InitI18nNormalizer(napi_env env, napi_value exports);
 
 private:
     static void CreateInitProperties(napi_property_descriptor *properties);
@@ -186,6 +188,23 @@ private:
 
     static bool ParseStringParam(napi_env env, napi_value argv, bool throwError, std::string &strParam);
 
+    static napi_status SetEnumValue(napi_env env, napi_value enumObj, const char* enumName, int32_t enumVal);
+    static napi_value CreateI18NNormalizerModeEnum(napi_env env);
+    static napi_value CreateI18nUtilObject(napi_env env);
+    static napi_value CreateI18nNormalizerObject(napi_env env);
+    static napi_value GetI18nNormalizerInstance(napi_env env, napi_callback_info info);
+    static napi_value I18nNormalizerConstructor(napi_env env, napi_callback_info info);
+    static napi_value Normalize(napi_env env, napi_callback_info info);
+
+    static const int32_t NORMALIZER_MODE_NFC = 1;
+    static const int32_t NORMALIZER_MODE_NFD = 2;
+    static const int32_t NORMALIZER_MODE_NFKC = 3;
+    static const int32_t NORMALIZER_MODE_NFKD = 4;
+    static const char *NORMALIZER_MODE_NFC_NAME;
+    static const char *NORMALIZER_MODE_NFD_NAME;
+    static const char *NORMALIZER_MODE_NFKC_NAME;
+    static const char *NORMALIZER_MODE_NFKD_NAME;
+
     napi_env env_;
     std::unique_ptr<PhoneNumberFormat> phonenumberfmt_ = nullptr;
     std::unique_ptr<I18nCalendar> calendar_ = nullptr;
@@ -193,6 +212,7 @@ private:
     std::unique_ptr<I18nBreakIterator> brkiter_ = nullptr;
     std::unique_ptr<IndexUtil> indexUtil_ = nullptr;
     std::unique_ptr<I18nTimeZone> timezone_ = nullptr;
+    std::unique_ptr<I18nNormalizer> normalizer_ = nullptr;
 };
 } // namespace I18n
 } // namespace Global

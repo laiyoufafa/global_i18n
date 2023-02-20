@@ -14,6 +14,7 @@
  */
 
 #include <gtest/gtest.h>
+#include "i18n_normalizer.h"
 #include "locale_config.h"
 #include "preferred_language.h"
 
@@ -60,6 +61,126 @@ HWTEST_F(I18nTest, I18nFuncTest001, TestSize.Level1)
             EXPECT_EQ(preferredLocale, "en-CN");
         }
     }
+}
+
+/**
+ * @tc.name: I18nFuncTest002
+ * @tc.desc: Test I18n Normalizer
+ * @tc.type: FUNC
+ */
+HWTEST_F(I18nTest, I18nFuncTest002, TestSize.Level1)
+{
+    I18nErrorCode errorCode = I18nErrorCode::SUCCESS;
+    I18nNormalizer normalizer(I18nNormalizerMode::NFD, errorCode);
+    EXPECT_EQ(errorCode, I18nErrorCode::SUCCESS);
+
+    string text = "\uFB01"; // \uFB01 is ﬁ
+    string normalizedText = normalizer.Normalize(text.c_str(), text.length(), errorCode);
+    EXPECT_EQ(errorCode, I18nErrorCode::SUCCESS);
+    EXPECT_EQ(normalizedText.length(), 3); // 3 is the NFD normalized length of ﬁ.
+    EXPECT_EQ(normalizedText, "\uFB01");
+
+    text = "\u0032\u2075";
+    normalizedText = normalizer.Normalize(text.c_str(), text.length(), errorCode);
+    EXPECT_EQ(errorCode, I18nErrorCode::SUCCESS);
+    EXPECT_EQ(normalizedText.length(), 4); // 4 is the expected normalized text length.
+    EXPECT_EQ(normalizedText, "\u0032\u2075");
+
+    text = "\u1E9B\u0323";
+    normalizedText = normalizer.Normalize(text.c_str(), text.length(), errorCode);
+    EXPECT_EQ(errorCode, I18nErrorCode::SUCCESS);
+    EXPECT_EQ(normalizedText.length(), 6); // 6 is the expected normalized text length.
+    EXPECT_EQ(normalizedText, "\u017F\u0323\u0307");
+}
+
+/**
+ * @tc.name: I18nFuncTest003
+ * @tc.desc: Test I18n Normalizer
+ * @tc.type: FUNC
+ */
+HWTEST_F(I18nTest, I18nFuncTest003, TestSize.Level1)
+{
+    I18nErrorCode errorCode = I18nErrorCode::SUCCESS;
+    I18nNormalizer normalizer(I18nNormalizerMode::NFC, errorCode);
+    EXPECT_EQ(errorCode, I18nErrorCode::SUCCESS);
+
+    string text = "\uFB01"; // \uFB01 is ﬁ
+    string normalizedText = normalizer.Normalize(text.c_str(), text.length(), errorCode);
+    EXPECT_EQ(errorCode, I18nErrorCode::SUCCESS);
+    EXPECT_EQ(normalizedText.length(), 3); // 3 is the NFC normalized length of ﬁ.
+    EXPECT_EQ(normalizedText, "\uFB01");
+
+    text = "\u0032\u2075";
+    normalizedText = normalizer.Normalize(text.c_str(), text.length(), errorCode);
+    EXPECT_EQ(errorCode, I18nErrorCode::SUCCESS);
+    EXPECT_EQ(normalizedText.length(), 4); // 4 is the expected normalized text length.
+    EXPECT_EQ(normalizedText, "\u0032\u2075");
+
+    text = "\u1E9B\u0323";
+    normalizedText = normalizer.Normalize(text.c_str(), text.length(), errorCode);
+    EXPECT_EQ(errorCode, I18nErrorCode::SUCCESS);
+    EXPECT_EQ(normalizedText.length(), 5); // 5 is the expected normalized text length.
+    EXPECT_EQ(normalizedText, "\u1E9B\u0323");
+}
+
+/**
+ * @tc.name: I18nFuncTest004
+ * @tc.desc: Test I18n Normalizer
+ * @tc.type: FUNC
+ */
+HWTEST_F(I18nTest, I18nFuncTest004, TestSize.Level1)
+{
+    I18nErrorCode errorCode = I18nErrorCode::SUCCESS;
+    I18nNormalizer normalizer(I18nNormalizerMode::NFKD, errorCode);
+    EXPECT_EQ(errorCode, I18nErrorCode::SUCCESS);
+
+    string text = "\uFB01"; // \uFB01 is ﬁ
+    string normalizedText = normalizer.Normalize(text.c_str(), text.length(), errorCode);
+    EXPECT_EQ(errorCode, I18nErrorCode::SUCCESS);
+    EXPECT_EQ(normalizedText.length(), 2); // 2 is the NFKD normalized length of ﬁ.
+    EXPECT_EQ(normalizedText, "\u0066\u0069");
+
+    text = "\u0032\u2075";
+    normalizedText = normalizer.Normalize(text.c_str(), text.length(), errorCode);
+    EXPECT_EQ(errorCode, I18nErrorCode::SUCCESS);
+    EXPECT_EQ(normalizedText.length(), 2); // 2 is the expected normalized text length.
+    EXPECT_EQ(normalizedText, "\u0032\u0035");
+
+    text = "\u1E9B\u0323";
+    normalizedText = normalizer.Normalize(text.c_str(), text.length(), errorCode);
+    EXPECT_EQ(errorCode, I18nErrorCode::SUCCESS);
+    EXPECT_EQ(normalizedText.length(), 5); // 5 is the expected normalized text length.
+    EXPECT_EQ(normalizedText, "\u0073\u0323\u0307");
+}
+
+/**
+ * @tc.name: I18nFuncTest005
+ * @tc.desc: Test I18n Normalizer
+ * @tc.type: FUNC
+ */
+HWTEST_F(I18nTest, I18nFuncTest005, TestSize.Level1)
+{
+    I18nErrorCode errorCode = I18nErrorCode::SUCCESS;
+    I18nNormalizer normalizer(I18nNormalizerMode::NFKC, errorCode);
+    EXPECT_EQ(errorCode, I18nErrorCode::SUCCESS);
+
+    string text = "\uFB01"; // \uFB01 is ﬁ
+    string normalizedText = normalizer.Normalize(text.c_str(), text.length(), errorCode);
+    EXPECT_EQ(errorCode, I18nErrorCode::SUCCESS);
+    EXPECT_EQ(normalizedText.length(), 2); // 2 is the NFKC normalized length of ﬁ.
+    EXPECT_EQ(normalizedText, "\u0066\u0069");
+
+    text = "\u0032\u2075";
+    normalizedText = normalizer.Normalize(text.c_str(), text.length(), errorCode);
+    EXPECT_EQ(errorCode, I18nErrorCode::SUCCESS);
+    EXPECT_EQ(normalizedText.length(), 2); // 2 is the expected normalized text length.
+    EXPECT_EQ(normalizedText, "\u0032\u0035");
+
+    text = "\u1E9B\u0323";
+    normalizedText = normalizer.Normalize(text.c_str(), text.length(), errorCode);
+    EXPECT_EQ(errorCode, I18nErrorCode::SUCCESS);
+    EXPECT_EQ(normalizedText.length(), 3); // 3 is the expected normalized text length.
+    EXPECT_EQ(normalizedText, "\u1E69");
 }
 } // namespace I18n
 } // namespace Global

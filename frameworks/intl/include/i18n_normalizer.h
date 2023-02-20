@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,17 +13,24 @@
  * limitations under the License.
  */
 
-#ifndef OHOS_GLOBAL_I18N_TEST_H
-#define OHOS_GLOBAL_I18N_TEST_H
+#ifndef OHOS_GLOBAL_I18N_I18N_NORMALIZER_H
+#define OHOS_GLOBAL_I18N_I18N_NORMALIZER_H
+
+#include "i18n_types.h"
+#include "normalizer2.h"
 
 namespace OHOS {
 namespace Global {
 namespace I18n {
-int I18nFuncTest001(void);
-int I18nFuncTest002(void);
-int I18nFuncTest003(void);
-int I18nFuncTest004(void);
-int I18nFuncTest005(void);
+class I18nNormalizer {
+public:
+    I18nNormalizer(I18nNormalizerMode mode, I18nErrorCode &errorCode);
+    ~I18nNormalizer();
+    std::string Normalize(const char *text, int32_t length, I18nErrorCode &errorCode);
+
+private:
+    const icu::Normalizer2 *normalizer = nullptr;
+};
 } // namespace I18n
 } // namespace Global
 } // namespace OHOS

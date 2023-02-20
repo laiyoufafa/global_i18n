@@ -32,11 +32,14 @@ namespace OHOS {
 namespace Global {
 namespace I18n {
 static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = { LOG_CORE, 0xD001E00, "I18nJs" };
+using namespace OHOS::HiviewDFX;
+
 static thread_local napi_ref* g_constructor = nullptr;
 static thread_local napi_ref* g_brkConstructor = nullptr;
 static thread_local napi_ref* g_timezoneConstructor = nullptr;
 static thread_local napi_ref g_indexUtilConstructor = nullptr;
 static thread_local napi_ref* g_transConstructor = nullptr;
+static thread_local napi_ref* g_normalizerConstructor = nullptr;
 static std::unordered_map<std::string, UCalendarDateFields> g_fieldsMap {
     { "era", UCAL_ERA },
     { "year", UCAL_YEAR },
@@ -76,7 +79,11 @@ static std::unordered_map<std::string, CalendarType> g_typeMap {
     { "japanese", CalendarType::JAPANESE },
     { "persion", CalendarType::PERSIAN },
 };
-using namespace OHOS::HiviewDFX;
+
+const char *I18nAddon::NORMALIZER_MODE_NFC_NAME = "NFC";
+const char *I18nAddon::NORMALIZER_MODE_NFD_NAME = "NFD";
+const char *I18nAddon::NORMALIZER_MODE_NFKC_NAME = "NFKC";
+const char *I18nAddon::NORMALIZER_MODE_NFKD_NAME = "NFKD";
 
 I18nAddon::I18nAddon() : env_(nullptr) {}
 
@@ -122,6 +129,96 @@ napi_value I18nAddon::CreateUnicodeObject(napi_env env)
     return character;
 }
 
+napi_value I18nAddon::CreateI18nUtilObject(napi_env env)
+{
+    napi_value i18nUtil = nullptr;
+    napi_status status = napi_create_object(env, &i18nUtil);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "Failed to create I18nUtil object at init");
+        return nullptr;
+    }
+    napi_property_descriptor i18nUtilProperties[] = {
+        DECLARE_NAPI_FUNCTION("unitConvert", UnitConvert),
+        DECLARE_NAPI_FUNCTION("getDateOrder", GetDateOrder)
+    };
+    status = napi_define_properties(env, i18nUtil, sizeof(i18nUtilProperties) / sizeof(napi_property_descriptor),
+        i18nUtilProperties);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "Failed to set properties of I18nUtil at init");
+        return nullptr;
+    }
+    return i18nUtil;
+}
+
+napi_value I18nAddon::CreateI18nNormalizerObject(napi_env env)
+{
+    napi_value i18nNormalizer = nullptr;
+    napi_status status = napi_create_object(env, &i18nNormalizer);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "Failed to create I18nNormalizer object at init");
+        return nullptr;
+    }
+    napi_property_descriptor i18nNormalizerProperties[] = {
+        DECLARE_NAPI_FUNCTION("getInstance", GetI18nNormalizerInstance)
+    };
+    status = napi_define_properties(env, i18nNormalizer,
+        sizeof(i18nNormalizerProperties) / sizeof(napi_property_descriptor), i18nNormalizerProperties);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "Failed to set properties of I18nNormalizer at init");
+        return nullptr;
+    }
+    return i18nNormalizer;
+}
+
+napi_status I18nAddon::SetEnumValue(napi_env env, napi_value enumObj, const char* enumName, int32_t enumVal)
+{
+    napi_value name = nullptr;
+    napi_status status = napi_create_string_utf8(env, enumName, NAPI_AUTO_LENGTH, &name);
+    if (status != napi_ok) {
+        return status;
+    }
+    napi_value value = nullptr;
+    status = napi_create_int32(env, enumVal, &value);
+    if (status != napi_ok) {
+        return status;
+    }
+    status = napi_set_property(env, enumObj, name, value);
+    if (status != napi_ok) {
+        return status;
+    }
+    status = napi_set_property(env, enumObj, value, name);
+    if (status != napi_ok) {
+        return status;
+    }
+    return napi_ok;
+}
+
+napi_value I18nAddon::CreateI18NNormalizerModeEnum(napi_env env)
+{
+    napi_value i18nNormalizerModel = nullptr;
+    napi_status status = napi_create_object(env, &i18nNormalizerModel);
+    if (status != napi_ok) {
+        return nullptr;
+    }
+    status = SetEnumValue(env, i18nNormalizerModel, NORMALIZER_MODE_NFC_NAME, NORMALIZER_MODE_NFC);
+    if (status != napi_ok) {
+        return nullptr;
+    }
+    status = SetEnumValue(env, i18nNormalizerModel, NORMALIZER_MODE_NFD_NAME, NORMALIZER_MODE_NFD);
+    if (status != napi_ok) {
+        return nullptr;
+    }
+    status = SetEnumValue(env, i18nNormalizerModel, NORMALIZER_MODE_NFKC_NAME, NORMALIZER_MODE_NFKC);
+    if (status != napi_ok) {
+        return nullptr;
+    }
+    status = SetEnumValue(env, i18nNormalizerModel, NORMALIZER_MODE_NFKD_NAME, NORMALIZER_MODE_NFKD);
+    if (status != napi_ok) {
+        return nullptr;
+    }
+    return i18nNormalizerModel;
+}
+
 void I18nAddon::CreateInitProperties(napi_property_descriptor *properties)
 {
     properties[0] = DECLARE_NAPI_FUNCTION("getSystemLanguages", GetSystemLanguages);  // 0 is properties index
@@ -163,21 +260,8 @@ void I18nAddon::CreateInitProperties(napi_property_descriptor *properties)
 napi_value I18nAddon::Init(napi_env env, napi_value exports)
 {
     napi_status status = napi_ok;
-    napi_value i18nUtil = nullptr;
-    status = napi_create_object(env, &i18nUtil);
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "Failed to create util object at init");
-        return nullptr;
-    }
-    napi_property_descriptor i18nUtilProperties[] = {
-        DECLARE_NAPI_FUNCTION("unitConvert", UnitConvert),
-        DECLARE_NAPI_FUNCTION("getDateOrder", GetDateOrder)
-    };
-    status = napi_define_properties(env, i18nUtil,
-                                    sizeof(i18nUtilProperties) / sizeof(napi_property_descriptor),
-                                    i18nUtilProperties);
-    if (status != napi_ok) {
-        HiLog::Error(LABEL, "Failed to set properties of i18nUtil at init");
+    napi_value i18nUtil = CreateI18nUtilObject(env);
+    if (i18nUtil == nullptr) {
         return nullptr;
     }
     napi_value unicode = CreateUnicodeObject(env);
@@ -196,7 +280,15 @@ napi_value I18nAddon::Init(napi_env env, napi_value exports)
     if (!system) {
         return nullptr;
     }
-    size_t propertiesNums = 30;
+    napi_value i18nNormalizer = CreateI18nNormalizerObject(env);
+    if (i18nNormalizer == nullptr) {
+        return nullptr;
+    }
+    napi_value i18nNormalizerMode = CreateI18NNormalizerModeEnum(env);
+    if (i18nNormalizerMode == nullptr) {
+        return nullptr;
+    }
+    size_t propertiesNums = 32;
     napi_property_descriptor properties[propertiesNums];
     CreateInitProperties(properties);
     properties[13] = DECLARE_NAPI_PROPERTY("I18NUtil", i18nUtil);  // 13 is properties index
@@ -204,6 +296,8 @@ napi_value I18nAddon::Init(napi_env env, napi_value exports)
     properties[24] = DECLARE_NAPI_PROPERTY("Transliterator", transliterator); // 24 is properties index
     properties[27] = DECLARE_NAPI_PROPERTY("TimeZone", timezone); // 27 is properties index
     properties[29] = DECLARE_NAPI_PROPERTY("System", system); // 29 is properties index
+    properties[30] = DECLARE_NAPI_PROPERTY("Normalizer", i18nNormalizer); // 30 is properties index
+    properties[31] = DECLARE_NAPI_PROPERTY("NormalizerMode", i18nNormalizerMode); // 31 is properties index
     status = napi_define_properties(env, exports, propertiesNums, properties);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Failed to set properties at init");
@@ -3694,6 +3788,146 @@ napi_value I18nAddon::InitUtil(napi_env env, napi_value exports)
     return exports;
 }
 
+napi_value I18nAddon::GetI18nNormalizerInstance(napi_env env, napi_callback_info info)
+{
+    size_t argc = 1;
+    napi_value argv[1] = { nullptr };
+    napi_value thisVar = nullptr;
+    void *data = nullptr;
+    napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+
+    napi_value constructor = nullptr;
+    status = napi_get_reference_value(env, *g_normalizerConstructor, &constructor);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "Failed to create reference of normalizer Constructor");
+        return nullptr;
+    }
+
+    napi_value result = nullptr;
+    status = napi_new_instance(env, constructor, argc, argv, &result);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "create normalizer instance failed");
+        return nullptr;
+    }
+    return result;
+}
+
+napi_value I18nAddon::InitI18nNormalizer(napi_env env, napi_value exports)
+{
+    napi_property_descriptor properties[] = {
+        DECLARE_NAPI_FUNCTION("normalize", Normalize)
+    };
+    napi_value constructor = nullptr;
+    napi_status status = napi_define_class(env, "Normalizer", NAPI_AUTO_LENGTH, I18nNormalizerConstructor, nullptr,
+        sizeof(properties) / sizeof(napi_property_descriptor), properties, &constructor);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "Failed to define class Normalizer at Init");
+        return nullptr;
+    }
+    g_normalizerConstructor = new (std::nothrow) napi_ref;
+    if (!g_normalizerConstructor) {
+        HiLog::Error(LABEL, "Failed to create Normalizer ref at init");
+        return nullptr;
+    }
+    status = napi_create_reference(env, constructor, 1, g_normalizerConstructor);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "Failed to create reference g_normalizerConstructor at init.");
+        return nullptr;
+    }
+    return exports;
+}
+
+napi_value I18nAddon::I18nNormalizerConstructor(napi_env env, napi_callback_info info)
+{
+    size_t argc = 1;
+    napi_value argv[1] = { nullptr };
+    napi_value thisVar = nullptr;
+    void *data = nullptr;
+    napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    if (status != napi_ok) {
+        return nullptr;
+    }
+    if (argv[0] == nullptr) {
+        ErrorUtil::NapiThrow(env, I18N_NOT_FOUND, true);
+    }
+    napi_valuetype valueType = napi_valuetype::napi_undefined;
+    napi_typeof(env, argv[0], &valueType);
+    
+    if (valueType != napi_valuetype::napi_number) {
+        ErrorUtil::NapiThrow(env, I18N_NOT_FOUND, true);
+    }
+    int32_t normalizerMode;
+    status = napi_get_value_int32(env, argv[0], &normalizerMode);
+    if (status != napi_ok) {
+        return nullptr;
+    }
+    if (normalizerMode != NORMALIZER_MODE_NFC && normalizerMode != NORMALIZER_MODE_NFD &&
+        normalizerMode != NORMALIZER_MODE_NFKC && normalizerMode != NORMALIZER_MODE_NFKD) {
+        ErrorUtil::NapiThrow(env, I18N_NOT_FOUND, true);
+    }
+
+    std::unique_ptr<I18nAddon> obj = std::make_unique<I18nAddon>();
+    status =
+        napi_wrap(env, thisVar, reinterpret_cast<void *>(obj.get()), I18nAddon::Destructor, nullptr, nullptr);
+    if (status != napi_ok) {
+        return nullptr;
+    }
+    I18nNormalizerMode mode = I18nNormalizerMode(normalizerMode);
+    I18nErrorCode errorCode = I18nErrorCode::SUCCESS;
+    obj->normalizer_ = std::make_unique<I18nNormalizer>(mode, errorCode);
+    if (errorCode != I18nErrorCode::SUCCESS || !obj->normalizer_) {
+        return nullptr;
+    }
+    obj.release();
+    return thisVar;
+}
+
+napi_value I18nAddon::Normalize(napi_env env, napi_callback_info info)
+{
+    size_t argc = 1;
+    napi_value argv[1] = { 0 };
+    napi_value thisVar = nullptr;
+    void *data = nullptr;
+    napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    if (status != napi_ok) {
+        return nullptr;
+    }
+    if (argv[0] == nullptr) {
+        ErrorUtil::NapiThrow(env, I18N_NOT_FOUND, true);
+    }
+    napi_valuetype valueType = napi_valuetype::napi_undefined;
+    napi_typeof(env, argv[0], &valueType);
+    if (valueType != napi_valuetype::napi_string) {
+        HiLog::Error(LABEL, "Invalid parameter type");
+        ErrorUtil::NapiThrow(env, I18N_NOT_FOUND, true);
+    }
+    int32_t code = 0;
+    std::string text = GetString(env, argv[0], code);
+    if (code != 0) {
+        return nullptr;
+    }
+
+    I18nAddon *obj = nullptr;
+    status = napi_unwrap(env, thisVar, reinterpret_cast<void **>(&obj));
+    if (status != napi_ok || obj == nullptr || obj->normalizer_ == nullptr) {
+        HiLog::Error(LABEL, "Get Normalizer object failed");
+        return nullptr;
+    }
+    I18nErrorCode errorCode = I18nErrorCode::SUCCESS;
+    std::string normalizedText = obj->normalizer_->Normalize(text.c_str(), static_cast<int32_t>(text.length()),
+        errorCode);
+    if (errorCode != I18nErrorCode::SUCCESS) {
+        return nullptr;
+    }
+    napi_value result = nullptr;
+    status = napi_create_string_utf8(env, normalizedText.c_str(), NAPI_AUTO_LENGTH, &result);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "Create result failed");
+        return nullptr;
+    }
+    return result;
+}
+
 napi_value Init(napi_env env, napi_value exports)
 {
     napi_value val = I18nAddon::Init(env, exports);
@@ -3705,6 +3939,7 @@ napi_value Init(napi_env env, napi_value exports)
     val = I18nAddon::InitTransliterator(env, val);
     val = I18nAddon::InitCharacter(env, val);
     val = I18nAddon::InitUtil(env, val);
+    val = I18nAddon::InitI18nNormalizer(env, val);
     return val;
 }
 
