@@ -20,6 +20,8 @@ namespace OHOS {
 namespace Global {
 namespace I18n {
 enum I18nErrorCode {
+    NO_PERMISSION = -3,
+    INVALID_PARAMETER = -2,
     FAILED = -1,
     SUCCESS = 0,
 };

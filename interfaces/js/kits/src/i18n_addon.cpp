@@ -3036,15 +3036,23 @@ napi_value I18nAddon::AddPreferredLanguageImpl(napi_env env, napi_callback_info 
         ErrorUtil::NapiThrow(env, I18N_NOT_VALID, throwError);
         return nullptr;
     }
-    bool success = PreferredLanguage::AddPreferredLanguage(language.data(), index);
+    I18nErrorCode errorCode = I18nErrorCode::SUCCESS;
+    PreferredLanguage::AddPreferredLanguage(language.data(), index, errorCode);
     if (throwError) {
-        if (!success) {
+        if (errorCode == I18nErrorCode::NO_PERMISSION) {
             ErrorUtil::NapiThrow(env, I18N_NO_PERMISSION, throwError);
+        }
+        if (errorCode == I18nErrorCode::INVALID_PARAMETER || errorCode == I18nErrorCode::FAILED) {
+            ErrorUtil::NapiThrow(env, I18N_NOT_VALID, throwError);
         }
         return nullptr;
     }
+    bool addResult = true;
+    if (errorCode != I18nErrorCode::SUCCESS) {
+        addResult = false;
+    } 
     napi_value result = nullptr;
-    status = napi_get_boolean(env, success, &result);
+    status = napi_get_boolean(env, addResult, &result);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "addPreferrdLanguage: create boolean result failed");
         return nullptr;

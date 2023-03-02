@@ -56,7 +56,9 @@ HWTEST_F(I18nTest, I18nFuncTest001, TestSize.Level1)
     EXPECT_TRUE(preferredLocale.size() > 0);
     string systemLocale = "zh-Hans-CN";
     if (LocaleConfig::SetSystemLocale(systemLocale)) {
-        if (PreferredLanguage::AddPreferredLanguage("en-US", 0)) {
+        I18nErrorCode errorCode = I18nErrorCode::SUCCESS;
+        PreferredLanguage::AddPreferredLanguage("en-US", 0, errorCode);
+        if (errorCode == I18nErrorCode::SUCCESS) {
             preferredLocale = PreferredLanguage::GetPreferredLocale();
             EXPECT_EQ(preferredLocale, "en-CN");
         }

@@ -18,13 +18,14 @@
 #include <set>
 #include <string>
 #include <vector>
+#include "i18n_types.h"
 
 namespace OHOS {
 namespace Global {
 namespace I18n {
 class PreferredLanguage {
 public:
-    static bool AddPreferredLanguage(const std::string& language, int index);
+    static void AddPreferredLanguage(const std::string& language, int index, I18nErrorCode &errorCode);
     static bool RemovePreferredLanguage(int index);
     static std::vector<std::string> GetPreferredLanguageList();
     static std::string GetFirstPreferredLanguage();
