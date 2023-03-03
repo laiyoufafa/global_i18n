@@ -71,13 +71,15 @@ bool PreferredLanguage::AddPreferredLanguageNonExist(std::vector<std::string> &p
     return true;
 }
 
-bool PreferredLanguage::AddPreferredLanguage(const std::string &language, int index)
+void PreferredLanguage::AddPreferredLanguage(const std::string &language, int index, I18nErrorCode &errorCode)
 {
     if (!LocaleConfig::CheckPermission()) {
-        return false;
+        errorCode = I18nErrorCode::NO_PERMISSION;
+        return;
     }
     if (!IsValidTag(language)) {
-        return false;
+        errorCode = I18nErrorCode::INVALID_PARAMETER;
+        return;
     }
     std::vector<std::string> preferredLanguageList = GetPreferredLanguageList();
     int idx = index;
@@ -104,7 +106,8 @@ bool PreferredLanguage::AddPreferredLanguage(const std::string &language, int in
         status = AddPreferredLanguageExist(preferredLanguageList, languageIdx, idx, language);
     }
     if (!status) {
-        return false;
+        errorCode = I18nErrorCode::FAILED;
+        return;
     }
     std::string result = "";
     for (size_t i = 0; i < preferredLanguageList.size(); i++) {
@@ -112,11 +115,9 @@ bool PreferredLanguage::AddPreferredLanguage(const std::string &language, int in
         result += ";";
     }
     result.pop_back();
-    if (result.length() > CONFIG_LEN) {
-        return false;
+    if (result.length() > CONFIG_LEN || SetParameter(PREFERRED_LANGUAGES, result.data()) != 0) {
+        errorCode = I18nErrorCode::FAILED;
     }
-    status = SetParameter(PREFERRED_LANGUAGES, result.data()) == 0;
-    return status;
 }
 
 bool PreferredLanguage::RemovePreferredLanguage(int index)

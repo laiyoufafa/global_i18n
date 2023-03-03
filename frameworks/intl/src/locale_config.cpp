@@ -299,19 +299,29 @@ string LocaleConfig::GetSystemLanguage()
 
 string LocaleConfig::GetSystemRegion()
 {
+    UErrorCode status = U_ZERO_ERROR;
+    const char *country = nullptr;
     std::string systemRegion = ReadSystemParameter(LOCALE_KEY, CONFIG_LEN);
     if (!systemRegion.empty()) {
-        UErrorCode status = U_ZERO_ERROR;
         icu::Locale origin = icu::Locale::forLanguageTag(systemRegion, status);
-        if (status == U_ZERO_ERROR) {
-            const char *country = origin.getCountry();
+        if (U_SUCCESS(status)) {
+            country = origin.getCountry();
             if (country != nullptr) {
                 return country;
             }
         }
     }
     systemRegion = ReadSystemParameter(DEFAULT_LOCALE_KEY, CONFIG_LEN);
-    return systemRegion;
+    if (!systemRegion.empty()) {
+        icu::Locale origin = icu::Locale::forLanguageTag(systemRegion, status);
+        if (U_SUCCESS(status)) {
+            country = origin.getCountry();
+            if (country != nullptr) {
+                return country;
+            }
+        }
+    }
+    return "";
 }
 
 string LocaleConfig::GetSystemLocale()
