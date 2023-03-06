@@ -313,6 +313,7 @@ string LocaleConfig::GetSystemRegion()
     }
     systemRegion = ReadSystemParameter(DEFAULT_LOCALE_KEY, CONFIG_LEN);
     if (!systemRegion.empty()) {
+        status = U_ZERO_ERROR;
         icu::Locale origin = icu::Locale::forLanguageTag(systemRegion, status);
         if (U_SUCCESS(status)) {
             country = origin.getCountry();
