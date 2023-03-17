@@ -19,8 +19,7 @@
 #include <map>
 #include <set>
 #include <string>
-#include <vector>
-
+#include "i18n_types.h"
 #include "memory"
 #include "unicode/timezone.h"
 
@@ -39,34 +38,38 @@ public:
     std::string GetDisplayName(std::string localeStr);
     std::string GetDisplayName(std::string localeStr, bool isDST);
     static std::unique_ptr<I18nTimeZone> CreateInstance(std::string &id, bool isZoneID);
-    static std::set<std::string> GetAvailableIDs();
-    static std::vector<std::string> GetAvailableZoneCityIDs();
+    static std::set<std::string> GetAvailableIDs(I18nErrorCode &errorCode);
+    static std::set<std::string> GetAvailableZoneCityIDs();
     static std::string GetCityDisplayName(std::string &cityID, std::string &locale);
 
 private:
     static const char *TIMEZONE_KEY;
     static const char *DEFAULT_TIMEZONE;
-    static const char *DEFAULT_LANGUAGE;
+    static const char *CITY2TIMEZONE_DATA_PATH;
     static const char *DEFAULT_LOCALE;
-    static const char *TIMEZONES_PATH;
-    static const char *SUPPORT_LOCALES_PATH;
-    static const char *rootTag;
-    static const char *secondRootTag;
-    static const uint32_t ELEMENT_NUM = 3;
-    static const char *supportLocalesTag;
-    static std::string displayLocale;
-    static bool isInitialized;
-    static std::set<std::string> availableIDs;
-    static std::vector<std::string> availableZoneCityIDs;
-    static std::map<std::string, std::string> city2DisplayName;
+    static const char *CITY2DISPLAYNAME_PATH;
+    static const char *SUPPORTED_LOCALES_PATH;
+    static const char *TIMEZONE_ROOT_TAG;
+    static const char *TIMEZONE_SECOND_ROOT_TAG;
+    static const char *CITY2DISPLAYNAME_ROOT_TAG;
+    static const char *CITY2DISPLAYNAME_SECOND_ROOT_TAG;
+    static const char *SUPPORTED_LOCALES_TAG;
+    static const char *ZONEINFO_PATH;
+    static const uint32_t ELEMENT_NUM = 2;
+    static std::set<std::string> supportedLocales;
+    static std::set<std::string> availableZoneCityIDs;
     static std::map<std::string, std::string> city2TimeZoneID;
-    static std::map<std::string, std::string> supportLocales;
     static constexpr int SYS_PARAM_LEN = 128;
     icu::TimeZone *timezone = nullptr;
 
-    static void ReadTimeZoneData(const char *xmlPath);
+    static bool ReadTimeZoneData(const char *xmlPath);
     static std::string ComputeLocale(std::string &locale);
     icu::TimeZone* GetTimeZone();
+    static std::string FindCityDisplayNameFromXml(std::string &cityID, std::string &locale);
+    static bool GetSupportedLocalesFromXml();
+    static std::string GetFallBack(std::string &localeStr);
+    static void GetTimezoneIDFromZoneInfo(std::set<std::string> &availableIDs, std::string &parentPath,
+        std::string &parentName);
 };
 } // namespace I18n
 } // namespace Global

@@ -14,6 +14,9 @@
  */
 #include "i18n_timezone.h"
 
+#include <filesystem>
+#include <sys/stat.h>
+#include "hilog/log.h"
 #include "libxml/globals.h"
 #include "libxml/tree.h"
 #include "libxml/xmlstring.h"
@@ -30,26 +33,31 @@
 #include "vector"
 #include "unicode/locid.h"
 #include "unicode/unistr.h"
+#include "utils.h"
 
 namespace OHOS {
 namespace Global {
 namespace I18n {
+static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = { LOG_CORE, 0xD001E00, "I18nJs" };
+using namespace OHOS::HiviewDFX;
+
 const char *I18nTimeZone::TIMEZONE_KEY = "persist.time.timezone";
 const char *I18nTimeZone::DEFAULT_TIMEZONE = "GMT";
-const char *I18nTimeZone::DEFAULT_LANGUAGE = "/system/usr/ohos_timezone/en-Latn.xml";
-const char *I18nTimeZone::DEFAULT_LOCALE = "en-Latn";
-const char *I18nTimeZone::TIMEZONES_PATH = "/system/usr/ohos_timezone/";
-const char *I18nTimeZone::SUPPORT_LOCALES_PATH = "/system/usr/ohos_timezone/supported_locales.xml";
-const char *I18nTimeZone::rootTag = "timezones";
-const char *I18nTimeZone::secondRootTag = "timezone";
-const char *I18nTimeZone::supportLocalesTag = "supported_locales";
-std::string I18nTimeZone::displayLocale = "";
-bool I18nTimeZone::isInitialized = false;
 
-std::map<std::string, std::string> I18nTimeZone::supportLocales {};
-std::set<std::string> I18nTimeZone::availableIDs {};
-std::vector<std::string> I18nTimeZone::availableZoneCityIDs {};
-std::map<std::string, std::string> I18nTimeZone::city2DisplayName {};
+const char *I18nTimeZone::CITY2TIMEZONE_DATA_PATH = "/system/usr/ohos_timezone/timezones.xml";
+const char *I18nTimeZone::DEFAULT_LOCALE = "root";
+const char *I18nTimeZone::CITY2DISPLAYNAME_PATH = "/system/usr/ohos_timezone/";
+const char *I18nTimeZone::SUPPORTED_LOCALES_PATH = "/system/usr/ohos_timezone/supported_locales.xml";
+
+const char *I18nTimeZone::TIMEZONE_ROOT_TAG = "timezones";
+const char *I18nTimeZone::TIMEZONE_SECOND_ROOT_TAG = "timezone";
+const char *I18nTimeZone::CITY2DISPLAYNAME_ROOT_TAG = "display_names";
+const char *I18nTimeZone::CITY2DISPLAYNAME_SECOND_ROOT_TAG = "display_name";
+const char *I18nTimeZone::SUPPORTED_LOCALES_TAG = "supported_locales";
+const char *I18nTimeZone::ZONEINFO_PATH = "/system/etc/zoneinfo";
+
+std::set<std::string> I18nTimeZone::supportedLocales {};
+std::set<std::string> I18nTimeZone::availableZoneCityIDs {};
 std::map<std::string, std::string> I18nTimeZone::city2TimeZoneID {};
 
 I18nTimeZone::I18nTimeZone(std::string &id, bool isZoneID)
@@ -67,9 +75,8 @@ I18nTimeZone::I18nTimeZone(std::string &id, bool isZoneID)
             timezone = icu::TimeZone::createTimeZone(unicodeZoneID);
         }
     } else {
-        if (!isInitialized) {
-            ReadTimeZoneData(DEFAULT_LANGUAGE);
-            isInitialized = true;
+        if (city2TimeZoneID.size() == 0) {
+            ReadTimeZoneData(CITY2TIMEZONE_DATA_PATH);
         }
         if (city2TimeZoneID.find(id) == city2TimeZoneID.end()) {
             timezone = icu::TimeZone::createDefault();
@@ -170,25 +177,25 @@ std::string I18nTimeZone::GetDisplayName(std::string localeStr, bool isDST)
     return result;
 }
 
-void I18nTimeZone::ReadTimeZoneData(const char *xmlPath)
+bool I18nTimeZone::ReadTimeZoneData(const char *xmlPath)
 {
     xmlKeepBlanksDefault(0);
     if (xmlPath == nullptr) {
-        return;
+        return false;
     }
     xmlDocPtr doc = xmlParseFile(xmlPath);
     if (!doc) {
-        return;
+        return false;
     }
     xmlNodePtr cur = xmlDocGetRootElement(doc);
-    if (!cur || xmlStrcmp(cur->name, reinterpret_cast<const xmlChar *>(rootTag))) {
+    if (!cur || xmlStrcmp(cur->name, reinterpret_cast<const xmlChar *>(TIMEZONE_ROOT_TAG))) {
         xmlFreeDoc(doc);
-        return;
+        return false;
     }
     cur = cur->xmlChildrenNode;
-    while (cur != nullptr && !xmlStrcmp(cur->name, reinterpret_cast<const xmlChar *>(secondRootTag))) {
+    while (cur != nullptr && !xmlStrcmp(cur->name, reinterpret_cast<const xmlChar *>(TIMEZONE_SECOND_ROOT_TAG))) {
         xmlNodePtr value = cur->xmlChildrenNode;
-        xmlChar *contents[ELEMENT_NUM] = { 0 }; // 3 represent cityid, zoneid, displayname;
+        xmlChar *contents[ELEMENT_NUM] = { 0 }; // 2 represent cityid, zoneid;
         for (size_t i = 0; i < ELEMENT_NUM; i++) {
             if (value != nullptr) {
                 contents[i] = xmlNodeGetContent(value);
@@ -197,18 +204,11 @@ void I18nTimeZone::ReadTimeZoneData(const char *xmlPath)
                 break;
             }
         }
-        if (!isInitialized) {
-            // 0 represents cityid index, 1 represents zoneid index
-            availableZoneCityIDs.insert(availableZoneCityIDs.end(), reinterpret_cast<const char *>(contents[0]));
-            availableIDs.insert(reinterpret_cast<const char *>(contents[1]));
-            city2TimeZoneID.insert(
-                std::make_pair<std::string, std::string>(reinterpret_cast<const char *>(contents[0]),
-                                                         reinterpret_cast<const char *>(contents[1])));
-        }
-        // 0 represents cityid index, 2 represents displayname index
-        city2DisplayName.insert(
+        // 0 represents cityid index, 1 represents zoneid index
+        availableZoneCityIDs.insert(reinterpret_cast<const char *>(contents[0]));
+        city2TimeZoneID.insert(
             std::make_pair<std::string, std::string>(reinterpret_cast<const char *>(contents[0]),
-                                                     reinterpret_cast<const char *>(contents[2])));
+                                                        reinterpret_cast<const char *>(contents[1])));
         for (size_t i = 0; i < ELEMENT_NUM; i++) {
             if (contents[i] != nullptr) {
                 xmlFree(contents[i]);
@@ -217,85 +217,190 @@ void I18nTimeZone::ReadTimeZoneData(const char *xmlPath)
         cur = cur->next;
     }
     xmlFreeDoc(doc);
+    return true;
 }
 
-std::set<std::string> I18nTimeZone::GetAvailableIDs()
+void I18nTimeZone::GetTimezoneIDFromZoneInfo(std::set<std::string> &availableIDs, std::string &parentPath,
+    std::string &parentName) 
 {
-    if (!isInitialized) {
-        ReadTimeZoneData(DEFAULT_LANGUAGE);
-        isInitialized = true;
+    using std::filesystem::directory_iterator;
+
+    for (const auto &dirEntry : directory_iterator{parentPath}) {
+        std::string zonePath = dirEntry.path();
+        std::string zoneName = zonePath.substr(parentPath.length() + 1); // 1 add length of path splitor
+        availableIDs.insert(parentName + "/" + zoneName);
+    }
+}
+
+std::set<std::string> I18nTimeZone::GetAvailableIDs(I18nErrorCode &errorCode)
+{
+    using std::filesystem::directory_iterator;
+
+    std::set<std::string> availableIDs;
+    struct stat s;
+    for (const auto &dirEntry : directory_iterator{ZONEINFO_PATH}) {
+        std::string parentPath = dirEntry.path();
+        if (stat(parentPath.c_str(), &s) != 0) {
+            HiLog::Error(LABEL, "zoneinfo path %{public}s not exist.", parentPath.c_str());
+            errorCode = I18nErrorCode::FAILED;
+            return availableIDs;
+        }
+        std::string parentName = parentPath.substr(strlen(ZONEINFO_PATH) + 1);
+        if (s.st_mode & S_IFDIR) {
+            GetTimezoneIDFromZoneInfo(availableIDs, parentPath, parentName);
+        } else {
+            availableIDs.insert(parentName);
+        }
     }
     return availableIDs;
 }
 
-std::vector<std::string> I18nTimeZone::GetAvailableZoneCityIDs()
+std::set<std::string> I18nTimeZone::GetAvailableZoneCityIDs()
 {
-    if (!isInitialized) {
-        ReadTimeZoneData(DEFAULT_LANGUAGE);
-        isInitialized = true;
+    if (availableZoneCityIDs.size() == 0) {
+        ReadTimeZoneData(CITY2TIMEZONE_DATA_PATH);
     }
     return availableZoneCityIDs;
 }
 
-std::string I18nTimeZone::ComputeLocale(std::string &locale)
+std::string I18nTimeZone::FindCityDisplayNameFromXml(std::string &cityID, std::string &locale)
 {
-    if (supportLocales.size() == 0) {
-        xmlKeepBlanksDefault(0);
-        xmlDocPtr doc = xmlParseFile(SUPPORT_LOCALES_PATH);
-        if (!doc) {
-            return DEFAULT_LOCALE;
-        }
-        xmlNodePtr cur = xmlDocGetRootElement(doc);
-        if (!cur || xmlStrcmp(cur->name, reinterpret_cast<const xmlChar *>(supportLocalesTag))) {
-            xmlFreeDoc(doc);
-            return DEFAULT_LOCALE;
-        }
-        cur = cur->xmlChildrenNode;
-        while (cur != nullptr) {
-            xmlChar *content = xmlNodeGetContent(cur);
-            if (content == nullptr) {
-                break;
-            }
-            std::map<std::string, std::string> configs = {};
-            LocaleInfo localeinfo(reinterpret_cast<const char*>(content), configs);
-            std::string language = localeinfo.GetLanguage();
-            std::string script = localeinfo.GetScript();
-            std::string languageAndScript = (script.length() == 0) ? language : language + "-" + script;
-            LocaleInfo newLocaleInfo(languageAndScript, configs);
-            std::string maximizeLocale = newLocaleInfo.Maximize();
-            supportLocales.insert(
-                std::make_pair<std::string, std::string>(maximizeLocale.c_str(),
-                                                         reinterpret_cast<const char*>(content)));
-            xmlFree(content);
-            cur = cur->next;
-        }
-    }
-    std::map<std::string, std::string> configs = {};
-    LocaleInfo localeinfo(locale, configs);
-    std::string language = localeinfo.GetLanguage();
-    std::string script = localeinfo.GetScript();
-    std::string languageAndScript = (script.length() == 0) ? language : language + "-" + script;
-    LocaleInfo newLocaleInfo(languageAndScript, configs);
-    std::string maximizeLocale = newLocaleInfo.Maximize();
-    if (supportLocales.find(maximizeLocale) != supportLocales.end()) {
-        return supportLocales.at(maximizeLocale);
-    }
-    return DEFAULT_LOCALE;
-}
-
-std::string I18nTimeZone::GetCityDisplayName(std::string &cityID, std::string &locale)
-{
-    std::string finalLocale = ComputeLocale(locale);
-    if (finalLocale.compare(displayLocale) != 0) {
-        std::string xmlPath = TIMEZONES_PATH + finalLocale + ".xml";
-        city2DisplayName.clear();
-        ReadTimeZoneData(xmlPath.c_str());
-        displayLocale = finalLocale;
-    }
-    if (city2DisplayName.find(cityID) == city2DisplayName.end()) {
+    xmlKeepBlanksDefault(0);
+    std::string xmlPath = CITY2DISPLAYNAME_PATH + locale + ".xml";
+    xmlDocPtr doc = xmlParseFile(xmlPath.c_str());
+    if (!doc) {
         return "";
     }
-    return city2DisplayName.at(cityID);
+    xmlNodePtr cur = xmlDocGetRootElement(doc);
+    if (!cur || xmlStrcmp(cur->name, reinterpret_cast<const xmlChar *>(CITY2DISPLAYNAME_ROOT_TAG))) {
+        xmlFreeDoc(doc);
+        return "";
+    }
+    cur = cur->xmlChildrenNode;
+    std::string displayName;
+    while (cur != nullptr && !xmlStrcmp(cur->name, 
+        reinterpret_cast<const xmlChar *>(CITY2DISPLAYNAME_SECOND_ROOT_TAG))) {
+        xmlNodePtr value = cur->xmlChildrenNode;
+        xmlChar *contents[ELEMENT_NUM] = { 0 }; // 2 represent cityid, displayName;
+        for (size_t i = 0; i < ELEMENT_NUM; i++) {
+            if (value != nullptr) {
+                contents[i] = xmlNodeGetContent(value);
+                value = value->next;
+            } else {
+                break;
+            }
+        }
+        if (strcmp(cityID.c_str(), reinterpret_cast<const char *>(contents[0])) == 0) {
+            displayName = reinterpret_cast<const char *>(contents[1]);
+        }
+        for (size_t i = 0; i < ELEMENT_NUM; i++) {
+            if (contents[i] != nullptr) {
+                xmlFree(contents[i]);
+            }
+        }
+        if (displayName.length() != 0) {
+            break;
+        }
+        cur = cur->next;
+    }
+    xmlFreeDoc(doc);
+    return displayName;
+}
+
+bool I18nTimeZone::GetSupportedLocalesFromXml()
+{
+    xmlKeepBlanksDefault(0);
+    xmlDocPtr doc = xmlParseFile(SUPPORTED_LOCALES_PATH);
+    if (!doc) {
+        return false;
+    }
+    xmlNodePtr cur = xmlDocGetRootElement(doc);
+    if (!cur || xmlStrcmp(cur->name, reinterpret_cast<const xmlChar *>(SUPPORTED_LOCALES_TAG))) {
+        xmlFreeDoc(doc);
+        return false;
+    }
+    cur = cur->xmlChildrenNode;
+    while (cur != nullptr) {
+        xmlChar *content = xmlNodeGetContent(cur);
+        if (content == nullptr) {
+            break;
+        }
+        supportedLocales.insert(reinterpret_cast<const char*>(content));
+        xmlFree(content);
+        cur = cur->next;
+    }
+    return true;
+}
+
+std::string I18nTimeZone::GetFallBack(std::string &localeStr)
+{
+    if (strcmp(localeStr.c_str(), DEFAULT_LOCALE) == 0) {
+        return "";
+    }
+    size_t begin = 0;
+    size_t end = 0;
+    std::vector<std::string> localeParts;
+    while (true) {
+        end = localeStr.find('_', begin);
+        localeParts.push_back(localeStr.substr(begin, end - begin));
+        if (end == std::string::npos) {
+         break;
+        }
+        begin = end + 1;
+    }
+
+    if (localeParts.size() == 1) {
+        return DEFAULT_LOCALE;
+    }
+    std::string fallBackLocale;
+    for (size_t i = 0; i < localeParts.size() - 1; i++) {
+        fallBackLocale += localeParts[i];
+        if (i != localeParts.size() - 2) { // -2 represent the last part
+            fallBackLocale += "_";
+        }
+    }
+    return fallBackLocale;
+}
+
+std::string I18nTimeZone::GetCityDisplayName(std::string &cityID, std::string &localeStr)
+{
+    if (availableZoneCityIDs.size() == 0) {
+        bool status = ReadTimeZoneData(CITY2TIMEZONE_DATA_PATH);
+        if (!status) {
+            return "";
+        }
+    }
+    if (availableZoneCityIDs.find(cityID) == availableZoneCityIDs.end()) {
+        return "";
+    }
+    if (supportedLocales.size() == 0) {
+        bool status = GetSupportedLocalesFromXml();
+        if (!status) {
+            return "";
+        }
+    }
+    UErrorCode errorCode = U_ZERO_ERROR;
+    icu::Locale locale = icu::Locale::forLanguageTag(localeStr, errorCode);
+    if (U_FAILURE(errorCode)) {
+        return "";
+    }
+    locale.addLikelySubtags(errorCode);
+    if (U_FAILURE(errorCode)) {
+        return "";
+    }
+    std::string requestLocaleStr = locale.getBaseName();
+    std::string displayName;
+    while (requestLocaleStr.length() != 0) {
+        if (supportedLocales.find(requestLocaleStr) != supportedLocales.end() || strcmp(requestLocaleStr.c_str(),
+            DEFAULT_LOCALE) == 0) {
+            displayName = FindCityDisplayNameFromXml(cityID, requestLocaleStr);
+            if (displayName.length() != 0) {
+                return displayName;
+            }
+        }
+        requestLocaleStr = GetFallBack(requestLocaleStr);
+    }
+    return displayName;
 }
 }
 }

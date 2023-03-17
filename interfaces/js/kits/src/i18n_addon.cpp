@@ -3600,7 +3600,11 @@ napi_value I18nAddon::CreateSystemObject(napi_env env)
 
 napi_value I18nAddon::GetAvailableTimezoneIDs(napi_env env, napi_callback_info info)
 {
-    std::set<std::string> timezoneIDs = I18nTimeZone::GetAvailableIDs();
+    I18nErrorCode errorCode = I18nErrorCode::SUCCESS;
+    std::set<std::string> timezoneIDs = I18nTimeZone::GetAvailableIDs(errorCode);
+    if (errorCode != I18nErrorCode::SUCCESS) {
+        return nullptr;
+    }
     napi_value result = nullptr;
     napi_status status = napi_create_array_with_length(env, timezoneIDs.size(), &result);
     if (status != napi_ok) {
@@ -3627,25 +3631,27 @@ napi_value I18nAddon::GetAvailableTimezoneIDs(napi_env env, napi_callback_info i
 
 napi_value I18nAddon::GetAvailableZoneCityIDs(napi_env env, napi_callback_info info)
 {
-    std::vector<std::string> cityIDs = I18nTimeZone::GetAvailableZoneCityIDs();
+    std::set<std::string> cityIDs = I18nTimeZone::GetAvailableZoneCityIDs();
     napi_value result = nullptr;
     napi_status status = napi_create_array_with_length(env, cityIDs.size(), &result);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Failed to create array");
         return nullptr;
     }
-    for (size_t i = 0; i < cityIDs.size(); ++i) {
+    size_t index = 0;
+    for (auto it = cityIDs.begin(); it != cityIDs.end(); ++it) {
         napi_value value = nullptr;
-        status = napi_create_string_utf8(env, cityIDs[i].c_str(), NAPI_AUTO_LENGTH, &value);
+        status = napi_create_string_utf8(env, (*it).c_str(), NAPI_AUTO_LENGTH, &value);
         if (status != napi_ok) {
             HiLog::Error(LABEL, "GetAvailableZoneCityIDs: Failed to create string item");
             return nullptr;
         }
-        status = napi_set_element(env, result, i, value);
+        status = napi_set_element(env, result, index, value);
         if (status != napi_ok) {
             HiLog::Error(LABEL, "GetAvailableZoneCityIDs: Failed to set array item");
             return nullptr;
         }
+        ++index;
     }
     return result;
 }
@@ -3803,6 +3809,10 @@ napi_value I18nAddon::GetI18nNormalizerInstance(napi_env env, napi_callback_info
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    if (status != napi_ok) {
+        HiLog::Error(LABEL, "Failed to get parameter of Normalizer.createInstance");
+        return nullptr;
+    }
 
     napi_value constructor = nullptr;
     status = napi_get_reference_value(env, *g_normalizerConstructor, &constructor);

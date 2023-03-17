@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (c) 2022 Huawei Device Co., Ltd.
+<!-- Copyright (c) 2023 Huawei Device Co., Ltd.
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
      You may obtain a copy of the License at
@@ -16,121 +16,97 @@
     <timezone>
         <city>Auckland</city>
         <id>Pacific/Auckland</id>
-        <display_name>奥克兰 (新西兰)</display_name>
     </timezone>
     <timezone>
         <city>Magadan</city>
         <id>Asia/Magadan</id>
-        <display_name>马加丹 (俄罗斯)</display_name>
     </timezone>
     <timezone>
         <city>Lord Howe Island</city>
         <id>Australia/Lord_Howe</id>
-        <display_name>豪勋爵岛 (澳大利亚)</display_name>
     </timezone>
     <timezone>
         <city>Tokyo</city>
         <id>Asia/Tokyo</id>
-        <display_name>东京 (日本)</display_name>
     </timezone>
     <timezone>
         <city>Shanghai</city>
         <id>Asia/Shanghai</id>
-        <display_name>上海 (中国)</display_name>
     </timezone>
     <timezone>
         <city>Hovd</city>
         <id>Asia/Hovd</id>
-        <display_name>科布多 (蒙古)</display_name>
     </timezone>
     <timezone>
         <city>Omsk</city>
         <id>Asia/Omsk</id>
-        <display_name>鄂木斯克 (俄罗斯)</display_name>
     </timezone>
     <timezone>
         <city>Ashgabat</city>
         <id>Asia/Ashgabat</id>
-        <display_name>阿什哈巴德 (土库曼斯坦)</display_name>
     </timezone>
     <timezone>
         <city>Yerevan</city>
         <id>Asia/Yerevan</id>
-        <display_name>埃里温 (亚美尼亚)</display_name>
     </timezone>
     <timezone>
         <city>Moscow</city>
         <id>Europe/Moscow</id>
-        <display_name>莫斯科 (俄罗斯)</display_name>
     </timezone>
     <timezone>
         <city>Tel Aviv</city>
         <id>Asia/Jerusalem</id>
-        <display_name>特拉维夫 (以色列)</display_name>
     </timezone>
     <timezone>
         <city>Dublin</city>
         <id>Europe/Dublin</id>
-        <display_name>都柏林 (爱尔兰)</display_name>
     </timezone>
     <timezone>
         <city>London</city>
         <id>Europe/London</id>
-        <display_name>伦敦 (英国)</display_name>
     </timezone>
     <timezone>
         <city>Praia</city>
         <id>Atlantic/Cape_Verde</id>
-        <display_name>普拉亚 (佛得角)</display_name>
     </timezone>
     <timezone>
         <city>Montevideo</city>
         <id>America/Montevideo</id>
-        <display_name>蒙得维的亚 (乌拉圭)</display_name>
     </timezone>
     <timezone>
         <city>Brasília</city>
         <id>America/Sao_Paulo</id>
-        <display_name>巴西利亚 (巴西)</display_name>
     </timezone>
     <timezone>
         <city>Santiago</city>
         <id>America/Santiago</id>
-        <display_name>圣地亚哥 (智利)</display_name>
     </timezone>
     <timezone>
         <city>Bogotá</city>
         <id>America/Bogota</id>
-        <display_name>波哥大 (哥伦比亚)</display_name>
     </timezone>
     <timezone>
         <city>Easter Island</city>
         <id>Pacific/Easter</id>
-        <display_name>复活节岛 (智利)</display_name>
     </timezone>
     <timezone>
         <city>Salt Lake City</city>
         <id>America/Denver</id>
-        <display_name>盐湖城 (美国)</display_name>
     </timezone>
     <timezone>
         <city>Los Angeles</city>
         <id>America/Los_Angeles</id>
-        <display_name>洛杉矶 (美国)</display_name>
     </timezone>
     <timezone>
         <city>Anchorage</city>
         <id>America/Anchorage</id>
-        <display_name>安克雷奇 (美国)</display_name>
     </timezone>
     <timezone>
         <city>Adak</city>
         <id>America/Adak</id>
-        <display_name>埃达克 (美国)</display_name>
     </timezone>
     <timezone>
         <city>Pago Pago</city>
         <id>Pacific/Pago_Pago</id>
-        <display_name>帕果-帕果 (美属萨摩耶)</display_name>
     </timezone>
 </timezones>

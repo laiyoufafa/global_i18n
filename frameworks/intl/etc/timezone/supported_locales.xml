@@ -13,6 +13,5 @@
      limitations under the License.
 -->
 <supported_locales>
-    <item>en-Latn</item>
-    <item>zh-Hans</item>
+    <item>zh_Hans</item>
 </supported_locales>
