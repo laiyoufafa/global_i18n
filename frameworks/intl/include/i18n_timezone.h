@@ -45,28 +45,30 @@ public:
 private:
     static const char *TIMEZONE_KEY;
     static const char *DEFAULT_TIMEZONE;
-    static const char *CITY2TIMEZONE_DATA_PATH;
+    static const char *CITY_TIMEZONE_DATA_PATH;
+    static const char *DEVICE_CITY_TIMEZONE_DATA_PATH;
     static const char *DEFAULT_LOCALE;
-    static const char *CITY2DISPLAYNAME_PATH;
+    static const char *CITY_DISPLAYNAME_PATH;
+    static const char *DEVICE_CITY_DISPLAYNAME_PATH;
     static const char *SUPPORTED_LOCALES_PATH;
     static const char *TIMEZONE_ROOT_TAG;
     static const char *TIMEZONE_SECOND_ROOT_TAG;
-    static const char *CITY2DISPLAYNAME_ROOT_TAG;
-    static const char *CITY2DISPLAYNAME_SECOND_ROOT_TAG;
-    static const char *SUPPORTED_LOCALES_TAG;
+    static const char *CITY_DISPLAYNAME_ROOT_TAG;
+    static const char *CITY_DISPLAYNAME_SECOND_ROOT_TAG;
     static const char *ZONEINFO_PATH;
     static const uint32_t ELEMENT_NUM = 2;
     static std::set<std::string> supportedLocales;
     static std::set<std::string> availableZoneCityIDs;
     static std::map<std::string, std::string> city2TimeZoneID;
     static constexpr int SYS_PARAM_LEN = 128;
+    static bool useDeviceCityDispName;
     icu::TimeZone *timezone = nullptr;
 
     static bool ReadTimeZoneData(const char *xmlPath);
     static std::string ComputeLocale(std::string &locale);
     icu::TimeZone* GetTimeZone();
     static std::string FindCityDisplayNameFromXml(std::string &cityID, std::string &locale);
-    static bool GetSupportedLocalesFromXml();
+    static bool GetSupportedLocales();
     static std::string GetFallBack(std::string &localeStr);
     static void GetTimezoneIDFromZoneInfo(std::set<std::string> &availableIDs, std::string &parentPath,
         std::string &parentName);
