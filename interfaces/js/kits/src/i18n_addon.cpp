@@ -3050,7 +3050,7 @@ napi_value I18nAddon::AddPreferredLanguageImpl(napi_env env, napi_callback_info 
     bool addResult = true;
     if (errorCode != I18nErrorCode::SUCCESS) {
         addResult = false;
-    } 
+    }
     napi_value result = nullptr;
     status = napi_get_boolean(env, addResult, &result);
     if (status != napi_ok) {
