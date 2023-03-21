@@ -45,10 +45,10 @@ const char *I18nTimeZone::TIMEZONE_KEY = "persist.time.timezone";
 const char *I18nTimeZone::DEFAULT_TIMEZONE = "GMT";
 
 const char *I18nTimeZone::CITY_TIMEZONE_DATA_PATH = "/system/usr/ohos_timezone/timezones.xml";
-const char *I18nTimeZone::DEVICE_CITY_TIMEZONE_DATA_PATH = "/system/usr/device_timezone/timezones.xml";
+const char *I18nTimeZone::DEVICE_CITY_TIMEZONE_DATA_PATH = "/vendor/etc/device_timezone/timezones.xml";
 const char *I18nTimeZone::DEFAULT_LOCALE = "root";
 const char *I18nTimeZone::CITY_DISPLAYNAME_PATH = "/system/usr/ohos_timezone/ohos_city_dispname/";
-const char *I18nTimeZone::DEVICE_CITY_DISPLAYNAME_PATH = "/system/usr/device_timezone/device_city_dispname/";
+const char *I18nTimeZone::DEVICE_CITY_DISPLAYNAME_PATH = "/vendor/etc/device_timezone/device_city_dispname/";
 
 const char *I18nTimeZone::TIMEZONE_ROOT_TAG = "timezones";
 const char *I18nTimeZone::TIMEZONE_SECOND_ROOT_TAG = "timezone";
