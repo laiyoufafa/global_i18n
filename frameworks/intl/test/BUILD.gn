@@ -29,6 +29,11 @@ ohos_unittest("intl_test") {
     "//third_party/icu/icu4c/source/common",
     "//third_party/icu/icu4c/source/common/unicode",
     "//third_party/icu/icu4c/source/i18n",
+    "//third_party/libphonenumber/cpp/src",
+    "//third_party/libphonenumber",
+    "//third_party/protobuf/src",
+    "//third_party/protobuf/src/google",
+    "//third_party/protobuf/src/google/protobuf",
   ]
 
   external_deps = [ "init:libbegetutil" ]
