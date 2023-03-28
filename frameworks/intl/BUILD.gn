@@ -228,7 +228,7 @@ ohos_prebuilt_etc("root_timezone_xml") {
 }
 
 ohos_prebuilt_etc("timezones_xml") {
-  source = "//base/global/i18n/frameworks/intl/etc/timezone/timezones.xml"
+  source = "//base/global/i18n/frameworks/intl/etc/timezone/ohos_timezones.xml"
   module_install_dir = "usr/ohos_timezone/"
   part_name = "i18n"
   subsystem_name = "global"
