@@ -419,7 +419,7 @@ void DateTimeFormat::ComputeHourCycleChars()
 
 void DateTimeFormat::ComputePattern()
 {
-    ComputePartOfPattern(year, yearChar, "yy", "Y");
+    ComputePartOfPattern(year, yearChar, "yy", "yyyy");
     ComputePartOfPattern(day, dayChar, "dd", "d");
     ComputePartOfPattern(hour, hourChar, hourTwoDigitString, hourNumericString);
     ComputePartOfPattern(minute, minuteChar, "mm", "mm");
