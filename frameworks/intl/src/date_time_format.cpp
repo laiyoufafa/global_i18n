@@ -365,7 +365,8 @@ void DateTimeFormat::ParseConfigsPartTwo(std::map<std::string, std::string> &con
 
 void DateTimeFormat::ComputeSkeleton()
 {
-    if (year.empty() && month.empty() && day.empty() && hour.empty() && minute.empty() && second.empty()) {
+    if (year.empty() && month.empty() && day.empty() && hour.empty() && minute.empty() && second.empty() &&
+        weekday.empty()) {
         pattern.append("yMd");
     }
     AddOptions(year, yearChar);
