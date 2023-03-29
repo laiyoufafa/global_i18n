@@ -24,14 +24,6 @@ int I18nFuncTest002(void);
 int I18nFuncTest003(void);
 int I18nFuncTest004(void);
 int I18nFuncTest005(void);
-int I18nFuncTest006(void);
-int I18nFuncTest007(void);
-int I18nFuncTest008(void);
-int I18nFuncTest009(void);
-int I18nFuncTest010(void);
-int I18nFuncTest011(void);
-int I18nFuncTest012(void);
-int I18nFuncTest013(void);
 } // namespace I18n
 } // namespace Global
 } // namespace OHOS
