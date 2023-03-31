@@ -202,7 +202,7 @@ HWTEST_F(IntlTest, IntlFuncTest005, TestSize.Level1)
     EXPECT_EQ(out, expects);
     int64_t fromMilliseconds = 123456789;
     int64_t toMilliseconds = 987654321;
-    expects = "1970/1/2金曜日～1970/1/12月曜日";
+    expects = "1970/01/02(金曜日)～1970/01/12(月曜日)";
     out = dateFormat->FormatRange(fromMilliseconds, toMilliseconds);
     EXPECT_EQ(out, expects);
     delete dateFormat;
