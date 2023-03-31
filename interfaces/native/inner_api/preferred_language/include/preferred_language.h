@@ -43,6 +43,7 @@ private:
     static bool IsValidTag(const std::string &tag);
     static void Split(const std::string &src, const std::string &sep, std::vector<std::string> &dest);
 #ifdef SUPPORT_APP_PREFERRED_LANGUAGE
+    static std::string GetBundleName();
     static std::set<std::string> GetResources();
     static bool IsMatched(const std::string& preferred, const std::string& resource);
 #endif

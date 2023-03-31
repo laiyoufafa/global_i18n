@@ -14,10 +14,13 @@
  */
 #ifdef SUPPORT_APP_PREFERRED_LANGUAGE
 #include <regex>
-#include "bundle_mgr_client.h"
+#include "bundle_info.h"
+#include "bundle_mgr_interface.h"
 #include "hap_resource.h"
-#include "ipc_skeleton.h"
+#include "iservice_registry.h"
+#include "system_ability_definition.h"
 #endif
+#include "hilog/log.h"
 #include "locale_config.h"
 #include "locale_info.h"
 #include "parameter.h"
@@ -27,6 +30,8 @@
 namespace OHOS {
 namespace Global {
 namespace I18n {
+static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = { LOG_CORE, 0xD001E00, "PreferredLanguage" };
+using namespace OHOS::HiviewDFX;
 const char *PreferredLanguage::RESOURCE_PATH_HEAD = "/data/accounts/account_0/applications/";
 const char *PreferredLanguage::RESOURCE_PATH_TAILOR = "/assets/entry/resources.index";
 const char *PreferredLanguage::RESOURCE_PATH_SPLITOR = "/";
@@ -195,12 +200,31 @@ std::string PreferredLanguage::GetFirstPreferredLanguage()
 }
 
 #ifdef SUPPORT_APP_PREFERRED_LANGUAGE
+std::string PreferredLanguage::GetBundleName()
+{
+    auto systemAbilityManager = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    if (systemAbilityManager == nullptr) {
+        HiLog::Error(LABEL, "Failed to create system ability manager.");
+        return "";
+    }
+    auto bundleMgrSa = systemAbilityManager->GetSystemAbility(OHOS::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
+    if (bundleMgrSa == nullptr) {
+        HiLog::Error(LABEL, "Failed to create bundle manager SA.");
+        return "";
+    }
+    auto bundleMgr = OHOS::iface_cast<AppExecFwk::IBundleMgr>(bundleMgrSa);
+    if (bundleMgr == nullptr) {
+        HiLog::Error(LABEL, "Failed to create bundle manager.");
+        return "";
+    }
+    AppExecFwk::BundleInfo bundleInfo;
+    bundleMgr->GetBundleInfoForSelf(0, bundleInfo);
+    return bundleInfo.name;
+}
+
 std::set<std::string> PreferredLanguage::GetResources()
 {
-    pid_t uid = OHOS::IPCSkeleton::GetCallingUid();
-    std::string bundleName = "";
-    OHOS::AppExecFwk::BundleMgrClient client;
-    client.GetBundleNameForUid(uid, bundleName);
+    std::string bundleName = GetBundleName();
     const std::string resourcePath = RESOURCE_PATH_HEAD + bundleName + RESOURCE_PATH_SPLITOR + bundleName +
         RESOURCE_PATH_TAILOR;
     const OHOS::Global::Resource::HapResource *resource =
