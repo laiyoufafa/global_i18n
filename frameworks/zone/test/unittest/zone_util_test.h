@@ -27,6 +27,9 @@ int ZoneUtilFuncTest005(void);
 int ZoneUtilFuncTest006(void);
 int ZoneUtilFuncTest007(void);
 int ZoneUtilFuncTest008(void);
+int ZoneUtilFuncTest009(void);
+int ZoneUtilFuncTest0010(void);
+int ZoneUtilFuncTest0011(void);
 } // namespace I18n
 } // namespace Global
 } // namespace OHOS
