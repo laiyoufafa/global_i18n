@@ -15,12 +15,14 @@ import("//build/ohos.gni")
 
 config("zone_util_public_configs") {
   include_dirs = [
+    "//base/global/i18n/frameworks/intl/include",
+    "//base/global/i18n/interfaces/native/inner_api/zone/include",
     "//third_party/icu/icu4c/source",
     "//third_party/icu/icu4c/source/common",
     "//third_party/icu/icu4c/source/common/unicode",
     "//third_party/icu/icu4c/source/i18n",
-    "//base/global/i18n/interfaces/native/inner_api/zone/include",
     "//third_party/libphonenumber/cpp/src",
+    "//third_party/libxml2/include",
     "//third_party/protobuf/src",
     "//third_party/protobuf/src/google",
     "//third_party/protobuf/src/google/protobuf",
@@ -35,11 +37,14 @@ ohos_shared_library("zone_util") {
     "-fPIC",
   ]
   deps = [
+    "//base/global/i18n/frameworks/intl:intl_util",
     "//third_party/icu/icu4c:ohos_icudat",
     "//third_party/icu/icu4c:shared_icui18n",
     "//third_party/icu/icu4c:shared_icuuc",
     "//third_party/libphonenumber/cpp:phonenumber_standard",
+    "//third_party/libxml2:xml2",
   ]
+  external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
   subsystem_name = "global"
   part_name = "i18n"
 }

@@ -186,6 +186,65 @@ HWTEST_F(ZoneUtilTest, ZoneUtilFuncTest008, TestSize.Level1)
     string out = util.GetDefaultZone(number, 8 * 3600 * 1000);
     EXPECT_EQ(expects[0], out);
 }
+
+/**
+ * @tc.name: ZoneUtilFuncTest009
+ * @tc.desc: Test ZoneUtil LookupTimezoneByCountryAndNITZ
+ * @tc.type: FUNC
+ */
+HWTEST_F(ZoneUtilTest, ZoneUtilFuncTest009, TestSize.Level1)
+{
+    ZoneUtil util;
+    std::string region = "CN";
+    NITZData nitzData = { 0, 28800000 , 1679969021999 };
+    CountryResult result = util.LookupTimezoneByCountryAndNITZ(region, nitzData);
+    EXPECT_TRUE(result.isOnlyMatch);
+    EXPECT_EQ(result.timezoneId, "Asia/Shanghai");
+
+    NITZData nitzData2 = { 0, 21600000, 1679969021999 };
+    CountryResult result2 = util.LookupTimezoneByCountryAndNITZ(region, nitzData2);
+    EXPECT_TRUE(result2.isOnlyMatch);
+    EXPECT_EQ(result2.timezoneId, "Asia/Urumqi");
+}
+
+/**
+ * @tc.name: ZoneUtilFuncTest010
+ * @tc.desc: Test ZoneUtil LookupTimezoneByNITZ
+ * @tc.type: FUNC
+ */
+HWTEST_F(ZoneUtilTest, ZoneUtilFuncTest010, TestSize.Level1)
+{
+    ZoneUtil util;
+    NITZData nitzData = { 0, 28800000 , 1679969021999 };
+    CountryResult result = util.LookupTimezoneByNITZ(nitzData);
+    EXPECT_FALSE(result.isOnlyMatch);
+    EXPECT_EQ(result.timezoneId, "Asia/Shanghai");
+
+    NITZData nitzData2 = { 1, 10800000, 1679969021999 };
+    CountryResult result2 = util.LookupTimezoneByNITZ(nitzData2);
+    EXPECT_FALSE(result2.isOnlyMatch);
+    EXPECT_EQ(result2.timezoneId, "Asia/Beirut");
+
+    NITZData nitzData3 = { 1, 37800000, 1679969021999 };
+    CountryResult result3 = util.LookupTimezoneByNITZ(nitzData3);
+    EXPECT_FALSE(result3.isOnlyMatch);
+    EXPECT_EQ(result3.timezoneId, "Australia/Adelaide");
+}
+
+/**
+ * @tc.name: ZoneUtilFuncTest011
+ * @tc.desc: Test ZoneUtil LookupTimezoneByCountry
+ * @tc.type: FUNC
+ */
+HWTEST_F(ZoneUtilTest, ZoneUtilFuncTest011, TestSize.Level1)
+{
+    ZoneUtil util;
+    std::string region = "AQ";
+    int64_t currentMillis = 1679969021999;
+    CountryResult result = util.LookupTimezoneByCountry(region, currentMillis);
+    EXPECT_EQ(result.timezoneId, "Antarctica/McMurdo");
+    EXPECT_EQ(result.quality, MatchQuality::MULTIPLE_ZONES_DIFFERENT_OFFSET);
+}
 } // namespace I18n
 } // namespace Global
 } // namespace OHOS

@@ -226,10 +226,20 @@ void I18nTimeZone::GetTimezoneIDFromZoneInfo(std::set<std::string> &availableIDs
 {
     using std::filesystem::directory_iterator;
 
+    struct stat s;
     for (const auto &dirEntry : directory_iterator{parentPath}) {
         std::string zonePath = dirEntry.path();
+        if (stat(zonePath.c_str(), &s) != 0) {
+            HiLog::Error(LABEL, "zoneinfo path %{public}s not exist.", parentPath.c_str());
+            return;
+        }
         std::string zoneName = zonePath.substr(parentPath.length() + 1); // 1 add length of path splitor
-        availableIDs.insert(parentName + "/" + zoneName);
+        std::string finalZoneName = parentName + "/" + zoneName;
+        if (s.st_mode & S_IFDIR) {
+            GetTimezoneIDFromZoneInfo(availableIDs, zonePath, finalZoneName);
+        } else {
+            availableIDs.insert(finalZoneName);
+        }
     }
 }
 
