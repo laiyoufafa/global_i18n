@@ -354,7 +354,7 @@ void ZoneUtil::GetCountryZones(std::string &region, std::string &defaultTimzone,
     }
     if (findCountry) {
         value = value->next;
-        GetDefaultAndBoost(value, defaultTimzone, isBoosted, zones);        
+        GetDefaultAndBoost(value, defaultTimzone, isBoosted, zones);
     }
     xmlFreeDoc(doc);
     return;
@@ -471,7 +471,8 @@ CountryResult ZoneUtil::Match(std::vector<std::string> &zones, NITZData &nitzDat
 }
 
 bool ZoneUtil::CheckSameDstOffset(std::vector<std::string> &zones, std::string &defaultTimezoneId,
-    int64_t currentMillis) {
+    int64_t currentMillis)
+{
     UnicodeString defaultID(defaultTimezoneId.data(), defaultTimezoneId.length());
     TimeZone *defaultTimezone = TimeZone::createTimeZone(defaultID);
     int32_t rawOffset = 0;
@@ -484,7 +485,7 @@ bool ZoneUtil::CheckSameDstOffset(std::vector<std::string> &zones, std::string &
         return false;
     }
     int32_t totalOffset = rawOffset + dstOffset;
-    for (int32_t i = 0; i < zones.size(); i++) {
+    for (size_t i = 0; i < zones.size(); i++) {
         UnicodeString unicodeZoneID(zones[i].data(), zones[i].length());
         TimeZone *timezone = TimeZone::createTimeZone(unicodeZoneID);
         timezone->getOffset(currentMillis, (UBool)local, rawOffset, dstOffset, status);
