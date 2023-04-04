@@ -196,7 +196,7 @@ HWTEST_F(ZoneUtilTest, ZoneUtilFuncTest009, TestSize.Level1)
 {
     ZoneUtil util;
     std::string region = "CN";
-    NITZData nitzData = { 0, 28800000 , 1679969021999 };
+    NITZData nitzData = { 0, 28800000, 1679969021999 };
     CountryResult result = util.LookupTimezoneByCountryAndNITZ(region, nitzData);
     EXPECT_TRUE(result.isOnlyMatch);
     EXPECT_EQ(result.timezoneId, "Asia/Shanghai");
@@ -215,7 +215,7 @@ HWTEST_F(ZoneUtilTest, ZoneUtilFuncTest009, TestSize.Level1)
 HWTEST_F(ZoneUtilTest, ZoneUtilFuncTest010, TestSize.Level1)
 {
     ZoneUtil util;
-    NITZData nitzData = { 0, 28800000 , 1679969021999 };
+    NITZData nitzData = { 0, 28800000, 1679969021999 };
     CountryResult result = util.LookupTimezoneByNITZ(nitzData);
     EXPECT_FALSE(result.isOnlyMatch);
     EXPECT_EQ(result.timezoneId, "Asia/Shanghai");
