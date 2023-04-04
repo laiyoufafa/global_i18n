@@ -282,7 +282,7 @@ HWTEST_F(IntlTest, IntlFuncTest007, TestSize.Level1)
 HWTEST_F(IntlTest, IntlFuncTest008, TestSize.Level1)
 {
     string locale = "en-CN";
-    string expects = "0,123,456.79%";
+    string expects = "12,345,678.9%";
     vector<string> locales;
     locales.push_back(locale);
     string minimumIntegerDigits = "7";
