@@ -1115,7 +1115,7 @@ HWTEST_F(IntlTest, IntlFuncTest0031, TestSize.Level1)
     
     map<string, string> res;
     formatter->GetResolvedOptions(res);
-    EXPECT_EQ(res.size(), 11);
+    EXPECT_EQ(res.size(), 12);
     map<string, string>::iterator it = res.find("locale");
     if (it != res.end()) {
         EXPECT_EQ(it->second, "zh-Hans");
