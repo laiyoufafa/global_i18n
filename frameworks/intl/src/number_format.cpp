@@ -136,7 +136,7 @@ void NumberFormat::InitProperties()
         numberFormat = numberFormat.precision(icu::number::Precision::maxFraction(DEFAULT_FRACTION_DIGITS));
     }
     if (!useGrouping.empty()) {
-        numberFormat.grouping((useGrouping == "true") ?
+        numberFormat = numberFormat.grouping((useGrouping == "true") ?
             UNumberGroupingStrategy::UNUM_GROUPING_AUTO : UNumberGroupingStrategy::UNUM_GROUPING_OFF);
     }
     if (!currencySign.empty() || !signDisplayString.empty()) {
