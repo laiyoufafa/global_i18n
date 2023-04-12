@@ -56,6 +56,7 @@ const char *I18nTimeZone::CITY_DISPLAYNAME_ROOT_TAG = "display_names";
 const char *I18nTimeZone::CITY_DISPLAYNAME_SECOND_ROOT_TAG = "display_name";
 const char *I18nTimeZone::ZONEINFO_PATH = "/system/etc/zoneinfo";
 
+std::set<std::string> I18nTimeZone::availableIDs {};
 std::set<std::string> I18nTimeZone::supportedLocales {};
 std::set<std::string> I18nTimeZone::availableZoneCityIDs {};
 std::map<std::string, std::string> I18nTimeZone::city2TimeZoneID {};
@@ -247,7 +248,9 @@ std::set<std::string> I18nTimeZone::GetAvailableIDs(I18nErrorCode &errorCode)
 {
     using std::filesystem::directory_iterator;
 
-    std::set<std::string> availableIDs;
+    if (availableIDs.size() != 0) {
+        return availableIDs;
+    }
     struct stat s;
     for (const auto &dirEntry : directory_iterator{ZONEINFO_PATH}) {
         std::string parentPath = dirEntry.path();

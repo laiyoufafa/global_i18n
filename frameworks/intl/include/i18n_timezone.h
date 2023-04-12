@@ -57,6 +57,7 @@ private:
     static const char *CITY_DISPLAYNAME_SECOND_ROOT_TAG;
     static const char *ZONEINFO_PATH;
     static const uint32_t ELEMENT_NUM = 2;
+    static std::set<std::string> availableIDs;
     static std::set<std::string> supportedLocales;
     static std::set<std::string> availableZoneCityIDs;
     static std::map<std::string, std::string> city2TimeZoneID;
