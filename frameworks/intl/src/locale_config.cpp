@@ -368,14 +368,21 @@ bool LocaleConfig::SetSystemLanguage(const string &language)
     if (!IsValidTag(language)) {
         return false;
     }
+    std::string oldLanguage = GetSystemLanguage();
     if (SetParameter(LANGUAGE_KEY, language.data()) == 0) {
+        bool isUpdateSuccess = UpdateSystemLocale(language);
+        if(isUpdateSuccess) {
 #ifdef SUPPORT_GRAPHICS
         auto appMgrClient = std::make_unique<AppExecFwk::AppMgrClient>();
         AppExecFwk::Configuration configuration;
         configuration.AddItem(AAFwk::GlobalConfigurationKey::SYSTEM_LANGUAGE, language);
         appMgrClient->UpdateConfiguration(configuration);
 #endif
-        return true;
+            return true;
+        } else {
+            SetParameter(LANGUAGE_KEY, oldLanguage.data());
+            return false;
+        }
     }
     return false;
 }
@@ -1089,6 +1096,43 @@ bool LocaleConfig::GetUsingLocalDigit()
         return false;
     }
     return true;
+}
+
+bool LocaleConfig::UpdateSystemLocale(const std::string &language)
+{
+    UErrorCode status = U_ZERO_ERROR;
+    icu::Locale languageLocale = icu::Locale::forLanguageTag(language.c_str(), status);
+    if (U_FAILURE(status)) {
+        return false;
+    }
+    std::string lang = languageLocale.getLanguage();
+    std::string script = languageLocale.getScript();
+
+    std::string systemLocaleTag = GetSystemLocale();
+    icu::Locale systemLocale = icu::Locale::forLanguageTag(systemLocaleTag.c_str(), status);
+    if (U_FAILURE(status)) {
+        return false;
+    }
+    std::string region = systemLocale.getCountry();
+    
+    std::string extendParam;
+    size_t pos = systemLocaleTag.find("-u-");
+    if (pos < systemLocaleTag.length()) {
+        extendParam = systemLocaleTag.substr(pos);
+    }
+
+    std::string finalLocaleTag = lang;
+    std::string splitor = "-";
+    if (script.length() > 0) {
+        finalLocaleTag += splitor + script;
+    }
+    if (region.length() > 0) {
+        finalLocaleTag += splitor + region;
+    }
+    if (extendParam.length() > 0) {
+        finalLocaleTag += extendParam;
+    }
+    return SetSystemLocale(finalLocaleTag);
 }
 } // namespace I18n
 } // namespace Global

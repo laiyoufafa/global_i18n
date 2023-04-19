@@ -57,6 +57,7 @@ private:
     static bool IsValidRegion(const std::string &region);
     static bool IsValidTag(const std::string &tag);
     static void Split(const std::string &src, const std::string &sep, std::vector<std::string> &dest);
+    static bool UpdateSystemLocale(const std::string &language);
     static constexpr uint32_t LANGUAGE_LEN = 2;
     static constexpr uint32_t LOCALE_ITEM_COUNT = 3;
     static constexpr uint32_t SCRIPT_OFFSET = 2;
