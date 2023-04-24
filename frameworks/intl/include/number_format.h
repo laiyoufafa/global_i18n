@@ -62,7 +62,7 @@ public:
 private:
     icu::Locale locale;
     std::string currency;
-    std::string currencySign;
+    std::string currencySign = "standard";
     std::string currencyDisplayString;
     std::string unit;
     std::string unitDisplayString;
@@ -70,7 +70,7 @@ private:
     std::string numberingSystem;
     std::string useGrouping;
     std::string notationString;
-    std::string signDisplayString;
+    std::string signDisplayString = "auto";
     std::string compactDisplay;
     std::string minimumIntegerDigits;
     std::string minimumFractionDigits;
