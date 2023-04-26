@@ -99,13 +99,14 @@ void I18nAddon::Destructor(napi_env env, void *nativeObject, void *hint)
     reinterpret_cast<I18nAddon *>(nativeObject)->~I18nAddon();
 }
 
-napi_value I18nAddon::CreateUnicodeObject(napi_env env)
+napi_value I18nAddon::CreateUnicodeObject(napi_env env, napi_status &initStatus)
 {
     napi_status status = napi_ok;
     napi_value character = nullptr;
     status = napi_create_object(env, &character);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Failed to create character object at init");
+        initStatus = napi_generic_failure;
         return nullptr;
     }
     napi_property_descriptor characterProperties[] = {
@@ -124,17 +125,19 @@ napi_value I18nAddon::CreateUnicodeObject(napi_env env)
                                     characterProperties);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Failed to set properties of character at init");
+        initStatus = napi_generic_failure;
         return nullptr;
     }
     return character;
 }
 
-napi_value I18nAddon::CreateI18nUtilObject(napi_env env)
+napi_value I18nAddon::CreateI18nUtilObject(napi_env env, napi_status &initStatus)
 {
     napi_value i18nUtil = nullptr;
     napi_status status = napi_create_object(env, &i18nUtil);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Failed to create I18nUtil object at init");
+        initStatus = napi_generic_failure;
         return nullptr;
     }
     napi_property_descriptor i18nUtilProperties[] = {
@@ -145,17 +148,19 @@ napi_value I18nAddon::CreateI18nUtilObject(napi_env env)
         i18nUtilProperties);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Failed to set properties of I18nUtil at init");
+        initStatus = napi_generic_failure;
         return nullptr;
     }
     return i18nUtil;
 }
 
-napi_value I18nAddon::CreateI18nNormalizerObject(napi_env env)
+napi_value I18nAddon::CreateI18nNormalizerObject(napi_env env, napi_status &initStatus)
 {
     napi_value i18nNormalizer = nullptr;
     napi_status status = napi_create_object(env, &i18nNormalizer);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Failed to create I18nNormalizer object at init");
+        initStatus = napi_generic_failure;
         return nullptr;
     }
     napi_property_descriptor i18nNormalizerProperties[] = {
@@ -165,6 +170,7 @@ napi_value I18nAddon::CreateI18nNormalizerObject(napi_env env)
         sizeof(i18nNormalizerProperties) / sizeof(napi_property_descriptor), i18nNormalizerProperties);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Failed to set properties of I18nNormalizer at init");
+        initStatus = napi_generic_failure;
         return nullptr;
     }
     return i18nNormalizer;
@@ -193,113 +199,76 @@ napi_status I18nAddon::SetEnumValue(napi_env env, napi_value enumObj, const char
     return napi_ok;
 }
 
-napi_value I18nAddon::CreateI18NNormalizerModeEnum(napi_env env)
+napi_value I18nAddon::CreateI18NNormalizerModeEnum(napi_env env, napi_status &initStatus)
 {
     napi_value i18nNormalizerModel = nullptr;
     napi_status status = napi_create_object(env, &i18nNormalizerModel);
     if (status != napi_ok) {
+        initStatus = napi_generic_failure;
         return nullptr;
     }
     status = SetEnumValue(env, i18nNormalizerModel, NORMALIZER_MODE_NFC_NAME, NORMALIZER_MODE_NFC);
     if (status != napi_ok) {
+        initStatus = napi_generic_failure;
         return nullptr;
     }
     status = SetEnumValue(env, i18nNormalizerModel, NORMALIZER_MODE_NFD_NAME, NORMALIZER_MODE_NFD);
     if (status != napi_ok) {
+        initStatus = napi_generic_failure;
         return nullptr;
     }
     status = SetEnumValue(env, i18nNormalizerModel, NORMALIZER_MODE_NFKC_NAME, NORMALIZER_MODE_NFKC);
     if (status != napi_ok) {
+        initStatus = napi_generic_failure;
         return nullptr;
     }
     status = SetEnumValue(env, i18nNormalizerModel, NORMALIZER_MODE_NFKD_NAME, NORMALIZER_MODE_NFKD);
     if (status != napi_ok) {
+        initStatus = napi_generic_failure;
         return nullptr;
     }
     return i18nNormalizerModel;
 }
 
-void I18nAddon::CreateInitProperties(napi_property_descriptor *properties)
-{
-    properties[0] = DECLARE_NAPI_FUNCTION("getSystemLanguages", GetSystemLanguages);  // 0 is properties index
-    properties[1] = DECLARE_NAPI_FUNCTION("getSystemCountries", GetSystemCountries);  // 1 is properties index
-    properties[2] = DECLARE_NAPI_FUNCTION("isSuggested", IsSuggested);  // 2 is properties index
-    properties[3] = DECLARE_NAPI_FUNCTION("getDisplayLanguage", GetDisplayLanguage);  // 3 is properties index
-    properties[4] = DECLARE_NAPI_FUNCTION("getDisplayCountry", GetDisplayCountry);  // 4 is properties index
-    properties[5] = DECLARE_NAPI_FUNCTION("getSystemLanguage", GetSystemLanguage);  // 5 is properties index
-    properties[6] = DECLARE_NAPI_FUNCTION("getSystemRegion", GetSystemRegion);  // 6 is properties index
-    properties[7] = DECLARE_NAPI_FUNCTION("getSystemLocale", GetSystemLocale);  // 7 is properties index
-    properties[8] = DECLARE_NAPI_FUNCTION("setSystemLanguage", SetSystemLanguage);  // 8 is properties index
-    properties[9] = DECLARE_NAPI_FUNCTION("setSystemRegion", SetSystemRegion);  // 9 is properties index
-    properties[10] = DECLARE_NAPI_FUNCTION("setSystemLocale", SetSystemLocale);  // 10 is properties index
-    properties[11] = DECLARE_NAPI_FUNCTION("getCalendar", GetCalendar);  // 11 is properties index
-    properties[12] = DECLARE_NAPI_FUNCTION("isRTL", IsRTL);  // 12 is properties index
-    properties[14] = DECLARE_NAPI_FUNCTION("getLineInstance", GetLineInstance);  // 14 is properties index
-    properties[15] = DECLARE_NAPI_FUNCTION("getInstance", GetIndexUtil);  // 15 is properties index
-    properties[17] = DECLARE_NAPI_FUNCTION("addPreferredLanguage", AddPreferredLanguage);  // 17 is properties index
-    // 18 is properties index
-    properties[18] = DECLARE_NAPI_FUNCTION("removePreferredLanguage", RemovePreferredLanguage);
-    // 19 is properties index
-    properties[19] = DECLARE_NAPI_FUNCTION("getPreferredLanguageList", GetPreferredLanguageList);
-    // 20 is properties index
-    properties[20] = DECLARE_NAPI_FUNCTION("getFirstPreferredLanguage", GetFirstPreferredLanguage);
-    // 21 is properties index
-    properties[21] = DECLARE_NAPI_FUNCTION("is24HourClock", Is24HourClock);
-    // 22 is properties index
-    properties[22] = DECLARE_NAPI_FUNCTION("set24HourClock", Set24HourClock);
-    // 23 is properties index
-    properties[23] = DECLARE_NAPI_FUNCTION("getTimeZone", GetI18nTimeZone);
-    // 25 is properties index
-    properties[25] = DECLARE_NAPI_FUNCTION("setUsingLocalDigit", SetUsingLocalDigitAddon);
-    // 26 is properties index
-    properties[26] = DECLARE_NAPI_FUNCTION("getUsingLocalDigit", GetUsingLocalDigitAddon);
-    // 28 is properties index
-    properties[28] = DECLARE_NAPI_FUNCTION("getAppPreferredLanguage", GetAppPreferredLanguage);
-}
-
 napi_value I18nAddon::Init(napi_env env, napi_value exports)
 {
-    napi_status status = napi_ok;
-    napi_value i18nUtil = CreateI18nUtilObject(env);
-    if (i18nUtil == nullptr) {
-        return nullptr;
-    }
-    napi_value unicode = CreateUnicodeObject(env);
-    if (!unicode) {
-        return nullptr;
-    }
-    napi_value transliterator = CreateTransliteratorObject(env);
-    if (!transliterator) {
-        return nullptr;
-    }
-    napi_value timezone = CreateTimeZoneObject(env);
-    if (!timezone) {
-        return nullptr;
-    }
-    napi_value system = CreateSystemObject(env);
-    if (!system) {
-        return nullptr;
-    }
-    napi_value i18nNormalizer = CreateI18nNormalizerObject(env);
-    if (i18nNormalizer == nullptr) {
-        return nullptr;
-    }
-    napi_value i18nNormalizerMode = CreateI18NNormalizerModeEnum(env);
-    if (i18nNormalizerMode == nullptr) {
-        return nullptr;
-    }
-    size_t propertiesNums = 32;
-    napi_property_descriptor properties[propertiesNums];
-    CreateInitProperties(properties);
-    properties[13] = DECLARE_NAPI_PROPERTY("I18NUtil", i18nUtil);  // 13 is properties index
-    properties[16] = DECLARE_NAPI_PROPERTY("Unicode", unicode);  // 16 is properties index
-    properties[24] = DECLARE_NAPI_PROPERTY("Transliterator", transliterator); // 24 is properties index
-    properties[27] = DECLARE_NAPI_PROPERTY("TimeZone", timezone); // 27 is properties index
-    properties[29] = DECLARE_NAPI_PROPERTY("System", system); // 29 is properties index
-    properties[30] = DECLARE_NAPI_PROPERTY("Normalizer", i18nNormalizer); // 30 is properties index
-    properties[31] = DECLARE_NAPI_PROPERTY("NormalizerMode", i18nNormalizerMode); // 31 is properties index
-    status = napi_define_properties(env, exports, propertiesNums, properties);
-    if (status != napi_ok) {
+    napi_status initStatus = napi_ok;
+    napi_property_descriptor properties[] = {
+        DECLARE_NAPI_FUNCTION("getSystemLanguages", GetSystemLanguages),
+        DECLARE_NAPI_FUNCTION("getSystemCountries", GetSystemCountries),
+        DECLARE_NAPI_FUNCTION("isSuggested", IsSuggested),
+        DECLARE_NAPI_FUNCTION("getDisplayLanguage", GetDisplayLanguage),
+        DECLARE_NAPI_FUNCTION("getDisplayCountry", GetDisplayCountry),
+        DECLARE_NAPI_FUNCTION("getSystemLanguage", GetSystemLanguage),
+        DECLARE_NAPI_FUNCTION("getSystemRegion", GetSystemRegion),
+        DECLARE_NAPI_FUNCTION("getSystemLocale", GetSystemLocale),
+        DECLARE_NAPI_FUNCTION("setSystemLanguage", SetSystemLanguage),
+        DECLARE_NAPI_FUNCTION("setSystemRegion", SetSystemRegion),
+        DECLARE_NAPI_FUNCTION("setSystemLocale", SetSystemLocale),
+        DECLARE_NAPI_FUNCTION("getCalendar", GetCalendar),
+        DECLARE_NAPI_FUNCTION("isRTL", IsRTL),
+        DECLARE_NAPI_PROPERTY("I18NUtil", CreateI18nUtilObject(env, initStatus)),
+        DECLARE_NAPI_FUNCTION("getLineInstance", GetLineInstance),
+        DECLARE_NAPI_FUNCTION("getInstance", GetIndexUtil),
+        DECLARE_NAPI_PROPERTY("Unicode", CreateUnicodeObject(env, initStatus)),
+        DECLARE_NAPI_FUNCTION("addPreferredLanguage", AddPreferredLanguage),
+        DECLARE_NAPI_FUNCTION("removePreferredLanguage", RemovePreferredLanguage),
+        DECLARE_NAPI_FUNCTION("getPreferredLanguageList", GetPreferredLanguageList),
+        DECLARE_NAPI_FUNCTION("getFirstPreferredLanguage", GetFirstPreferredLanguage),
+        DECLARE_NAPI_FUNCTION("is24HourClock", Is24HourClock),
+        DECLARE_NAPI_FUNCTION("set24HourClock", Set24HourClock),
+        DECLARE_NAPI_FUNCTION("getTimeZone", GetI18nTimeZone),
+        DECLARE_NAPI_PROPERTY("Transliterator", CreateTransliteratorObject(env, initStatus)),
+        DECLARE_NAPI_FUNCTION("setUsingLocalDigit", SetUsingLocalDigitAddon),
+        DECLARE_NAPI_FUNCTION("getUsingLocalDigit", GetUsingLocalDigitAddon),
+        DECLARE_NAPI_PROPERTY("TimeZone", CreateTimeZoneObject(env, initStatus)),
+        DECLARE_NAPI_FUNCTION("getAppPreferredLanguage", GetAppPreferredLanguage),
+        DECLARE_NAPI_PROPERTY("System", CreateSystemObject(env, initStatus)),
+        DECLARE_NAPI_PROPERTY("Normalizer", CreateI18nNormalizerObject(env, initStatus)),
+        DECLARE_NAPI_PROPERTY("NormalizerMode", CreateI18NNormalizerModeEnum(env, initStatus))
+    };
+    initStatus = napi_define_properties(env, exports, sizeof(properties) / sizeof(napi_property_descriptor), properties);
+    if (initStatus != napi_ok) {
         HiLog::Error(LABEL, "Failed to set properties at init");
         return nullptr;
     }
@@ -602,13 +571,14 @@ bool I18nAddon::InitTransliteratorContext(napi_env env, napi_callback_info info,
     return transliterator_ != nullptr;
 }
 
-napi_value I18nAddon::CreateTransliteratorObject(napi_env env)
+napi_value I18nAddon::CreateTransliteratorObject(napi_env env, napi_status &initStatus)
 {
     napi_status status = napi_ok;
     napi_value transliterator = nullptr;
     status = napi_create_object(env, &transliterator);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Failed to create transliterator object at init");
+        initStatus = napi_generic_failure;
         return nullptr;
     }
     napi_property_descriptor transProperties[] = {
@@ -620,6 +590,7 @@ napi_value I18nAddon::CreateTransliteratorObject(napi_env env)
                                     transProperties);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Failed to set properties of transliterator at init");
+        initStatus = napi_generic_failure;
         return nullptr;
     }
     return transliterator;
@@ -3532,13 +3503,14 @@ napi_value I18nAddon::GetUsingLocalDigitAddon(napi_env env, napi_callback_info i
     return value;
 }
 
-napi_value I18nAddon::CreateTimeZoneObject(napi_env env)
+napi_value I18nAddon::CreateTimeZoneObject(napi_env env, napi_status &initStatus)
 {
     napi_status status = napi_ok;
     napi_value timezone = nullptr;
     status = napi_create_object(env, &timezone);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Failed to create timezone object at init");
+        initStatus = napi_generic_failure;
         return nullptr;
     }
     napi_property_descriptor timezoneProperties[] = {
@@ -3552,18 +3524,20 @@ napi_value I18nAddon::CreateTimeZoneObject(napi_env env)
                                     timezoneProperties);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Failed to set properties of timezone at init");
+        initStatus = napi_generic_failure;
         return nullptr;
     }
     return timezone;
 }
 
-napi_value I18nAddon::CreateSystemObject(napi_env env)
+napi_value I18nAddon::CreateSystemObject(napi_env env, napi_status &initStatus)
 {
     napi_status status = napi_ok;
     napi_value system = nullptr;
     status = napi_create_object(env, &system);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Failed to create system object at init");
+        initStatus = napi_generic_failure;
         return nullptr;
     }
     napi_property_descriptor systemProperties[] = {
@@ -3593,6 +3567,7 @@ napi_value I18nAddon::CreateSystemObject(napi_env env)
                                     systemProperties);
     if (status != napi_ok) {
         HiLog::Error(LABEL, "Failed to set properties of system at init");
+        initStatus = napi_generic_failure;
         return nullptr;
     }
     return system;

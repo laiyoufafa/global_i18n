@@ -106,7 +106,6 @@ public:
     static napi_value InitI18nNormalizer(napi_env env, napi_value exports);
 
 private:
-    static void CreateInitProperties(napi_property_descriptor *properties);
     static napi_value PhoneNumberFormatConstructor(napi_env env, napi_callback_info info);
     static napi_value IsValidPhoneNumber(napi_env env, napi_callback_info info);
     static napi_value FormatPhoneNumber(napi_env env, napi_callback_info info);
@@ -151,7 +150,7 @@ private:
     static napi_value AddLocale(napi_env env, napi_callback_info info);
     static napi_value GetIndex(napi_env env, napi_callback_info info);
     bool InitIndexUtilContext(napi_env env, napi_callback_info info, const std::string &localeTag);
-    static napi_value CreateUnicodeObject(napi_env env);
+    static napi_value CreateUnicodeObject(napi_env env, napi_status &initStatus);
 
     static napi_value I18nTimeZoneConstructor(napi_env env, napi_callback_info info);
     static napi_value GetID(napi_env env, napi_callback_info info);
@@ -161,7 +160,7 @@ private:
     static napi_value GetRawOffset(napi_env env, napi_callback_info info);
 
     static napi_value Transform(napi_env env, napi_callback_info info);
-    static napi_value CreateTransliteratorObject(napi_env env);
+    static napi_value CreateTransliteratorObject(napi_env env, napi_status &initStatus);
     bool InitTransliteratorContext(napi_env env, napi_callback_info info, const std::string &idTag);
     static napi_value TransliteratorConstructor(napi_env env, napi_callback_info info);
     static std::string ModifyOrder(std::string &pattern);
@@ -169,9 +168,9 @@ private:
     static bool GetStringFromJS(napi_env env, napi_value argv, std::string &jsString);
 
     static napi_value StaticGetTimeZone(napi_env, napi_value *argv, bool isZoneID);
-    static napi_value CreateTimeZoneObject(napi_env env);
+    static napi_value CreateTimeZoneObject(napi_env env, napi_status &initStatus);
 
-    static napi_value CreateSystemObject(napi_env env);
+    static napi_value CreateSystemObject(napi_env env, napi_status &initStatus);
     static napi_value GetSystemCountriesImpl(napi_env env, napi_callback_info info, bool throwError);
     static napi_value IsSuggestedImpl(napi_env env, napi_callback_info info, bool throwError);
     static napi_value GetDisplayLanguageImpl(napi_env env, napi_callback_info info, bool throwError);
@@ -189,9 +188,9 @@ private:
     static bool ParseStringParam(napi_env env, napi_value argv, bool throwError, std::string &strParam);
 
     static napi_status SetEnumValue(napi_env env, napi_value enumObj, const char* enumName, int32_t enumVal);
-    static napi_value CreateI18NNormalizerModeEnum(napi_env env);
-    static napi_value CreateI18nUtilObject(napi_env env);
-    static napi_value CreateI18nNormalizerObject(napi_env env);
+    static napi_value CreateI18NNormalizerModeEnum(napi_env env, napi_status &initStatus);
+    static napi_value CreateI18nUtilObject(napi_env env, napi_status &initStatus);
+    static napi_value CreateI18nNormalizerObject(napi_env env, napi_status &initStatus);
     static napi_value GetI18nNormalizerInstance(napi_env env, napi_callback_info info);
     static napi_value I18nNormalizerConstructor(napi_env env, napi_callback_info info);
     static napi_value Normalize(napi_env env, napi_callback_info info);
