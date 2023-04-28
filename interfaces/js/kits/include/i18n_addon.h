@@ -29,6 +29,7 @@
 #include "number_format.h"
 #include "phone_number_format.h"
 #include "preferred_language.h"
+#include "system_locale_manager.h"
 
 namespace OHOS {
 namespace Global {
@@ -104,6 +105,7 @@ public:
     static napi_value InitUtil(napi_env env, napi_value exports);
     static napi_value System(napi_env env, napi_value exports);
     static napi_value InitI18nNormalizer(napi_env env, napi_value exports);
+    static napi_value InitSystemLocaleManager(napi_env env, napi_value exports);
 
 private:
     static napi_value PhoneNumberFormatConstructor(napi_env env, napi_callback_info info);
@@ -195,6 +197,18 @@ private:
     static napi_value I18nNormalizerConstructor(napi_env env, napi_callback_info info);
     static napi_value Normalize(napi_env env, napi_callback_info info);
 
+    static napi_value SystemLocaleManagerConstructor(napi_env env, napi_callback_info info);
+    bool InitSystemLocaleManagerContext(napi_env env, napi_callback_info info);
+    static napi_value GetLanguageInfoArray(napi_env env, napi_callback_info info);
+    static napi_value getCountryInfoArray(napi_env env, napi_callback_info info);
+    static void GetStringArrayFromJsParam(napi_env env, napi_value &jsArray, std::vector<std::string> &strArray);
+    static void GetSortOptionsFromJsParam(napi_env env, napi_value &jsOptions, SortOptions &options);
+    static void GetBoolOptionValue(napi_env env, napi_value &options, const std::string &optionName, bool &boolVal);
+    static napi_value CreateLocaleItemArray(napi_env env, const std::vector<LocaleItem> &localeItemList);
+    static napi_value CreateLocaleItem(napi_env env, const LocaleItem &localeItem);
+    static napi_value CreateString(napi_env env, const std::string &str);
+    static napi_value CreateSuggestionType(napi_env env, SuggestionType suggestionType);
+
     static const int32_t NORMALIZER_MODE_NFC = 1;
     static const int32_t NORMALIZER_MODE_NFD = 2;
     static const int32_t NORMALIZER_MODE_NFKC = 3;
@@ -212,6 +226,7 @@ private:
     std::unique_ptr<IndexUtil> indexUtil_ = nullptr;
     std::unique_ptr<I18nTimeZone> timezone_ = nullptr;
     std::unique_ptr<I18nNormalizer> normalizer_ = nullptr;
+    std::unique_ptr<SystemLocaleManager> systemLocaleManager_ = nullptr;
 };
 } // namespace I18n
 } // namespace Global

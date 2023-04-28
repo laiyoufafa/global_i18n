@@ -50,6 +50,9 @@ public:
     static bool CheckPermission();
     static bool SetUsingLocalDigit(bool flag);
     static bool GetUsingLocalDigit();
+    static std::unordered_set<std::string> GetBlockedLanguages();
+    static std::unordered_set<std::string> GetBlockedRegions();
+    static std::unordered_set<std::string> GetLanguageBlockedRegions();
 
 private:
     static bool IsValidLanguage(const std::string &language);
@@ -100,8 +103,12 @@ private:
     static std::string GetDsiplayLanguageWithDialect(const std::string &language, const std::string &displayLocale);
     static std::string ComputeLocale(const std::string &displayLocale);
     static void ReadLangData(const char *langDataPath);
+    static void ProcessForbiddenRegions(const std::unordered_set<std::string> &forbiddenRegions);
     static std::unordered_set<std::string> supportedLocales;
     static std::unordered_set<std::string> supportedRegions;
+    static std::unordered_set<std::string> blockedLanguages;
+    static std::unordered_set<std::string> blockedRegions;
+    static std::unordered_map<std::string, std::unordered_set<std::string>> blockedLanguageRegions;
     static std::unordered_set<std::string> whiteLanguages;
     static std::map<std::string, std::string> supportedDialectLocales;
     static std::unordered_map<std::string, std::string> dialectMap;
