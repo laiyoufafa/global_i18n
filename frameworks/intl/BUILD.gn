@@ -126,8 +126,8 @@ ohos_shared_library("intl_util") {
     "//third_party/icu/icu4c:shared_icui18n",
     "//third_party/icu/icu4c:shared_icuuc",
     "//third_party/libphonenumber/cpp:phonenumber_standard",
-    "//third_party/libxml2:xml2",
     "//third_party/libpng:libpng",
+    "//third_party/libxml2:xml2",
   ]
   use_exceptions = true
   external_deps = [
