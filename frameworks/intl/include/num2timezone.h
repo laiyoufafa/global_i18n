@@ -8,6 +8,8 @@ namespace OHOS {
 namespace Global {
 namespace I18n {
 
+using namespace std;
+
 std::map<int, string> categoryNum2TimezoneWN = {
     { 0, "Africa/Abidjan" },
     { 1, "Africa/Accra" },
