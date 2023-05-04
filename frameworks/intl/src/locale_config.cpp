@@ -73,6 +73,9 @@ const char *LocaleConfig::rootTag = "languages";
 const char *LocaleConfig::secondRootTag = "lang";
 unordered_set<string> LocaleConfig::supportedLocales;
 unordered_set<string> LocaleConfig::supportedRegions;
+unordered_set<string> LocaleConfig::blockedLanguages;
+unordered_set<string> LocaleConfig::blockedRegions;
+unordered_map<string, unordered_set<string>> LocaleConfig::blockedLanguageRegions;
 unordered_set<string> LocaleConfig::whiteLanguages;
 unordered_map<string, string> LocaleConfig::dialectMap {
     { "es-Latn-419", "es-Latn-419" },
@@ -371,7 +374,7 @@ bool LocaleConfig::SetSystemLanguage(const string &language)
     std::string oldLanguage = GetSystemLanguage();
     if (SetParameter(LANGUAGE_KEY, language.data()) == 0) {
         bool isUpdateSuccess = UpdateSystemLocale(language);
-        if(isUpdateSuccess) {
+        if (isUpdateSuccess) {
 #ifdef SUPPORT_GRAPHICS
         auto appMgrClient = std::make_unique<AppExecFwk::AppMgrClient>();
         AppExecFwk::Configuration configuration;
@@ -627,6 +630,24 @@ void LocaleConfig::GetListFromFile(const char *path, const char *resourceName, u
     xmlFreeDoc(doc);
 }
 
+void LocaleConfig::ProcessForbiddenRegions(const unordered_set<string> &forbiddenRegions)
+{
+    for (auto it = forbiddenRegions.begin(); it != forbiddenRegions.end(); ++it) {
+        size_t pos = it->rfind("-");
+        std::string language = it->substr(0, pos);
+        std::string region = it->substr(pos + 1);
+        if (language.compare("*") == 0) {
+            blockedRegions.insert(region);
+        } else {
+            if (blockedLanguageRegions.find(language) == blockedLanguageRegions.end()) {
+                blockedLanguageRegions[language] = { region };
+            } else {
+                blockedLanguageRegions[language].insert(region);
+            }
+        }
+    }
+}
+
 void LocaleConfig::Expunge(unordered_set<string> &src, const unordered_set<string> &another)
 {
     for (auto iter = src.begin(); iter != src.end();) {
@@ -644,11 +665,11 @@ bool LocaleConfig::InitializeLists()
     GetListFromFile(SUPPORTED_REGIONS_PATH, SUPPORTED_REGIONS_NAME, supportedRegions);
     unordered_set<string> forbiddenRegions;
     GetListFromFile(FORBIDDEN_REGIONS_PATH, FORBIDDEN_REGIONS_NAME, forbiddenRegions);
-    Expunge(supportedRegions, forbiddenRegions);
+    ProcessForbiddenRegions(forbiddenRegions);
+    Expunge(supportedRegions, blockedRegions);
     GetListFromFile(WHITE_LANGUAGES_PATH, WHITE_LANGUAGES_NAME, whiteLanguages);
-    unordered_set<string> forbiddenLanguages;
-    GetListFromFile(FORBIDDEN_LANGUAGES_PATH, FORBIDDEN_LANGUAGES_NAME, forbiddenLanguages);
-    Expunge(whiteLanguages, forbiddenLanguages);
+    GetListFromFile(FORBIDDEN_LANGUAGES_PATH, FORBIDDEN_LANGUAGES_NAME, blockedLanguages);
+    Expunge(whiteLanguages, blockedLanguages);
     GetListFromFile(SUPPORTED_LOCALES_PATH, SUPPORTED_LOCALES_NAME, supportedLocales);
     return true;
 }
@@ -1114,7 +1135,7 @@ bool LocaleConfig::UpdateSystemLocale(const std::string &language)
         return false;
     }
     std::string region = systemLocale.getCountry();
-    
+
     std::string extendParam;
     size_t pos = systemLocaleTag.find("-u-");
     if (pos < systemLocaleTag.length()) {
@@ -1133,6 +1154,26 @@ bool LocaleConfig::UpdateSystemLocale(const std::string &language)
         finalLocaleTag += extendParam;
     }
     return SetSystemLocale(finalLocaleTag);
+}
+
+std::unordered_set<std::string> LocaleConfig::GetBlockedLanguages()
+{
+    return blockedLanguages;
+}
+
+std::unordered_set<std::string> LocaleConfig::GetBlockedRegions()
+{
+    return blockedRegions;
+}
+
+std::unordered_set<std::string> LocaleConfig::GetLanguageBlockedRegions()
+{
+    std::string systemLanguage = LocaleConfig::GetSystemLanguage();
+    if (blockedLanguageRegions.find(systemLanguage) != blockedLanguageRegions.end()) {
+        return blockedLanguageRegions[systemLanguage];
+    }
+    std::unordered_set<std::string> emptyResult;
+    return emptyResult;
 }
 } // namespace I18n
 } // namespace Global

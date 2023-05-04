@@ -90,6 +90,7 @@ ohos_shared_library("intl_util") {
     "src/i18n_normalizer.cpp",
     "src/i18n_timezone.cpp",
     "src/index_util.cpp",
+    "src/locale_compare.cpp",
     "src/locale_config.cpp",
     "src/locale_info.cpp",
     "src/measure_data.cpp",
@@ -97,6 +98,9 @@ ohos_shared_library("intl_util") {
     "src/phone_number_format.cpp",
     "src/plural_rules.cpp",
     "src/relative_time_format.cpp",
+    "src/system_locale_manager.cpp",
+    "src/taboo.cpp",
+    "src/taboo_utils.cpp",
     "src/utils.cpp",
   ]
   version_script = "libintl_util.map"
