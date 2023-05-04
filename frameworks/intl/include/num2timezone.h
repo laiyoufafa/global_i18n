@@ -7,7 +7,6 @@
 namespace OHOS {
 namespace Global {
 namespace I18n {
-
 using namespace std;
 
 std::map<int, string> categoryNum2TimezoneWN = {
@@ -366,7 +365,7 @@ std::map<int, string> categoryNum2TimezoneEN {
     { 183, "Pacific/Saipan" },
     { 184, "Pacific/Tarawa" },
     { 185, "Pacific/Wake" },
-}
+};
 
 
 std::map<int, string> categoryNum2TimezoneWS {
@@ -447,7 +446,7 @@ std::map<int, string> categoryNum2TimezoneWS {
     { 74, "Pacific/Tahiti" },
     { 75, "Pacific/Tongatapu" },
     { 76, "Pacific/Wallis" },
-}
+};
 
 
 std::map<int, string> categoryNum2TimezoneES {
@@ -533,7 +532,7 @@ std::map<int, string> categoryNum2TimezoneES {
     { 79, "Pacific/Noumea" },
     { 80, "Pacific/Port_Moresby" },
     { 81, "Pacific/Tarawa" },
-}
+};
 
 } // namespace I18n
 } // namespace Global
