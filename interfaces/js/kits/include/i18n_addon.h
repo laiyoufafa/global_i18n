@@ -106,6 +106,7 @@ public:
     static napi_value System(napi_env env, napi_value exports);
     static napi_value InitI18nNormalizer(napi_env env, napi_value exports);
     static napi_value InitSystemLocaleManager(napi_env env, napi_value exports);
+    static napi_value GetTimezonesByLocation(napi_env env, napi_callback_info info);
 
 private:
     static napi_value PhoneNumberFormatConstructor(napi_env env, napi_callback_info info);

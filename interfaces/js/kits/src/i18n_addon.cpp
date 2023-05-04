@@ -3518,7 +3518,8 @@ napi_value I18nAddon::CreateTimeZoneObject(napi_env env, napi_status &initStatus
         DECLARE_NAPI_FUNCTION("getAvailableIDs", GetAvailableTimezoneIDs),
         DECLARE_NAPI_FUNCTION("getAvailableZoneCityIDs", GetAvailableZoneCityIDs),
         DECLARE_NAPI_FUNCTION("getCityDisplayName", GetCityDisplayName),
-        DECLARE_NAPI_FUNCTION("getTimezoneFromCity", GetTimezoneFromCity)
+        DECLARE_NAPI_FUNCTION("getTimezoneFromCity", GetTimezoneFromCity),
+        DECLARE_NAPI_FUNCTION("getTimezonesByLocation", GetTimezonesByLocation)
     };
     status = napi_define_properties(env, timezone,
                                     sizeof(timezoneProperties) / sizeof(napi_property_descriptor),
@@ -4179,6 +4180,50 @@ napi_value I18nAddon::CreateSuggestionType(napi_env env, SuggestionType suggesti
         return nullptr;
     }
     return result;
+}
+
+napi_value I18nAddon::GetTimezonesByLocation(napi_env env, napi_callback_info info)
+{
+    size_t argc = 2;
+    napi_value argv[2] = {0, 0};
+    napi_value thisVar = nullptr;
+    void *data = nullptr;
+    napi_status status = napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
+    if (status != napi_ok) {
+        return nullptr;
+    }
+    double x , y ;
+    status = napi_get_value_double(env, argv[0], &x);
+    if(status != napi_ok){
+        HiLog::Error(LABEL, "zdd: Parse first argument x failed");
+        return nullptr;
+    }
+    status = napi_get_value_double(env, argv[1], &y);
+    if(status != napi_ok){
+        HiLog::Error(LABEL, "zdd: Parse second argument y failed");
+        return nullptr;
+    }
+    napi_value timezoneList = nullptr;
+    napi_create_array(env, &timezoneList);
+    std::vector<std::string> tempList = I18nTimeZone::GetTimezoneIdByLocation(x, y);
+    for(size_t i = 0; i < tempList.size() ;i++){
+        napi_value timezoneId = nullptr;
+        status = napi_create_string_utf8(env, tempList[i].c_str(), NAPI_AUTO_LENGTH, &timezoneId);
+        if (status != napi_ok) {
+            HiLog::Error(LABEL, "zdd: Get timezone ID failed");
+            return nullptr;
+        }
+        HiLog::Info(LABEL, "zdd: timezoneId: %{public}s", tempList[i].c_str());
+        napi_value argTimeZoneId[1] = { timezoneId };
+        napi_value timezone = StaticGetTimeZone(env, argTimeZoneId, true);
+        status = napi_set_element(env, timezoneList, i, timezone);
+        if (status != napi_ok) {
+            HiLog::Error(LABEL, "zdd: Set result timezone string failed");
+            return nullptr;
+        }
+    }
+
+    return timezoneList;
 }
 
 napi_value Init(napi_env env, napi_value exports)

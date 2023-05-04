@@ -22,6 +22,7 @@
 #include "i18n_types.h"
 #include "memory"
 #include "unicode/timezone.h"
+#include <vector>
 
 namespace OHOS {
 namespace Global {
@@ -41,12 +42,14 @@ public:
     static std::set<std::string> GetAvailableIDs(I18nErrorCode &errorCode);
     static std::set<std::string> GetAvailableZoneCityIDs();
     static std::string GetCityDisplayName(std::string &cityID, std::string &locale);
+    static std::vector<std::string> GetTimezoneIdByLocation(const double x, const double y);
 
 private:
     static const char *TIMEZONE_KEY;
     static const char *DEFAULT_TIMEZONE;
     static const char *CITY_TIMEZONE_DATA_PATH;
     static const char *DEVICE_CITY_TIMEZONE_DATA_PATH;
+    static const char *TZ_PIXEL_PATH;
     static const char *DEFAULT_LOCALE;
     static const char *CITY_DISPLAYNAME_PATH;
     static const char *DEVICE_CITY_DISPLAYNAME_PATH;
@@ -73,6 +76,8 @@ private:
     static std::string GetFallBack(std::string &localeStr);
     static void GetTimezoneIDFromZoneInfo(std::set<std::string> &availableIDs, std::string &parentPath,
         std::string &parentName);
+    static std::vector<int> GetColorData(const int x, const int y);
+
 };
 } // namespace I18n
 } // namespace Global
