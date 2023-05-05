@@ -77,7 +77,6 @@ private:
     static void GetTimezoneIDFromZoneInfo(std::set<std::string> &availableIDs, std::string &parentPath,
         std::string &parentName);
     static std::vector<int> GetColorData(const int x, const int y);
-
 };
 } // namespace I18n
 } // namespace Global
