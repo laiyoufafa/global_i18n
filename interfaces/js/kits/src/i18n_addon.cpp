@@ -4210,6 +4210,11 @@ napi_value I18nAddon::GetTimezonesByLocation(napi_env env, napi_callback_info in
         ErrorUtil::NapiThrow(env, I18N_NOT_VALID, true);
         return nullptr;
     }
+    if(x < -180 || x > 179.9 || y < -90 || y > 89.9 ){
+        HiLog::Error(LABEL, "GetTimezonesByLocation: Args x or y exceed it's scope.");
+        ErrorUtil::NapiThrow(env, I18N_NOT_VALID, true);
+        return nullptr;
+    }
     napi_value timezoneList = nullptr;
     napi_create_array(env, &timezoneList);
     std::vector<std::string> tempList = I18nTimeZone::GetTimezoneIdByLocation(x, y);
