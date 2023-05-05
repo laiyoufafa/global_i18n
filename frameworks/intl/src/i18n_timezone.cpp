@@ -490,20 +490,20 @@ std::vector<int> I18nTimeZone::GetColorData(const int x, const int y)
     if(!png_ptr){
         fclose(fp);
         png_destroy_read_struct( &png_ptr, &info_ptr, 0);
-        HiLog::Error(LABEL, "create png struct failed.");
+        HiLog::Error(LABEL, "create read_struct failed.");
         return result;
     }
     info_ptr = png_create_info_struct(png_ptr);
     if(!info_ptr){
         fclose(fp);
         png_destroy_read_struct( &png_ptr, &info_ptr, 0);
-        HiLog::Error(LABEL, "create png_info failed.");
+        HiLog::Error(LABEL, "create info_struct failed.");
         return result;
     }
     if(setjmp( png_jmpbuf(png_ptr) )){
         fclose(fp);
         png_destroy_read_struct( &png_ptr, &info_ptr, 0);
-        HiLog::Error(LABEL, "libpng error.");
+        HiLog::Error(LABEL, "read data resource file error.");
         return result;
     };
     rewind(fp);
