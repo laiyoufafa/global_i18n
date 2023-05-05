@@ -119,6 +119,7 @@ ohos_shared_library("intl_util") {
     ":language_config.para.dac",
     ":root_timezone_xml",
     ":timezones_xml",
+    ":tz_pixel_dat",
     ":white_languages_xml",
     ":zh_Hans_lang_xml",
     ":zh_Hans_timezone_xml",
