@@ -27,7 +27,7 @@
         </policylist>
         <filefilterlist>
             <filefilter name="defaultFilter" desc="Files not to check">
-                <filteritem type="filepath" name="frameworks/intl/etc/timezone/*.dat" desc="资源二进制文件"/>
+                <filteritem type="filepath" name="frameworks/intl/etc/timezone/.*.dat" desc="资源二进制文件"/>
             </filefilter>
         </filefilterlist>
     </oatconfig>
