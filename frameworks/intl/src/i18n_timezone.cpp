@@ -34,6 +34,9 @@
 #include "unicode/locid.h"
 #include "unicode/unistr.h"
 #include "utils.h"
+#include "num2timezone.h"
+#include <png.h>
+#include <stdio.h>
 
 namespace OHOS {
 namespace Global {
@@ -46,6 +49,7 @@ const char *I18nTimeZone::DEFAULT_TIMEZONE = "GMT";
 
 const char *I18nTimeZone::CITY_TIMEZONE_DATA_PATH = "/system/usr/ohos_timezone/ohos_timezones.xml";
 const char *I18nTimeZone::DEVICE_CITY_TIMEZONE_DATA_PATH = "/system/usr/ohos_timezone/device_timezones.xml";
+const char *I18nTimeZone::TZ_PIXEL_PATH = "/system/usr/ohos_timezone/tz_pixel.dat";
 const char *I18nTimeZone::DEFAULT_LOCALE = "root";
 const char *I18nTimeZone::CITY_DISPLAYNAME_PATH = "/system/usr/ohos_timezone/ohos_city_dispname/";
 const char *I18nTimeZone::DEVICE_CITY_DISPLAYNAME_PATH = "/system/usr/ohos_timezone/device_city_dispname/";
@@ -437,6 +441,87 @@ std::string I18nTimeZone::GetCityDisplayName(std::string &cityID, std::string &l
         requestLocaleStr = GetFallBack(requestLocaleStr);
     }
     return displayName;
+}
+
+std::vector<std::string> I18nTimeZone::GetTimezoneIdByLocation(const double x, const double y)
+{
+    std::vector<std::string> tzIdList;
+#ifdef SUPPORT_GRAPHICS
+    std::map<int, string> categoryMap;
+    int fixedX,fixedY; 
+    if(x < 0 && y >=0){
+        categoryMap = categoryNum2TimezoneWN;
+    }else if(x >= 0 && y >=0){
+        categoryMap = categoryNum2TimezoneEN;
+    }else if(x < 0 && y < 0){
+        categoryMap = categoryNum2TimezoneWS;
+    }else{
+        categoryMap = categoryNum2TimezoneES;
+    }
+    fixedX = (int)(y*10+ 900);
+    fixedY = (int)(x*10+ 1800);
+    std::vector<int> pixel = GetColorData(fixedX, fixedY);
+    for(size_t i =0 ; i< pixel.size() ;i++){
+        if(pixel[i] != 255 && categoryMap.find(pixel[i]) != categoryMap.end()){
+            std::string zdId = categoryMap[pixel[i]];
+            tzIdList.insert(tzIdList.end(), zdId);
+        }
+    }
+#endif
+    return tzIdList;
+}
+
+std::vector<int> I18nTimeZone::GetColorData(const int x, const int y)
+{
+    std::vector<int> result;
+    if(x < 0 || x > 1799 || y < 0 || y > 3599){
+        HiLog::Error(LABEL, "invalid width:%d or height: %d ", x, y);
+        return result;
+    }
+    FILE *fp;
+    png_infop info_ptr;
+    png_bytep row_pointers;
+    fp = fopen(TZ_PIXEL_PATH, "rb" );
+    if( fp == NULL ) {
+        HiLog::Error(LABEL, "timezone data resource file not exists.");
+        return result;
+    }
+    png_structp png_ptr = png_create_read_struct( PNG_LIBPNG_VER_STRING, NULL, NULL, NULL );
+    if(!png_ptr){
+        fclose(fp);
+        png_destroy_read_struct( &png_ptr, &info_ptr, 0);
+        HiLog::Error(LABEL, "create read_struct failed.");
+        return result;
+    }
+    info_ptr = png_create_info_struct(png_ptr);
+    if(!info_ptr){
+        fclose(fp);
+        png_destroy_read_struct( &png_ptr, &info_ptr, 0);
+        HiLog::Error(LABEL, "create info_struct failed.");
+        return result;
+    }
+    if(setjmp( png_jmpbuf(png_ptr) )){
+        fclose(fp);
+        png_destroy_read_struct( &png_ptr, &info_ptr, 0);
+        HiLog::Error(LABEL, "read data resource file error.");
+        return result;
+    };
+    rewind(fp);
+    png_init_io(png_ptr,fp);
+    png_read_info(png_ptr, info_ptr);
+    unsigned int rowbytes = png_get_rowbytes(png_ptr, info_ptr);
+    row_pointers = (png_bytep)png_malloc(png_ptr, rowbytes);
+    png_start_read_image(png_ptr);
+    for(int i = 0 ; i < y+1 ; i++){
+        png_read_row(png_ptr, row_pointers, NULL);
+    }
+    for(size_t i = 0 ; i < 3 ; i++){
+        string pixel = to_string(*(row_pointers + x*3 + i));
+        result.insert(result.begin(), atoi(pixel.c_str()));
+    }
+    png_free(png_ptr, row_pointers);
+    fclose(fp);
+    return result;
 }
 }
 }

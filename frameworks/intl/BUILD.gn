@@ -119,6 +119,7 @@ ohos_shared_library("intl_util") {
     ":language_config.para.dac",
     ":root_timezone_xml",
     ":timezones_xml",
+    ":tz_pixel_dat",
     ":white_languages_xml",
     ":zh_Hans_lang_xml",
     ":zh_Hans_timezone_xml",
@@ -126,6 +127,7 @@ ohos_shared_library("intl_util") {
     "//third_party/icu/icu4c:shared_icui18n",
     "//third_party/icu/icu4c:shared_icuuc",
     "//third_party/libphonenumber/cpp:phonenumber_standard",
+    "//third_party/libpng:libpng",
     "//third_party/libxml2:xml2",
   ]
   use_exceptions = true
@@ -240,6 +242,13 @@ ohos_prebuilt_etc("root_timezone_xml") {
 
 ohos_prebuilt_etc("timezones_xml") {
   source = "//base/global/i18n/frameworks/intl/etc/timezone/ohos_timezones.xml"
+  module_install_dir = "usr/ohos_timezone/"
+  part_name = "i18n"
+  subsystem_name = "global"
+}
+
+ohos_prebuilt_etc("tz_pixel_dat") {
+  source = "//base/global/i18n/frameworks/intl/etc/timezone/tz_pixel.dat"
   module_install_dir = "usr/ohos_timezone/"
   part_name = "i18n"
   subsystem_name = "global"

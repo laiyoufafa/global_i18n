@@ -25,6 +25,7 @@
 #include "plural_rules.h"
 #include "relative_time_format.h"
 #include "utils.h"
+#include "i18n_timezone.h"
 #include "intl_test.h"
 
 using namespace OHOS::Global::I18n;
@@ -1776,6 +1777,45 @@ HWTEST_F(IntlTest, IntlFuncTest0045, TestSize.Level1)
     paramKey = "fake system param";
     res = ReadSystemParameter(paramKey.c_str(), paramLength);
     EXPECT_TRUE(res.length() == 0);
+}
+
+/**
+ * @tc.name: IntlFuncTest0046
+ * @tc.desc: Test Intl GetTimezoneIdByLocation
+ * @tc.type: FUNC
+ */
+HWTEST_F(IntlTest, IntlFuncTest0046, TestSize.Level1)
+{
+    for (int i =0;i< 1 ;i++){
+        //北京
+        vector<std::string> Beijing = I18nTimeZone::GetTimezoneIdByLocation(116.3, 39.5);
+        EXPECT_TRUE(Beijing.size() == 1 && Beijing[0] == "Asia/Shanghai");
+        //洛杉矶
+        vector<std::string> LosAngeles = I18nTimeZone::GetTimezoneIdByLocation(-118.1, 34.0);
+        EXPECT_TRUE(LosAngeles.size() == 1 && LosAngeles[0] == "America/Los_Angeles");
+        //里约热内卢
+        vector<std::string> RIO = I18nTimeZone::GetTimezoneIdByLocation(-43.1, -22.5);
+        EXPECT_TRUE(RIO.size() == 1 && RIO[0] == "America/Sao_Paulo");
+        //悉尼
+        vector<std::string> Sydney = I18nTimeZone::GetTimezoneIdByLocation(150.5, -33.55);
+        EXPECT_TRUE(Sydney.size() == 1 && Sydney[0] == "Australia/Sydney");
+        //乌鲁木齐
+        vector<std::string> Urumqi = I18nTimeZone::GetTimezoneIdByLocation(87.7, 43.8);
+        EXPECT_TRUE(Urumqi.size() == 2);
+        bool containsShanghai = false;
+        bool containsUrumqi = false;
+        for(int i=0;i < Urumqi.size();i++){
+            if(Urumqi[i] == "Asia/Shanghai"){
+                containsShanghai = true;
+            }
+            if(Urumqi[i] == "Asia/Urumqi"){
+                containsUrumqi = true;
+            }
+        }
+        EXPECT_TRUE(containsShanghai);
+        EXPECT_TRUE(containsUrumqi);
+    }
+
 }
 } // namespace I18n
 } // namespace Global
