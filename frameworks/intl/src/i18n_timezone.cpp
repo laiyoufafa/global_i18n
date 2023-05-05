@@ -483,7 +483,7 @@ std::vector<int> I18nTimeZone::GetColorData(const int x, const int y)
     png_bytep row_pointers;
     fp = fopen(TZ_PIXEL_PATH, "rb" );
     if( fp == NULL ) {
-        HiLog::Error(LABEL, "png timezone image not exists.");
+        HiLog::Error(LABEL, "timezone data resource file not exists.");
         return result;
     }
     png_structp png_ptr = png_create_read_struct( PNG_LIBPNG_VER_STRING, NULL, NULL, NULL );
