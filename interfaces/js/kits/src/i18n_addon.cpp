@@ -4192,15 +4192,22 @@ napi_value I18nAddon::GetTimezonesByLocation(napi_env env, napi_callback_info in
     if (status != napi_ok) {
         return nullptr;
     }
-    double x , y ;
+    if (argv[0] == nullptr || argv[1] == nullptr) {
+        HiLog::Error(LABEL, "GetTimezonesByLocation: Missing parameter");
+        ErrorUtil::NapiThrow(env, I18N_NOT_FOUND, true);
+        return nullptr;
+    }
+    double x, y;
     status = napi_get_value_double(env, argv[0], &x);
     if(status != napi_ok){
-        HiLog::Error(LABEL, "zdd: Parse first argument x failed");
+        HiLog::Error(LABEL, "GetTimezonesByLocation: Parse first argument x failed");
+        ErrorUtil::NapiThrow(env, I18N_NOT_VALID, true);
         return nullptr;
     }
     status = napi_get_value_double(env, argv[1], &y);
     if(status != napi_ok){
-        HiLog::Error(LABEL, "zdd: Parse second argument y failed");
+        HiLog::Error(LABEL, "GetTimezonesByLocation: Parse second argument y failed");
+        ErrorUtil::NapiThrow(env, I18N_NOT_VALID, true);
         return nullptr;
     }
     napi_value timezoneList = nullptr;
@@ -4210,15 +4217,14 @@ napi_value I18nAddon::GetTimezonesByLocation(napi_env env, napi_callback_info in
         napi_value timezoneId = nullptr;
         status = napi_create_string_utf8(env, tempList[i].c_str(), NAPI_AUTO_LENGTH, &timezoneId);
         if (status != napi_ok) {
-            HiLog::Error(LABEL, "zdd: Get timezone ID failed");
+            HiLog::Error(LABEL, "GetTimezonesByLocation: Get timezone ID failed");
             return nullptr;
         }
-        HiLog::Info(LABEL, "zdd: timezoneId: %{public}s", tempList[i].c_str());
         napi_value argTimeZoneId[1] = { timezoneId };
         napi_value timezone = StaticGetTimeZone(env, argTimeZoneId, true);
         status = napi_set_element(env, timezoneList, i, timezone);
         if (status != napi_ok) {
-            HiLog::Error(LABEL, "zdd: Set result timezone string failed");
+            HiLog::Error(LABEL, "GetTimezonesByLocation: Set result timezone string failed");
             return nullptr;
         }
     }
